@@ -171,7 +171,7 @@ export function CaseDetailView({
           </span>
         )}
         {flippedScorer != null && (
-          <Tag tone="red">was PASS on {detail.promptLabel}</Tag>
+          <Tag tone="red">was PASS on prior version</Tag>
         )}
         <span className="flex-1" />
         <button

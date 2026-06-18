@@ -170,6 +170,7 @@ export function TrajectoriesView({ rows, stats, suite }: TrajectoriesViewProps) 
               rows={visibleRows}
               total={stats.total}
               divergedCount={divergedRows.length}
+              stepBudget={stats.stepBudget}
               scope={scope}
               onScopeChange={setScope}
             />

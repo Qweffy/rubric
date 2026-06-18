@@ -68,10 +68,10 @@ export const SCORER_TINT: Record<ScorerKey, ScorerTint> = {
   },
   neutral: {
     accent: "var(--text-mid)",
-    fillStrong: "rgba(147,164,179,0.06)",
-    fillSoft: "rgba(147,164,179,0.06)",
+    fillStrong: "color-mix(in srgb, var(--text-mid) 6%, transparent)",
+    fillSoft: "color-mix(in srgb, var(--text-mid) 6%, transparent)",
     border: "var(--divider)",
-    cellHot: "rgba(147,164,179,0.06)",
+    cellHot: "color-mix(in srgb, var(--text-mid) 6%, transparent)",
     scorerLabel: "NEUTRAL",
     filterLabel: "uncat",
   },

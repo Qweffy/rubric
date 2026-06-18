@@ -241,7 +241,10 @@ function VerdictGauge({
           strokeDasharray={circ}
           strokeDashoffset={circ * (1 - fraction)}
           transform="rotate(-90 74 74)"
-          style={{ filter: "drop-shadow(0 0 6px rgba(167,139,250,0.55))" }}
+          style={{
+            filter:
+              "drop-shadow(0 0 6px color-mix(in srgb, var(--violet) 55%, transparent))",
+          }}
         />
       </svg>
       <div
@@ -313,7 +316,8 @@ function JudgeOrb({ size = 30 }: { size?: number }) {
           justifyContent: "center",
           background: "var(--violet-16)",
           border: "1px solid color-mix(in srgb, var(--violet) 50%, transparent)",
-          boxShadow: "0 0 14px rgba(167,139,250,0.22)",
+          boxShadow:
+            "var(--glow-violet-sm, 0 0 14px color-mix(in srgb, var(--violet) 22%, transparent))",
         }}
       >
         {showIcon && (

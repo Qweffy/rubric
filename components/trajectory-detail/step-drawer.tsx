@@ -64,10 +64,10 @@ export function StepDrawer({ step, otherActual, onFocus }: StepDrawerProps) {
           ? `color-mix(in srgb, ${meta.accent} 42%, transparent)`
           : undefined,
         boxShadow: divergent
-          ? `0 0 18px ${
+          ? `${
               step.kind === "insert"
-                ? "rgba(255,200,87,0.26)"
-                : "rgba(255,93,93,0.22)"
+                ? "var(--glow-amber, 0 0 18px color-mix(in srgb, var(--amber) 26%, transparent))"
+                : "var(--glow-red)"
             }, var(--shadow-card)`
           : undefined,
       }}

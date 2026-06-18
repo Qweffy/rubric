@@ -1,0 +1,65 @@
+name: rubric
+
+# CI for prompts. Standard build checks gate the PR, then the rubric eval gate
+# runs the deterministic scorers (exact-match / json-schema / field-accuracy)
+# against the golden suite. The CLI exits non-zero on a regression, which fails
+# the job — open a PR that makes the output worse and this check goes red.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: rubric-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: build + eval gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # --- Standard build checks: typecheck → lint → test → build ---
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      # --- Rubric eval gate: deterministic scorers only ---
+      # No secrets required. The fixture target replays a captured output, so
+      # this is offline and deterministic. --no-store keeps CI from writing to
+      # the run store; the CLI's non-zero exit on regression fails the job.
+      - name: Rubric eval gate (deterministic scorers)
+        run: npx tsx bin/rubric.ts run examples/settle-bill-review/suite.yaml --no-store
+
+      # --- Optional LLM-judge tier ---
+      # Skipped until GROQ_API_KEY is set as a repository secret. The deterministic
+      # gate above is the hard quality gate; the judge tier is an additional,
+      # non-blocking signal for open-ended outputs. Wire a judge-enabled suite
+      # here once the secret exists.
+      - name: Rubric judge tier (optional)
+        if: ${{ secrets.GROQ_API_KEY != '' }}
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: npx tsx bin/rubric.ts run examples/settle-bill-review/suite.yaml --no-store

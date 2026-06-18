@@ -288,7 +288,7 @@ export function GateDetailPanel({
                 height: 30,
                 padding: "0 11px",
                 font: "600 12px/1 var(--font-ui)",
-                color: "#1A0606",
+                color: "var(--bg-void)",
                 background: "var(--red)",
                 border: "1px solid transparent",
                 borderRadius: "var(--radius-control)",

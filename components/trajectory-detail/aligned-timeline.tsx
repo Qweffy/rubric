@@ -258,7 +258,7 @@ function ActualNode({
         border: `1px solid ${borderColor}`,
         background: bg,
         boxShadow: amber
-          ? "0 0 18px rgba(255,200,87,0.26)"
+          ? "var(--glow-amber, 0 0 18px color-mix(in srgb, var(--amber) 26%, transparent))"
           : red
             ? "var(--glow-red)"
             : undefined,
@@ -394,8 +394,8 @@ function AnchorFlag({ stepNumber }: { stepNumber: number }) {
       </span>
       <style href="rb-anchor-flag" precedence="default">{`
         @keyframes rb-anchor-pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(255,200,87,0.34); }
-          50% { box-shadow: 0 0 0 7px rgba(255,200,87,0); }
+          0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--amber) 34%, transparent); }
+          50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--amber) 0%, transparent); }
         }
         .rb-anchor-flag { animation: rb-anchor-pulse 1.8s var(--ease-out) infinite; }
         @media (prefers-reduced-motion: reduce) {

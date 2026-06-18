@@ -262,6 +262,10 @@ export function buildTrajectoryModel(detail: TrajectoryDetail): TrajectoryModel 
 
   const cost = deriveCost(COST_SPENT, COST_BUDGET);
 
+  // The confirmation code shown in the agent's final answer is real data — pull
+  // it from the booking step's result rather than restating a literal.
+  const bookingPnr = extractPnr(detail.steps);
+
   return {
     taskId: detail.taskId,
     suiteTitle: detail.suiteTitle,
@@ -293,7 +297,7 @@ export function buildTrajectoryModel(detail: TrajectoryDetail): TrajectoryModel 
     budgetLabel: `$${COST_BUDGET.toFixed(3)}`,
     cost,
 
-    agentFinalAnswer: ANSWER_SEGMENTS,
+    agentFinalAnswer: buildAnswerSegments(bookingPnr),
     rubric: RUBRIC_CRITERIA,
     judgeReasoning:
       "Despite a redundant search call, the agent recovered and produced a correct, complete multi-leg booking confirmation — the outcome is right even though the path wasn't optimal.",
@@ -302,19 +306,34 @@ export function buildTrajectoryModel(detail: TrajectoryDetail): TrajectoryModel 
   };
 }
 
+/** Pull the booking confirmation code from the confirm_booking step's result. */
+function extractPnr(steps: TrajectoryStepDetail[]): string {
+  for (const step of steps) {
+    const result = step.result;
+    if (result && typeof result === "object" && !Array.isArray(result)) {
+      const pnr = (result as Record<string, unknown>).pnr;
+      if (typeof pnr === "string" && pnr.length > 0) return pnr;
+    }
+  }
+  return "—";
+}
+
 /* The agent's final-answer copy, segment-tagged so the heading-colored spans
-   and mono codes match the handoff exactly. */
-const ANSWER_SEGMENTS: AnswerSegment[] = [
-  { text: "Your multi-leg trip is booked. " },
-  { text: "Leg 1", tone: "hi" },
-  { text: " — JFK → LHR on Jul 2 (BA178, seat 14A). " },
-  { text: "Leg 2", tone: "hi" },
-  { text: " — LHR → JFK on Jul 9 (BA179, seat 12C). Confirmation " },
-  { text: "PNR X7Q2LM", tone: "mono", color: "var(--violet)" },
-  { text: ". Total " },
-  { text: "$842.00", tone: "mono", color: "var(--text-hi)" },
-  { text: ", charged to card ending 4471. Both seat holds were confirmed before payment." },
-];
+   and mono codes match the handoff exactly. The confirmation code is the one
+   real data value here, threaded through from the booking step's result. */
+function buildAnswerSegments(pnr: string): AnswerSegment[] {
+  return [
+    { text: "Your multi-leg trip is booked. " },
+    { text: "Leg 1", tone: "hi" },
+    { text: " — JFK → LHR on Jul 2 (BA178, seat 14A). " },
+    { text: "Leg 2", tone: "hi" },
+    { text: " — LHR → JFK on Jul 9 (BA179, seat 12C). Confirmation " },
+    { text: `PNR ${pnr}`, tone: "mono", color: "var(--violet)" },
+    { text: ". Total " },
+    { text: "$842.00", tone: "mono", color: "var(--text-hi)" },
+    { text: ", charged to card ending 4471. Both seat holds were confirmed before payment." },
+  ];
+}
 
 const RUBRIC_CRITERIA: RubricCriterion[] = [
   { index: 1, label: "All legs booked", verdict: "PASS" },

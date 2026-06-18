@@ -227,6 +227,7 @@ const eslintConfig = defineConfig([
       "@typescript-eslint/no-non-null-assertion": "off",
       "no-secrets/no-secrets": "off",
       "security/detect-non-literal-regexp": "off",
+      "security/detect-non-literal-fs-filename": "off",
       "import-x/no-cycle": "off",
     },
   },

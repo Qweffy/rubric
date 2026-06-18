@@ -182,8 +182,13 @@ export function groupHasAlert(group: ShellNavGroup): boolean {
 
 /** Derive the active nav key from the current pathname. */
 export function activeNavKey(pathname: string): NavKey | null {
-  const match = ALL_NAV_ITEMS.find((item) =>
-    pathname === item.href || pathname.startsWith(`${item.href}/`),
-  );
+  let match: ShellNavItem | null = null;
+  for (const item of ALL_NAV_ITEMS) {
+    const isMatch =
+      pathname === item.href || pathname.startsWith(`${item.href}/`);
+    if (isMatch && (match === null || item.href.length > match.href.length)) {
+      match = item;
+    }
+  }
   return match?.key ?? null;
 }

@@ -209,7 +209,7 @@ function OverlayBtn({
       ? { background: "transparent", color: "var(--text-body)", borderColor: "var(--border)" }
       : {
           background: "var(--red)",
-          color: "#1A0606",
+          color: "var(--bg-void)",
           boxShadow: disabled ? undefined : "var(--glow-red)",
         };
   return (

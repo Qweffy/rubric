@@ -146,6 +146,8 @@ function RecommendationBanner({
 
 export interface ModelComparisonViewProps {
   judges: JudgeComparisonRow[];
+  /** Shared labeled-pair count from calibration (the "420 LABELED PAIRS" anchor). */
+  labeledPairs: number | null;
 }
 
 /**
@@ -158,7 +160,10 @@ export interface ModelComparisonViewProps {
  * Below two labeled judges the board can't compare anything, so it falls back to
  * the "need at least two judges" empty state.
  */
-export function ModelComparisonView({ judges }: ModelComparisonViewProps) {
+export function ModelComparisonView({
+  judges,
+  labeledPairs,
+}: ModelComparisonViewProps) {
   const recommended = recommendedJudge(judges);
   const fallbackDefault = defaultJudge(judges);
   const flagged = costFlaggedJudge(judges);
@@ -189,7 +194,9 @@ export function ModelComparisonView({ judges }: ModelComparisonViewProps) {
               Judge Comparison
             </h1>
             <SectionLabel>
-              M2 · {judges.length} JUDGES · CHECKOUT-EXTRACTION
+              M2
+              {labeledPairs != null ? ` · ${labeledPairs} LABELED PAIRS` : ""} ·{" "}
+              {judges.length} JUDGES · CHECKOUT-EXTRACTION
             </SectionLabel>
           </div>
           <PrimaryButton icon>Set default judge</PrimaryButton>
@@ -225,7 +232,8 @@ export function ModelComparisonView({ judges }: ModelComparisonViewProps) {
                   className="mono"
                   style={{ font: "500 11px/1 var(--font-mono)", color: "var(--text-muted)" }}
                 >
-                  {judges.length} judges · same labeled set
+                  {judges.length} judges · same{" "}
+                  {labeledPairs != null ? `${labeledPairs}-pair` : "labeled"} set
                 </span>
               }
             >

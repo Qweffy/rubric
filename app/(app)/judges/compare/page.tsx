@@ -1,5 +1,5 @@
 import { ModelComparisonView } from "@/components/model-comparison/model-comparison-view";
-import { getModelComparison } from "@/lib/queries/calibration";
+import { getCalibration, getModelComparison } from "@/lib/queries/calibration";
 
 // The judge board reflects the latest calibration of every judge against the
 // shared human-gold set; calibration lands out-of-band, so never statically
@@ -26,5 +26,14 @@ export default async function ModelComparisonPage({
 
   const judges = await getModelComparison();
 
-  return <ModelComparisonView judges={judges} />;
+  // The header / table subtitle cite the shared labeled-pair count ("420
+  // LABELED PAIRS"). That sample size lives on the calibration run, not on the
+  // comparison rows, so source it from the default judge's latest calibration
+  // (every judge calibrates against the same gold set). Never a literal.
+  const defaultName = judges.find((j) => j.isDefault)?.judgeName ?? null;
+  const labeledPairs = defaultName
+    ? (await getCalibration(defaultName))?.n ?? null
+    : null;
+
+  return <ModelComparisonView judges={judges} labeledPairs={labeledPairs} />;
 }

@@ -185,6 +185,8 @@ function accColor(kind: TrajectoryMatchKind): string {
 
 export interface TaskRowProps {
   row: TrajectoryRow;
+  /** Step budget the STEPS column is graded against (from the seeded stats). */
+  stepBudget: number;
   /** The first row is the keyboard-selected anchor (amber `.sel` styling). */
   selected?: boolean;
 }
@@ -195,7 +197,7 @@ export interface TaskRowProps {
  * then the MATCH / TOOL-ACC / FINAL / STEPS / STATUS columns. The selected
  * anchor gets the amber wash; a DIVERGED row gets the red wash.
  */
-export function TaskRow({ row, selected = false }: TaskRowProps) {
+export function TaskRow({ row, stepBudget, selected = false }: TaskRowProps) {
   const chips = buildChips(row);
   const diverged = row.match === "DIVERGED";
   const accPct = `${(row.toolSelectionAccuracy * 100).toFixed(
@@ -218,7 +220,8 @@ export function TaskRow({ row, selected = false }: TaskRowProps) {
   if (selected) {
     rowStyle.borderColor = "color-mix(in srgb, var(--amber) 42%, transparent)";
     rowStyle.background = "var(--amber-14)";
-    rowStyle.boxShadow = "var(--glow-amber, 0 0 14px rgba(255,200,87,0.22))";
+    rowStyle.boxShadow =
+      "var(--glow-amber, 0 0 14px color-mix(in srgb, var(--amber) 22%, transparent))";
   } else if (diverged) {
     rowStyle.borderColor = "color-mix(in srgb, var(--red) 34%, transparent)";
     rowStyle.background = "var(--red-14)";
@@ -297,7 +300,7 @@ export function TaskRow({ row, selected = false }: TaskRowProps) {
           fontVariantNumeric: "tabular-nums",
         }}
       >
-        {steps}/6
+        {steps}/{stepBudget}
       </span>
 
       {/* STATUS */}

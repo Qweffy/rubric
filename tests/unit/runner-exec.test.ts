@@ -25,8 +25,7 @@ let dir: string;
 /** Write a node script to the tmp dir and return its absolute path. */
 function script(name: string, body: string): string {
   const path = join(dir, name);
-  // reason: path is a fixed name under a test-owned mkdtemp dir, not user input.
-  writeFileSync(path, body, "utf8"); // eslint-disable-line security/detect-non-literal-fs-filename
+  writeFileSync(path, body, "utf8");
   return path;
 }
 

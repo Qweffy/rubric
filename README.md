@@ -43,6 +43,16 @@ rubric export <suite>    # export results to parquet for pandas error analysis
 
 (`npm link` once for a global `rubric`, or call it via `npm run rubric -- run <suite>`.)
 
+## CI
+
+The quality gate runs in GitHub Actions ([`.github/workflows/rubric.yml`](.github/workflows/rubric.yml)) on every pull request and on pushes to `main`. It runs the standard build checks — `typecheck`, `lint`, `test`, `build` — then the rubric eval gate:
+
+```bash
+npx tsx bin/rubric.ts run examples/settle-bill-review/suite.yaml --no-store
+```
+
+The deterministic scorers (exact-match, JSON-schema, field-accuracy) need no secrets and run fully offline against a captured fixture, so the gate always runs and fails the job on a regression via the CLI's non-zero exit code. A separate, optional **judge tier** is guarded by `if: ${{ secrets.GROQ_API_KEY != '' }}` and stays skipped until that secret is set — the deterministic gate is the hard blocker; the LLM judge is an additional signal for open-ended outputs.
+
 ## Milestones
 
 - [ ] **M1 — CLI core.** YAML golden-set spec, exact-match + JSON-schema scorers, clean terminal report. Demoed against a real bill-review prompt.

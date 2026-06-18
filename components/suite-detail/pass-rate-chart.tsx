@@ -143,6 +143,13 @@ export function PassRateChart({
       </div>
 
       <div style={{ position: "relative", padding: 16 }}>
+        <style>{`
+@keyframes rb-suite-pulse { 0%, 100% { r: 4px; opacity: 1; } 50% { r: 7px; opacity: 0.55; } }
+@keyframes rb-suite-ping { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.4); opacity: 0; } }
+.rb-suite-pulse { animation: rb-suite-pulse 1.8s var(--ease-out) infinite; }
+.rb-suite-ping { animation: rb-suite-ping 1.8s var(--ease-out) infinite; transform-origin: center; transform-box: fill-box; }
+@media (prefers-reduced-motion: reduce) { .rb-suite-pulse, .rb-suite-ping { animation: none; } .rb-suite-ping { opacity: 0; } }
+`}</style>
         <svg
           viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
           width="100%"
@@ -277,7 +284,7 @@ export function PassRateChart({
                 filter="url(#suiteDropGlow)"
               />
               <circle
-                className="rb-ring"
+                className="rb-suite-ping"
                 cx={geometry.dropTo.x}
                 cy={geometry.dropTo.y}
                 r="4"
@@ -287,7 +294,7 @@ export function PassRateChart({
                 style={{ transformOrigin: "center", transformBox: "fill-box" }}
               />
               <circle
-                className="rb-pulse"
+                className="rb-suite-pulse"
                 cx={geometry.dropTo.x}
                 cy={geometry.dropTo.y}
                 r="4"

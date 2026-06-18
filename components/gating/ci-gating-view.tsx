@@ -10,6 +10,7 @@ import { Banner } from "@/components/ui/banner";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Icon } from "@/components/ui/icon";
 import { SectionLabel } from "@/components/ui/section-label";
+import { cn } from "@/lib/cn";
 import { type SuiteGate } from "@/lib/queries/gating";
 
 /* ------------------------------------------------------------------ */
@@ -105,7 +106,7 @@ function StatCard({
 }) {
   return (
     <div
-      className="flex flex-col"
+      className={cn("flex flex-col", glow && "rb-blockpulse")}
       style={{
         gap: 9,
         padding: "15px 17px",

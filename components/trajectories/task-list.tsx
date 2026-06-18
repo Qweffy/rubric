@@ -15,6 +15,8 @@ export interface TaskListProps {
   total: number;
   /** Number of diverged (non-EXACT) tasks — the segmented toggle's count. */
   divergedCount: number;
+  /** Step budget the STEPS column is graded against (from the seeded stats). */
+  stepBudget: number;
   scope: "all" | "diverged";
   onScopeChange: (scope: "all" | "diverged") => void;
 }
@@ -63,6 +65,7 @@ export function TaskList({
   rows,
   total,
   divergedCount,
+  stepBudget,
   scope,
   onScopeChange,
 }: TaskListProps) {
@@ -126,7 +129,7 @@ export function TaskList({
       {/* rows */}
       <div className="flex flex-col" style={{ padding: 8, gap: 6 }}>
         {rows.map((row, i) => (
-          <TaskRow key={row.id} row={row} selected={i === 0} />
+          <TaskRow key={row.id} row={row} stepBudget={stepBudget} selected={i === 0} />
         ))}
 
         {remaining > 0 ? (
