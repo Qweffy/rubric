@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { RubricIllustration } from "@/components/illustrations/rubric-illustration";
 import { Icon } from "@/components/ui/icon";
@@ -15,6 +16,63 @@ export interface BreadcrumbSegment {
   label: string;
   /** Omit on the active leaf — it renders as static phosphor text. */
   href?: string;
+}
+
+/**
+ * Static route → breadcrumb trail. The single source of truth for the topbar
+ * trail on every non-parameterized route, so no page wires its own breadcrumb.
+ * Parameterized routes (suites/<slug>, trajectories/<taskId>) are derived from
+ * the pathname in {@link breadcrumbForPath}.
+ */
+const STATIC_TRAILS: Record<string, BreadcrumbSegment[]> = {
+  "/suites": [{ label: "Suites" }],
+  "/judges": [{ label: "Judge Calibration" }],
+  "/judges/compare": [{ label: "Judges", href: "/judges" }, { label: "Compare" }],
+  "/prompts": [{ label: "Prompt Timeline" }],
+  "/regressions": [{ label: "Regression Diff" }],
+  "/trajectories": [{ label: "Trajectories" }],
+  "/errors": [{ label: "Error Workbench" }],
+  "/gating": [{ label: "CI / Gating" }],
+  "/settings": [{ label: "Settings" }],
+};
+
+/**
+ * Derive the topbar breadcrumb trail from the current pathname. Earlier segments
+ * are cyan links to their route; the last is the active phosphor leaf (no href).
+ * Dynamic suite / run / case / task ids are read straight off the path so every
+ * route gets a consistent trail with no per-page wiring.
+ */
+export function breadcrumbForPath(pathname: string): BreadcrumbSegment[] {
+  const segments = pathname.split("/").filter((s) => s.length > 0);
+
+  // /suites/<slug>[/runs/<runId>[/cases/<caseId>]]
+  const [root, slug, , runId, , caseId] = segments;
+  if (root === "suites" && slug !== undefined) {
+    const trail: BreadcrumbSegment[] = [{ label: "Suites", href: "/suites" }];
+    const suiteHref = `/suites/${slug}`;
+    trail.push({ label: slug, href: runId !== undefined ? suiteHref : undefined });
+    if (runId !== undefined) {
+      const runHref = `${suiteHref}/runs/${runId}`;
+      trail.push({
+        label: `run ${runId}`,
+        href: caseId !== undefined ? runHref : undefined,
+      });
+    }
+    if (caseId !== undefined) {
+      trail.push({ label: caseId });
+    }
+    return trail;
+  }
+
+  // /trajectories/<taskId>
+  if (root === "trajectories" && slug !== undefined) {
+    return [
+      { label: "Trajectories", href: "/trajectories" },
+      { label: slug },
+    ];
+  }
+
+  return STATIC_TRAILS[pathname] ?? [];
 }
 
 export type SyncTone = "synced" | "syncing" | "failed";
@@ -32,8 +90,6 @@ const SYNC_COLOR: Record<SyncTone, string> = {
 };
 
 export interface TopbarProps {
-  /** Mono breadcrumb segments, root → leaf. The last is the active leaf. */
-  breadcrumb?: BreadcrumbSegment[];
   /** SYNC dot + label state. @default { tone: "synced", label: "—" } */
   syncStatus?: SyncStatus;
   /** Open the ⌘K command palette. */
@@ -79,14 +135,19 @@ function Breadcrumb({ segments }: { segments: BreadcrumbSegment[] }) {
  * Topbar — the 56px glass header. Wordmark lockup, mono breadcrumb (cyan link
  * segments + a phosphor active leaf), a ⌘K palette trigger, a SYNC dot+label,
  * a branch selector, and the avatar monogram. Mirrors Rubric App Shell.dc.html.
+ *
+ * The breadcrumb is derived from the current route ({@link breadcrumbForPath}),
+ * so the topbar is the single source of truth — pages never wire their own.
  */
 export function Topbar({
-  breadcrumb,
   syncStatus = { tone: "synced", label: "—" },
   onOpenPalette,
   branch = "main",
   avatar = "AR",
 }: TopbarProps) {
+  const pathname = usePathname();
+  const breadcrumb = breadcrumbForPath(pathname);
+
   return (
     <header
       className="relative flex shrink-0 items-center"
@@ -121,7 +182,7 @@ export function Topbar({
 
       <div style={{ width: 1, height: 24, background: "var(--divider)", flex: "none" }} />
 
-      {breadcrumb && breadcrumb.length > 0 ? <Breadcrumb segments={breadcrumb} /> : null}
+      {breadcrumb.length > 0 ? <Breadcrumb segments={breadcrumb} /> : null}
 
       <button
         type="button"

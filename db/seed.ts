@@ -9,6 +9,7 @@
 import "@/lib/env";
 
 import { and, eq } from "drizzle-orm";
+import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 
 import { db } from "@/db";
 import {
@@ -637,6 +638,10 @@ async function main(): Promise<void> {
   const log = (msg: string): void => {
     process.stdout.write(`${msg}\n`);
   };
+
+  // Apply schema migrations first so `npm run seed` works against an empty DB.
+  migrate(db, { migrationsFolder: `${import.meta.dirname}/migrations` });
+  log("migrations applied");
 
   // 1) Suites — idempotent on slug.
   const suiteIdBy = new Map<string, number>();

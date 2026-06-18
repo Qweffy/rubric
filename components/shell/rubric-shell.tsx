@@ -11,16 +11,10 @@ import {
 } from "@/components/shell/keyboard-nav";
 import { ShellCommandPalette } from "@/components/shell/shell-command-palette";
 import { Sidebar } from "@/components/shell/sidebar";
-import {
-  Topbar,
-  type BreadcrumbSegment,
-  type SyncStatus,
-} from "@/components/shell/topbar";
+import { Topbar, type SyncStatus } from "@/components/shell/topbar";
 
 export interface RubricShellProps {
   children: ReactNode;
-  /** Mono breadcrumb segments, root → leaf, for the topbar. */
-  breadcrumb?: BreadcrumbSegment[];
   /** SYNC dot + label state for the topbar. */
   syncStatus?: SyncStatus;
   /** Reserved for per-group nav badges (e.g. counts) the sidebar may surface. */
@@ -33,7 +27,7 @@ export interface RubricShellProps {
  * the bottom key-hint strip; owns the ⌘K palette state; and wires the global
  * key handler against the RowNav controller it provides to the content subtree.
  */
-function ShellInner({ children, breadcrumb, syncStatus }: RubricShellProps) {
+function ShellInner({ children, syncStatus }: RubricShellProps) {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const rowNav = useRowNavController();
 
@@ -57,7 +51,6 @@ function ShellInner({ children, breadcrumb, syncStatus }: RubricShellProps) {
         <Sidebar />
         <div className="flex h-full min-w-0 flex-1 flex-col">
           <Topbar
-            breadcrumb={breadcrumb}
             syncStatus={syncStatus}
             onOpenPalette={() => setPaletteOpen(true)}
           />

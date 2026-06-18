@@ -76,14 +76,14 @@ export const NAV_GROUPS: ShellNavGroup[] = [
       {
         key: "calibration",
         label: "Judge Calibration",
-        href: "/calibration",
+        href: "/judges",
         icon: "scale",
         hint: "g c",
       },
       {
         key: "compare",
         label: "Model Comparison",
-        href: "/compare",
+        href: "/judges/compare",
         icon: "columns",
         hint: "g m",
       },

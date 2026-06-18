@@ -9,6 +9,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefObject,
 } from "react";
 
 import { ALL_NAV_ITEMS } from "@/components/shell/nav-items";
@@ -253,13 +254,20 @@ export function useKeyboardNav({
 }
 
 /**
- * List-view side of row nav. Call from a "use client" list with an ordered ref
- * array of its row nodes and an open handler; it registers them with the shell
- * for the lifetime of the component and returns the active row index so the
- * list can paint the j/k highlight. A no-op (returns -1) outside the shell.
+ * List-view side of row nav. Call from a "use client" list with a ref object
+ * holding the ordered row-node array and an open handler; it registers them with
+ * the shell for the lifetime of the component and returns the active row index so
+ * the list can paint the j/k highlight. A no-op (returns -1) outside the shell.
+ *
+ * The ref object (not its `.current`) is passed in so the node array is only read
+ * inside effects — never during the caller's render — keeping callers free of
+ * render-time ref access. The number of rows is passed separately as a render
+ * input so the registration effect re-runs when the set size changes (rows are
+ * collected during commit, so by the time the effect runs the ref is current).
  */
 export function useRowNavRegistration(
-  rows: (HTMLElement | null)[],
+  rowsRef: RefObject<(HTMLElement | null)[]>,
+  rowCount: number,
   onOpen: (index: number) => void,
 ): number {
   const rowNav = useRowNav();
@@ -271,20 +279,20 @@ export function useRowNavRegistration(
     onOpenRef.current = onOpen;
   }, [onOpen]);
 
-  // Stable key over the non-null row nodes so registration only re-runs when the
-  // set actually changes, not on every render that produces a fresh array.
-  const presentRows = rows.filter((row): row is HTMLElement => row !== null);
-  const rowsKey = presentRows.map((row) => row.dataset.rowKey ?? "").join("|");
-
   useEffect(() => {
-    if (rowNav === null || presentRows.length === 0) return;
+    if (rowNav === null) return;
+    const presentRows = rowsRef.current.filter(
+      (row): row is HTMLElement => row !== null,
+    );
+    if (presentRows.length === 0) return;
     return rowNav.register({
       rows: presentRows,
       onOpen: (index) => onOpenRef.current(index),
     });
-    // presentRows is recomputed each render; rowsKey is the stable identity.
+    // rowsRef is stable; the node set is collected during commit and read here.
+    // rowCount triggers re-registration when the visible row set changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rowNav, rowsKey]);
+  }, [rowNav, rowCount]);
 
   return rowNav?.activeRow ?? -1;
 }
