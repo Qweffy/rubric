@@ -1,0 +1,45 @@
+/* ============================================================
+   RUBRIC — SPACING & LAYOUT TOKENS
+   4px base grid. Instrument density: tight but breathable.
+   ============================================================ */
+
+:root {
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* Component padding rhythm */
+  --pad-control-x: 14px;   /* button / input horizontal */
+  --pad-control-y: 9px;
+  --pad-card: 16px;
+  --pad-panel: 20px;
+
+  /* Layout */
+  --topbar-h: 56px;
+  --sidebar-w: 248px;
+  --maxw-content: 1280px;
+  --gutter: 24px;
+
+  /* Control sizing */
+  --control-h-sm: 30px;
+  --control-h: 36px;
+  --control-h-lg: 44px;
+
+  /* Z-index ladder */
+  --z-base: 1;        /* @kind other */
+  --z-sticky: 50;     /* @kind other */
+  --z-dropdown: 100;  /* @kind other */
+  --z-drawer: 200;    /* @kind other */
+  --z-modal: 300;     /* @kind other */
+  --z-toast: 400;     /* @kind other */
+  --z-palette: 500;   /* @kind other */
+}

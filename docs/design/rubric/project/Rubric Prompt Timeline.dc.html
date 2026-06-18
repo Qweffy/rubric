@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+  :root{
+    --bg-void:#06080C; --bg-surface:#0B1018; --bg-raised:#111826; --glass:rgba(17,24,38,0.55);
+    --phosphor:#3DFFA2; --phosphor-dim:rgba(61,255,162,0.16);
+    --cyan:#4CC9F0; --violet:#A78BFA; --amber:#FFC857; --red:#FF5D5D; --empty:#5C8A77;
+    --text-hi:#E8F0F2; --text-mid:#93A4B3; --text-low:#5C6B7A; --text-low-content:#6E7E8F;
+    --phosphor-12:rgba(61,255,162,0.12); --phosphor-08:rgba(61,255,162,0.08);
+    --cyan-12:rgba(76,201,240,0.12); --violet-16:rgba(167,139,250,0.16); --violet-12:rgba(167,139,250,0.12);
+    --amber-14:rgba(255,200,87,0.14); --red-14:rgba(255,93,93,0.14);
+    --surface-page:var(--bg-void); --surface-panel:var(--bg-surface); --surface-card:var(--bg-raised); --surface-glass:var(--glass);
+    --border:var(--phosphor-dim); --border-strong:rgba(61,255,162,0.28); --divider:rgba(147,164,179,0.10);
+    --accent:var(--phosphor); --link:var(--cyan); --ai:var(--violet); --warn:var(--amber); --danger:var(--red);
+    --text-heading:var(--text-hi); --text-body:var(--text-mid); --text-muted:var(--text-low-content); --text-label:var(--text-low);
+    --focus-ring:var(--phosphor);
+    --font-display:'Space Grotesk',system-ui,sans-serif; --font-ui:'Inter',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --text-lg:400 16px/1.5 var(--font-ui); --text-base:400 14px/1.5 var(--font-ui); --text-sm:400 13px/1.45 var(--font-ui); --text-xs:500 12px/1.4 var(--font-ui);
+    --radius-card:10px; --radius-control:6px; --radius-sm:4px; --radius-full:0;
+    --glow-phosphor:0 0 24px rgba(61,255,162,0.25); --glow-phosphor-sm:0 0 12px rgba(61,255,162,0.20);
+    --glow-violet:0 0 24px rgba(167,139,250,0.22); --glow-cyan:0 0 16px rgba(76,201,240,0.20); --glow-red:0 0 16px rgba(255,93,93,0.22);
+    --shadow-card:0 1px 0 rgba(255,255,255,0.02) inset, 0 8px 24px rgba(0,0,0,0.45);
+    --ring:0 0 0 2px var(--bg-void), 0 0 0 4px var(--focus-ring);
+    --ease-out:cubic-bezier(0.22,1,0.36,1);
+    color-scheme:dark;
+  }
+  body{ background:#04060A; }
+  .hr-label{ font-family:var(--font-mono); font-weight:600; font-size:11px; line-height:1.2; letter-spacing:.14em; text-transform:uppercase; color:var(--text-low); }
+  .mono{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+  .void-tex{ background-color:var(--bg-void); background-image:radial-gradient(rgba(61,255,162,0.04) 1px, transparent 1px); background-size:24px 24px; }
+  .card{ background:var(--surface-card); border:1px solid var(--border); border-radius:var(--radius-card); box-shadow:var(--shadow-card); }
+  .cardhead{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 16px; border-bottom:1px solid var(--divider); }
+  .badge{ display:inline-flex; align-items:center; gap:6px; height:20px; padding:0 7px; border-radius:var(--radius-sm); font-family:var(--font-mono); font-weight:600; font-size:10px; line-height:1; letter-spacing:.10em; text-transform:uppercase; border:1px solid transparent; white-space:nowrap; }
+  .dot{ width:6px; height:6px; border-radius:50%; background:currentColor; flex:none; }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; height:36px; padding:0 14px; border-radius:var(--radius-control); font-family:var(--font-ui); font-weight:600; font-size:13px; line-height:1; border:1px solid transparent; cursor:pointer; white-space:nowrap; }
+  .btn svg{ width:16px; height:16px; }
+  .btn.sm{ height:30px; padding:0 11px; font-size:12px; }
+  .btn.primary{ background:var(--phosphor); color:var(--bg-void); box-shadow:var(--glow-phosphor); }
+  .btn.secondary{ background:transparent; color:var(--text-hi); border-color:var(--border-strong); }
+  .btn.ghost{ background:transparent; color:var(--text-body); }
+  .kbd{ display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-panel); font-family:var(--font-mono); font-size:11px; color:var(--text-muted); }
+  .nav-item{ display:flex; align-items:center; gap:10px; height:34px; padding:0 12px 0 11px; border-radius:var(--radius-control); color:var(--text-body); position:relative; cursor:pointer; font:var(--text-sm); }
+  .nav-item svg{ width:16px; height:16px; flex:none; }
+  .nav-item .lbl{ flex:1; }
+  .nav-item.active{ background:var(--phosphor-08); color:var(--text-hi); }
+  .nav-item.active::before{ content:""; position:absolute; left:0; top:6px; bottom:6px; width:2px; border-radius:1px; background:var(--phosphor); box-shadow:var(--glow-phosphor-sm); }
+  .nav-item .mtag{ font-family:var(--font-mono); font-size:10px; font-weight:600; letter-spacing:.06em; color:var(--cyan); }
+  .colh{ font-family:var(--font-mono); font-weight:600; font-size:10px; letter-spacing:.10em; text-transform:uppercase; color:var(--text-low); }
+  .tab{ display:inline-flex; align-items:center; gap:7px; padding:9px 11px; font:500 13px/1 var(--font-ui); color:var(--text-body); border-bottom:2px solid transparent; cursor:pointer; }
+  .tab.active{ color:var(--text-hi); border-bottom-color:var(--phosphor); }
+  .tag{ display:inline-flex; align-items:center; gap:6px; height:22px; padding:0 8px; border-radius:var(--radius-sm); font-family:var(--font-mono); font-size:10px; font-weight:600; letter-spacing:.06em; border:1px solid var(--border); color:var(--text-body); }
+  .chk{ width:16px; height:16px; border-radius:var(--radius-sm); border:1px solid var(--border-strong); display:inline-flex; align-items:center; justify-content:center; flex:none; }
+  .chk.on{ background:var(--phosphor); color:var(--bg-void); border-color:var(--phosphor); }
+  .node-body{ border:1px solid var(--border); border-radius:var(--radius-card); background:var(--surface-card); box-shadow:var(--shadow-card); padding:13px 16px; }
+  .skel{ background:linear-gradient(90deg, color-mix(in srgb,var(--text-mid) 8%,transparent) 25%, color-mix(in srgb,var(--text-mid) 15%,transparent) 37%, color-mix(in srgb,var(--text-mid) 8%,transparent) 63%); background-size:400% 100%; animation:rb-shimmer 1.6s linear infinite; border-radius:var(--radius-sm); }
+  @keyframes rb-shimmer{ 0%{ background-position:100% 0 } 100%{ background-position:-100% 0 } }
+  .stage{ width:max-content; min-width:100%; min-height:100vh; box-sizing:border-box; padding:48px; background:#04060A; }
+  .frame-label{ font-family:var(--font-mono); font-weight:600; font-size:12px; letter-spacing:.10em; text-transform:uppercase; color:var(--text-low); margin:0 0 12px; display:flex; align-items:center; gap:10px; }
+  .frame-label .n{ color:var(--phosphor); }
+  .shell{ border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:var(--shadow-card); display:flex; flex-direction:column; }
+  .sweep-host{ position:relative; overflow:hidden; }
+  .sweep-host::after{ content:""; position:absolute; left:0; right:0; height:120px; top:-120px; background:linear-gradient(180deg, transparent, rgba(61,255,162,0.10), transparent); animation:rb-sweepv 1.8s var(--ease-out) infinite; pointer-events:none; }
+  @keyframes rb-sweepv{ 0%{ transform:translateY(0) } 100%{ transform:translateY(calc(100% + 240px)) } }
+  @media (prefers-reduced-motion:reduce){ .skel{ animation:none } .sweep-host::after{ animation:none; display:none } }
+  a.crumb{ color:var(--cyan); text-decoration:none; }
+  a.crumb:hover{ text-decoration:underline; text-underline-offset:2px; }
+  a.lnk{ color:var(--cyan); text-decoration:none; }
+  a.lnk:hover{ text-decoration:underline; text-underline-offset:2px; }
+</style>
+</helmet>
+
+<div class="stage">
+
+  <!-- ============================================================ -->
+  <!-- PROMPT VERSIONS TIMELINE                                     -->
+  <!-- ============================================================ -->
+  <div class="frame-label" data-screen-label="Prompt timeline"><span class="n">PROMPT VERSIONS</span> · checkout-extraction · git-log × lab-logbook · 1440×1080</div>
+  <div class="shell" style="width:1440px; height:1080px; margin-bottom:48px;">
+
+    <!-- TOPBAR -->
+    <div style="height:56px; flex:none; display:flex; align-items:center; gap:18px; padding:0 16px 0 18px; background:var(--glass); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); position:relative; z-index:50;">
+      <div style="display:flex; align-items:center; gap:9px; flex:none;">
+        <svg viewBox="0 0 32 32" width="26" height="26"><defs><filter id="tb-mk" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="3.25" y="3.25" width="25.5" height="25.5" rx="6" fill="none" stroke="#3DFFA2" stroke-opacity="0.28" stroke-width="2.5"/><rect x="8" y="18" width="6" height="6" rx="1.4" fill="none" stroke="#3DFFA2" stroke-opacity="0.30" stroke-width="2.5"/><path d="M9 20 l9 -8 l5 4" fill="none" stroke="#3DFFA2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#tb-mk)"/><circle cx="23" cy="16" r="2" fill="#3DFFA2"/></svg>
+        <span style="font:600 18px/1 var(--font-display); letter-spacing:-0.02em; color:var(--text-hi);">rubric</span>
+      </div>
+      <div style="width:1px; height:24px; background:var(--divider); flex:none;"></div>
+      <div class="mono" style="font-size:13px; display:flex; align-items:center; gap:8px; flex:none;">
+        <a class="crumb" href="#">checkout-extraction</a>
+        <span style="color:var(--text-low);">/</span>
+        <span style="color:var(--phosphor);">versions</span>
+      </div>
+      <button class="mono" style="margin-left:8px; display:flex; align-items:center; gap:10px; height:34px; width:300px; padding:0 8px 0 12px; background:var(--surface-panel); border:1px solid var(--border); border-radius:var(--radius-control); color:var(--text-muted); cursor:text; font-size:13px;">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-label);"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span style="flex:1; text-align:left;">Jump to suite, run, case…</span>
+        <span class="kbd">⌘K</span>
+      </button>
+      <div style="flex:1;"></div>
+      <div style="display:flex; align-items:center; gap:7px; flex:none;">
+        <span class="dot" style="color:var(--phosphor); box-shadow:0 0 8px var(--phosphor);"></span>
+        <span class="hr-label" style="color:var(--text-low);">SYNC 09:12 UTC</span>
+      </div>
+      <button class="btn secondary sm mono" style="font-weight:500; gap:7px;">branch: main
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div style="width:30px; height:30px; flex:none; border-radius:var(--radius-control); border:1px solid var(--border); background:var(--surface-card); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:600; font-size:11px; color:var(--text-mid);">AR</div>
+    </div>
+
+    <!-- BODY -->
+    <div style="display:flex; flex:1; min-height:0;">
+
+      <!-- SIDEBAR -->
+      <div style="width:248px; flex:none; background:var(--surface-panel); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:16px 12px 12px;">
+        <div class="hr-label" style="padding:0 11px; margin-bottom:14px;">MISSION CONTROL</div>
+        <div style="display:flex; flex-direction:column; gap:16px; flex:1; overflow:hidden;">
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">MEASURE</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M1/M3</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></svg><span class="lbl">Suites</span><span class="dot" style="color:var(--red); box-shadow:0 0 6px var(--red);"></span></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">JUDGE</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M2</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg><span class="lbl">Judge Calibration</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/></svg><span class="lbl">Model Comparison</span></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">VERSIONS</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M3</span></div>
+            <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="3" x2="9" y1="12" y2="12"/><line x1="15" x2="21" y1="12" y2="12"/></svg><span class="lbl">Prompt Timeline</span><span class="mtag">M3</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M11 18H8a2 2 0 0 1-2-2V9"/></svg><span class="lbl">Regression Diff</span></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">AGENTS</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M4</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg><span class="lbl">Trajectories</span></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">ANALYZE</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M5</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="7.5" r="1.2"/><circle cx="18.5" cy="5.5" r="1.2"/><circle cx="11.5" cy="11.5" r="1.2"/><circle cx="7.5" cy="16.5" r="1.2"/><circle cx="17.5" cy="14.5" r="1.2"/><path d="M3 3v16a2 2 0 0 0 2 2h16"/></svg><span class="lbl">Error Workbench</span></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">SHIP</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M6</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><span class="lbl">CI / Gating</span><span class="dot" style="color:var(--red); box-shadow:0 0 6px var(--red);"></span></div>
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--divider); padding-top:10px; margin-top:10px;">
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="lbl">Settings</span></div>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="void-tex" style="flex:1; min-width:0; display:flex; flex-direction:column;">
+        <div style="flex:1; overflow:auto; padding:24px;">
+          <div style="max-width:1280px; margin:0 auto; display:flex; flex-direction:column; gap:18px;">
+
+            <!-- HEADER -->
+            <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:16px;">
+              <div>
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                  <h1 style="font:700 30px/1.1 var(--font-display); letter-spacing:-0.02em; color:var(--text-hi); margin:0;">Prompt Versions</h1>
+                  <span class="tag" style="height:24px; color:var(--text-hi); border-color:var(--border-strong); letter-spacing:0; font-weight:500; font-size:12px;">checkout-extraction</span>
+                </div>
+                <span class="hr-label" style="color:var(--text-low);">M3 · 23 VERSIONS · LIVE v22</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="display:flex; align-items:center; border:1px solid var(--border); border-radius:var(--radius-control); overflow:hidden;">
+                  <span class="tab active" style="border-bottom:none; padding:8px 12px; background:var(--phosphor-08); color:var(--text-hi);">main</span>
+                  <span style="width:1px; align-self:stretch; background:var(--divider);"></span>
+                  <span class="tab" style="border-bottom:none; padding:8px 12px;">feat/stricter-schema</span>
+                </div>
+                <button class="btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M11 18H8a2 2 0 0 1-2-2V9"/></svg>Compare</button>
+              </div>
+            </div>
+
+            <!-- MAIN GRID -->
+            <div style="display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:20px; align-items:start;">
+
+              <!-- TIMELINE -->
+              <div class="card" style="overflow:hidden;">
+                <div class="cardhead"><span class="hr-label">VERSION HISTORY</span><span class="mono" style="font-size:11px; color:var(--text-muted);">newest first · check 2 to compare</span></div>
+                <div style="padding:18px 18px 8px;">
+
+                  <!-- v23 -->
+                  <div style="display:grid; grid-template-columns:24px 28px 1fr; gap:12px;">
+                    <div style="display:flex; align-items:center; justify-content:center; padding-top:16px;"><span class="chk on"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+                    <div style="position:relative; display:flex; justify-content:center;">
+                      <div style="position:absolute; top:24px; bottom:-18px; width:2px; background:var(--red); box-shadow:0 0 6px color-mix(in srgb,var(--red) 60%,transparent);"></div>
+                      <div style="width:14px; height:14px; border-radius:50%; background:var(--red); box-shadow:0 0 10px var(--red); margin-top:16px; z-index:1; border:2px solid var(--bg-void);"></div>
+                    </div>
+                    <div class="node-body" style="border-color:color-mix(in srgb,var(--red) 40%,transparent); background:var(--red-14); margin-bottom:18px;">
+                      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                          <span class="mono" style="font-size:16px; font-weight:600; color:var(--text-hi);">v23</span>
+                          <a class="lnk mono" href="#" style="font-size:12px;">a3f9c21</a>
+                          <span class="mono" style="font-size:12px; color:var(--text-muted);">2026-06-17</span>
+                          <span class="tag" style="color:var(--amber); border-color:color-mix(in srgb,var(--amber) 38%,transparent);">PR #214</span>
+                          <span class="tag" style="color:var(--red); border-color:color-mix(in srgb,var(--red) 40%,transparent);"><span class="dot"></span>REGRESSED</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                          <span class="mono" style="font:500 18px/1 var(--font-mono); color:var(--red);">88.7%</span>
+                          <span class="tag" style="color:var(--red); border-color:color-mix(in srgb,var(--red) 40%,transparent); letter-spacing:0;">Δ −5.6</span>
+                          <span class="tag" style="color:var(--text-muted); letter-spacing:0;">cost +$0.02</span>
+                        </div>
+                      </div>
+                      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:9px;">
+                        <span class="mono" style="font-size:11px; color:var(--text-muted);">you · feat/stricter-schema</span>
+                        <a class="lnk mono" href="#" style="font-size:12px;">Compare to live</a>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- v22 LIVE -->
+                  <div style="display:grid; grid-template-columns:24px 28px 1fr; gap:12px;">
+                    <div style="display:flex; align-items:center; justify-content:center; padding-top:16px;"><span class="chk on"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+                    <div style="position:relative; display:flex; justify-content:center;">
+                      <div style="position:absolute; top:24px; bottom:-18px; width:2px; background:var(--phosphor); box-shadow:0 0 6px color-mix(in srgb,var(--phosphor) 50%,transparent);"></div>
+                      <div style="width:14px; height:14px; border-radius:50%; background:var(--phosphor); box-shadow:var(--glow-phosphor); margin-top:16px; z-index:1; border:2px solid var(--bg-void);"></div>
+                    </div>
+                    <div class="node-body" style="border-color:var(--border-strong); box-shadow:var(--shadow-card), var(--glow-phosphor-sm); margin-bottom:18px;">
+                      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                          <span class="mono" style="font-size:16px; font-weight:600; color:var(--text-hi);">v22</span>
+                          <a class="lnk mono" href="#" style="font-size:12px;">7b1d004</a>
+                          <span class="mono" style="font-size:12px; color:var(--text-muted);">2026-06-16</span>
+                          <span class="tag" style="color:var(--phosphor); border-color:color-mix(in srgb,var(--phosphor) 36%,transparent);"><span class="dot"></span>LIVE</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                          <span class="mono" style="font:500 18px/1 var(--font-mono); color:var(--phosphor);">94.4%</span>
+                          <span class="tag" style="color:var(--phosphor); border-color:color-mix(in srgb,var(--phosphor) 36%,transparent); letter-spacing:0;">Δ +0.3</span>
+                          <span class="tag" style="color:var(--text-muted); letter-spacing:0;">cost 0</span>
+                        </div>
+                      </div>
+                      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:9px;">
+                        <span class="mono" style="font-size:11px; color:var(--text-muted);">you · main</span>
+                        <a class="lnk mono" href="#" style="font-size:12px;">Compare to live</a>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- v21 -->
+                  <div style="display:grid; grid-template-columns:24px 28px 1fr; gap:12px;">
+                    <div style="display:flex; align-items:center; justify-content:center; padding-top:16px;"><span class="chk"></span></div>
+                    <div style="position:relative; display:flex; justify-content:center;">
+                      <div style="position:absolute; top:24px; bottom:-18px; width:2px; background:var(--divider);"></div>
+                      <div style="width:14px; height:14px; border-radius:50%; background:var(--text-mid); margin-top:16px; z-index:1; border:2px solid var(--bg-void);"></div>
+                    </div>
+                    <div class="node-body" style="margin-bottom:18px;">
+                      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                        <div style="display:flex; align-items:center; gap:10px;"><span class="mono" style="font-size:16px; font-weight:600; color:var(--text-hi);">v21</span><a class="lnk mono" href="#" style="font-size:12px;">c14e8aa</a><span class="mono" style="font-size:12px; color:var(--text-muted);">2026-06-12</span><span class="tag" style="color:var(--cyan); border-color:color-mix(in srgb,var(--cyan) 38%,transparent);">main</span></div>
+                        <div style="display:flex; align-items:center; gap:10px;"><span class="mono" style="font:500 18px/1 var(--font-mono); color:var(--phosphor);">93.9%</span><span class="tag" style="color:var(--text-muted); letter-spacing:0;">Δ −0.2</span></div>
+                      </div>
+                      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:9px;"><span class="mono" style="font-size:11px; color:var(--text-muted);">you · main</span><a class="lnk mono" href="#" style="font-size:12px;">Compare to live</a></div>
+                    </div>
+                  </div>
+
+                  <!-- v20 IMPROVED -->
+                  <div style="display:grid; grid-template-columns:24px 28px 1fr; gap:12px;">
+                    <div style="display:flex; align-items:center; justify-content:center; padding-top:16px;"><span class="chk"></span></div>
+                    <div style="position:relative; display:flex; justify-content:center;">
+                      <div style="position:absolute; top:24px; bottom:-18px; width:2px; background:var(--phosphor); box-shadow:0 0 6px color-mix(in srgb,var(--phosphor) 50%,transparent);"></div>
+                      <div style="width:14px; height:14px; border-radius:50%; background:var(--phosphor); box-shadow:var(--glow-phosphor-sm); margin-top:16px; z-index:1; border:2px solid var(--bg-void);"></div>
+                    </div>
+                    <div class="node-body" style="margin-bottom:18px;">
+                      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                        <div style="display:flex; align-items:center; gap:10px;"><span class="mono" style="font-size:16px; font-weight:600; color:var(--text-hi);">v20</span><a class="lnk mono" href="#" style="font-size:12px;">9f2b110</a><span class="mono" style="font-size:12px; color:var(--text-muted);">2026-06-09</span><span class="tag" style="color:var(--phosphor); border-color:color-mix(in srgb,var(--phosphor) 36%,transparent);">IMPROVED</span></div>
+                        <div style="display:flex; align-items:center; gap:10px;"><span class="mono" style="font:500 18px/1 var(--font-mono); color:var(--phosphor);">94.1%</span><span class="tag" style="color:var(--phosphor); border-color:color-mix(in srgb,var(--phosphor) 36%,transparent); letter-spacing:0;">Δ +2.4</span></div>
+                      </div>
+                      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:9px;"><span class="mono" style="font-size:11px; color:var(--text-muted);">you · main</span><a class="lnk mono" href="#" style="font-size:12px;">Compare to live</a></div>
+                    </div>
+                  </div>
+
+                  <!-- v19 NEUTRAL-COST-WIN -->
+                  <div style="display:grid; grid-template-columns:24px 28px 1fr; gap:12px;">
+                    <div style="display:flex; align-items:center; justify-content:center; padding-top:16px;"><span class="chk"></span></div>
+                    <div style="position:relative; display:flex; justify-content:center;">
+                      <div style="width:14px; height:14px; border-radius:50%; background:var(--cyan); box-shadow:var(--glow-cyan); margin-top:16px; z-index:1; border:2px solid var(--bg-void);"></div>
+                    </div>
+                    <div class="node-body">
+                      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                        <div style="display:flex; align-items:center; gap:10px;"><span class="mono" style="font-size:16px; font-weight:600; color:var(--text-hi);">v19</span><a class="lnk mono" href="#" style="font-size:12px;">4ad7e60</a><span class="mono" style="font-size:12px; color:var(--text-muted);">2026-06-05</span><span class="tag" style="color:var(--cyan); border-color:color-mix(in srgb,var(--cyan) 38%,transparent); letter-spacing:0;">NEUTRAL-COST-WIN</span></div>
+                        <div style="display:flex; align-items:center; gap:10px;"><span class="mono" style="font:500 18px/1 var(--font-mono); color:var(--phosphor);">91.7%</span><span class="tag" style="color:var(--text-muted); letter-spacing:0;">Δ +0.0</span><span class="tag" style="color:var(--phosphor); border-color:color-mix(in srgb,var(--phosphor) 36%,transparent); letter-spacing:0;">cost −$0.15</span></div>
+                      </div>
+                      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:9px;"><span class="mono" style="font-size:11px; color:var(--text-muted);">you · main</span><a class="lnk mono" href="#" style="font-size:12px;">Compare to live</a></div>
+                    </div>
+                  </div>
+
+                </div>
+                <div style="padding:8px 18px 16px; text-align:center;"><span class="mono" style="font-size:11px; color:var(--text-low);">+ 18 older versions</span></div>
+              </div>
+
+              <!-- RIGHT RAIL -->
+              <div style="display:flex; flex-direction:column; gap:16px; position:sticky; top:0;">
+                <!-- compare bar (2 checked) -->
+                <div class="card" style="padding:12px 14px; border-color:var(--border-strong); box-shadow:var(--shadow-card), var(--glow-phosphor-sm); display:flex; flex-direction:column; gap:10px;">
+                  <span class="mono" style="font-size:12px; color:var(--text-hi);">Comparing <span style="color:var(--phosphor);">v22</span> ↔ <span style="color:var(--red);">v23</span></span>
+                  <button class="btn primary sm" style="width:100%;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M11 18H8a2 2 0 0 1-2-2V9"/></svg>Open regression diff</button>
+                </div>
+                <!-- sparkline across 23 -->
+                <div class="card" style="padding:14px;">
+                  <div class="hr-label" style="margin-bottom:12px;">PASS-RATE · 23 VERSIONS</div>
+                  <svg viewBox="0 0 272 70" width="100%" height="70">
+                    <defs><linearGradient id="tlspark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3DFFA2" stop-opacity="0.22"/><stop offset="1" stop-color="#3DFFA2" stop-opacity="0"/></linearGradient></defs>
+                    <path d="M4 50 L16 46 L28 44 L40 40 L52 42 L64 36 L76 38 L88 30 L100 24 L112 28 L124 22 L136 26 L148 20 L160 24 L172 22 L184 26 L196 24 L208 22 L220 20 L232 22 L244 24 L256 22 L268 50 L268 66 L4 66 Z" fill="url(#tlspark)"/>
+                    <path d="M4 50 L16 46 L28 44 L40 40 L52 42 L64 36 L76 38 L88 30 L100 24 L112 28 L124 22 L136 26 L148 20 L160 24 L172 22 L184 26 L196 24 L208 22 L220 20 L232 22 L244 24 L256 22" fill="none" stroke="#3DFFA2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M256 22 L268 50" fill="none" stroke="#FF5D5D" stroke-width="1.8" stroke-linecap="round"/>
+                    <circle cx="268" cy="50" r="2.4" fill="#FF5D5D"/>
+                    <circle cx="148" cy="20" r="2" fill="#3DFFA2"/>
+                  </svg>
+                  <div style="display:flex; justify-content:space-between; margin-top:6px;"><span class="mono" style="font-size:10px; color:var(--text-muted);">v1</span><span class="mono" style="font-size:10px; color:var(--text-muted);">v23</span></div>
+                </div>
+                <!-- scorecards -->
+                <div class="card" style="padding:14px;"><div class="hr-label" style="margin-bottom:8px;">LIVE VERSION</div><div class="mono" style="font:600 24px/1.1 var(--font-mono); color:var(--phosphor);">v22</div><div class="mono" style="font-size:11px; margin-top:6px; color:var(--text-muted);">94.4% · since 06-16</div></div>
+                <div class="card" style="padding:14px;"><div class="hr-label" style="margin-bottom:8px;">BEST EVER</div><div class="mono" style="font:600 24px/1.1 var(--font-mono); color:var(--text-hi);">96.8<span style="font-size:14px; color:var(--text-muted);">%</span></div><div class="mono" style="font-size:11px; margin-top:6px; color:var(--text-muted);">v11 · 2026-05-02</div></div>
+                <div class="card" style="padding:14px;"><div class="hr-label" style="margin-bottom:8px;">VERSIONS THIS WEEK</div><div class="mono" style="font:600 24px/1.1 var(--font-mono); color:var(--text-hi);">2</div><div class="mono" style="font-size:11px; margin-top:6px; color:var(--text-muted);">v22 · v23</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- STATES                                                       -->
+  <!-- ============================================================ -->
+  <div class="frame-label" data-screen-label="Prompt timeline states"><span class="n">STATES</span> · LIVE vs branch badges + Δ chips are the signal · cost deltas matter too</div>
+
+  <div style="width:1440px; display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+
+    <!-- 1 LOADING -->
+    <div>
+      <div class="frame-label"><span class="n">1</span> · LOADING · timeline shimmer · sweep down the rail</div>
+      <div class="card void-tex sweep-host" style="height:380px; overflow:hidden; padding:18px; display:flex; flex-direction:column; gap:16px;">
+        <div style="display:grid; grid-template-columns:28px 1fr; gap:14px;"><div style="display:flex; justify-content:center;"><div class="skel" style="width:14px; height:14px; border-radius:50%; margin-top:14px;"></div></div><div class="skel" style="height:64px;"></div></div>
+        <div style="display:grid; grid-template-columns:28px 1fr; gap:14px;"><div style="display:flex; justify-content:center;"><div class="skel" style="width:14px; height:14px; border-radius:50%; margin-top:14px;"></div></div><div class="skel" style="height:64px;"></div></div>
+        <div style="display:grid; grid-template-columns:28px 1fr; gap:14px;"><div style="display:flex; justify-content:center;"><div class="skel" style="width:14px; height:14px; border-radius:50%; margin-top:14px;"></div></div><div class="skel" style="height:64px;"></div></div>
+        <div style="display:grid; grid-template-columns:28px 1fr; gap:14px;"><div style="display:flex; justify-content:center;"><div class="skel" style="width:14px; height:14px; border-radius:50%; margin-top:14px;"></div></div><div class="skel" style="height:64px;"></div></div>
+      </div>
+    </div>
+
+    <!-- 2 EMPTY -->
+    <div>
+      <div class="frame-label"><span class="n">2</span> · EMPTY · one version only</div>
+      <div class="card void-tex" style="height:380px; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:24px; text-align:center;">
+        <svg viewBox="0 0 120 96" width="140" height="112"><rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#5C8A77" stroke-opacity="0.35" stroke-width="1.5"/><g stroke="#5C8A77" stroke-opacity="0.14" stroke-width="1"><line x1="8" y1="48" x2="112" y2="48"/><line x1="60" y1="8" x2="60" y2="88"/></g><line x1="14" y1="48" x2="106" y2="48" stroke="#5C8A77" stroke-width="1.5" stroke-dasharray="2 4" stroke-opacity="0.45"/></svg>
+        <h3 style="font:600 17px/1.25 var(--font-display); color:var(--text-hi); letter-spacing:-0.02em; margin:6px 0 0;">Only one version</h3>
+        <p style="font:var(--text-sm); color:var(--text-muted); max-width:340px; margin:0;">Ship a prompt change and the comparison timeline fills in.</p>
+      </div>
+    </div>
+
+    <!-- 3 ERROR -->
+    <div>
+      <div class="frame-label"><span class="n">3</span> · ERROR · timeline / right rail fails</div>
+      <div class="card void-tex" style="height:380px; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:24px; text-align:center;">
+        <svg viewBox="0 0 120 96" width="108" height="86"><rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#FF5D5D" stroke-opacity="0.18" stroke-width="1.5"/><path d="M12 46 h14 l5 -10 l4 18 l6 -8 h6" fill="none" stroke="#FF5D5D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M64 60 h8 l4 -14 l3 10 h6" fill="none" stroke="#FF5D5D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.8"/></svg>
+        <h3 style="font:600 16px/1.25 var(--font-display); color:var(--text-hi); letter-spacing:-0.02em; margin:4px 0 0;">Couldn't load versions</h3>
+        <button class="btn secondary sm" style="margin-top:6px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>Retry</button>
+      </div>
+    </div>
+
+    <!-- 4 REGRESSED -->
+    <div>
+      <div class="frame-label"><span class="n">4</span> · REGRESSED · default · v23 red head + red trace</div>
+      <div class="card void-tex" style="height:380px; overflow:hidden; padding:18px; display:flex; flex-direction:column; gap:14px;">
+        <div style="display:grid; grid-template-columns:28px 1fr; gap:12px;">
+          <div style="position:relative; display:flex; justify-content:center;"><div style="position:absolute; top:24px; bottom:-14px; width:2px; background:var(--red); box-shadow:0 0 6px var(--red);"></div><div style="width:14px; height:14px; border-radius:50%; background:var(--red); box-shadow:0 0 10px var(--red); margin-top:16px; z-index:1; border:2px solid var(--bg-void);"></div></div>
+          <div class="node-body" style="border-color:color-mix(in srgb,var(--red) 40%,transparent); background:var(--red-14);">
+            <div style="display:flex; align-items:center; justify-content:space-between;"><div style="display:flex; align-items:center; gap:8px;"><span class="mono" style="font-size:15px; font-weight:600; color:var(--text-hi);">v23</span><span class="tag" style="color:var(--red); border-color:color-mix(in srgb,var(--red) 40%,transparent);"><span class="dot"></span>REGRESSED</span></div><div style="display:flex; gap:8px; align-items:center;"><span class="mono" style="font:500 16px/1 var(--font-mono); color:var(--red);">88.7%</span><span class="tag" style="color:var(--red); border-color:color-mix(in srgb,var(--red) 40%,transparent); letter-spacing:0;">Δ −5.6</span></div></div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:28px 1fr; gap:12px;">
+          <div style="display:flex; justify-content:center;"><div style="width:14px; height:14px; border-radius:50%; background:var(--phosphor); box-shadow:var(--glow-phosphor); margin-top:16px; border:2px solid var(--bg-void);"></div></div>
+          <div class="node-body"><div style="display:flex; align-items:center; justify-content:space-between;"><div style="display:flex; align-items:center; gap:8px;"><span class="mono" style="font-size:15px; font-weight:600; color:var(--text-hi);">v22</span><span class="tag" style="color:var(--phosphor); border-color:color-mix(in srgb,var(--phosphor) 36%,transparent);"><span class="dot"></span>LIVE</span></div><span class="mono" style="font:500 16px/1 var(--font-mono); color:var(--phosphor);">94.4%</span></div></div>
+        </div>
+        <svg viewBox="0 0 480 70" width="100%" height="50" preserveAspectRatio="none"><path d="M10 24 L120 22 L230 20 L340 22" fill="none" stroke="#3DFFA2" stroke-width="1.8" stroke-linecap="round"/><path d="M340 22 L470 56" fill="none" stroke="#FF5D5D" stroke-width="2" stroke-linecap="round"/><circle cx="470" cy="56" r="3" fill="#FF5D5D"/></svg>
+      </div>
+    </div>
+
+    <!-- 5 IMPROVED -->
+    <div>
+      <div class="frame-label"><span class="n">5</span> · IMPROVED · head node phosphor + green trace</div>
+      <div class="card void-tex" style="height:380px; overflow:hidden; padding:18px; display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; gap:10px;"><svg viewBox="0 0 120 96" width="40" height="32"><path d="M30 22 L22 22 L22 74 L30 74" fill="none" stroke="#3DFFA2" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/><path d="M90 22 L98 22 L98 74 L90 74" fill="none" stroke="#3DFFA2" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/><circle cx="60" cy="40" r="8" fill="none" stroke="#3DFFA2" stroke-width="1.8"/><path d="M56 40 l3 3 l5 -6" fill="none" stroke="#3DFFA2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="hr-label" style="color:var(--phosphor);">GATE OPEN</span></div>
+        <div style="display:grid; grid-template-columns:28px 1fr; gap:12px;">
+          <div style="position:relative; display:flex; justify-content:center;"><div style="position:absolute; top:24px; bottom:-14px; width:2px; background:var(--phosphor); box-shadow:0 0 6px var(--phosphor);"></div><div style="width:14px; height:14px; border-radius:50%; background:var(--phosphor); box-shadow:var(--glow-phosphor); margin-top:16px; z-index:1; border:2px solid var(--bg-void);"></div></div>
+          <div class="node-body" style="border-color:var(--border-strong); box-shadow:var(--shadow-card), var(--glow-phosphor-sm);">
+            <div style="display:flex; align-items:center; justify-content:space-between;"><div style="display:flex; align-items:center; gap:8px;"><span class="mono" style="font-size:15px; font-weight:600; color:var(--text-hi);">v24</span><span class="tag" style="color:var(--phosphor); border-color:color-mix(in srgb,var(--phosphor) 36%,transparent);">IMPROVED +2.4</span></div><span class="mono" style="font:500 16px/1 var(--font-mono); color:var(--phosphor);">96.8%</span></div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:28px 1fr; gap:12px;">
+          <div style="display:flex; justify-content:center;"><div style="width:14px; height:14px; border-radius:50%; background:var(--text-mid); margin-top:16px; border:2px solid var(--bg-void);"></div></div>
+          <div class="node-body"><div style="display:flex; align-items:center; justify-content:space-between;"><span class="mono" style="font-size:15px; font-weight:600; color:var(--text-hi);">v23</span><span class="mono" style="font:500 16px/1 var(--font-mono); color:var(--phosphor);">94.4%</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 NEUTRAL-COST-REGRESSION -->
+    <div>
+      <div class="frame-label"><span class="n">6</span> · NEUTRAL-COST · cost-win vs cost-regression</div>
+      <div class="card void-tex" style="height:380px; overflow:hidden; padding:18px; display:flex; flex-direction:column; gap:14px; justify-content:center;">
+        <!-- cost win v19 -->
+        <div class="node-body">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <div style="display:flex; align-items:center; gap:8px;"><span class="mono" style="font-size:15px; font-weight:600; color:var(--text-hi);">v19</span><span class="tag" style="color:var(--cyan); border-color:color-mix(in srgb,var(--cyan) 38%,transparent); letter-spacing:0;">NEUTRAL-COST-WIN</span></div>
+            <div style="display:flex; gap:8px; align-items:center;"><span class="mono" style="font:500 15px/1 var(--font-mono); color:var(--phosphor);">91.7%</span><span class="tag" style="color:var(--text-muted); letter-spacing:0;">Δ +0.0</span><span class="tag" style="color:var(--phosphor); border-color:color-mix(in srgb,var(--phosphor) 36%,transparent); letter-spacing:0;">cost −$0.15</span></div>
+          </div>
+          <div class="mono" style="font-size:11px; color:var(--text-muted); margin-top:8px;">same accuracy, 15% cheaper — a free win</div>
+        </div>
+        <!-- cost regression counter-example -->
+        <div class="node-body" style="border-color:color-mix(in srgb,var(--amber) 30%,transparent);">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <div style="display:flex; align-items:center; gap:8px;"><span class="mono" style="font-size:15px; font-weight:600; color:var(--text-hi);">v18</span><span class="tag" style="color:var(--amber); border-color:color-mix(in srgb,var(--amber) 38%,transparent); letter-spacing:0;">NEUTRAL-COST-REGRESSION</span></div>
+            <div style="display:flex; gap:8px; align-items:center;"><span class="mono" style="font:500 15px/1 var(--font-mono); color:var(--phosphor);">91.7%</span><span class="tag" style="color:var(--text-muted); letter-spacing:0;">Δ +0.0</span><span class="tag" style="color:var(--amber); border-color:color-mix(in srgb,var(--amber) 38%,transparent); letter-spacing:0;">cost +$0.18</span></div>
+          </div>
+          <div class="mono" style="font-size:11px; color:var(--text-muted); margin-top:8px;">no accuracy change but 18% more expensive</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="width:1440px; display:flex; align-items:center; justify-content:space-between; padding-top:24px; margin-top:28px; border-top:1px solid var(--divider);">
+    <span class="mono" style="font-size:11px; color:var(--text-muted);">rubric · prompt versions · git-log × lab-logbook · cost Δ matters as much as pass-rate</span>
+    <span class="hr-label">23 VERSIONS · LIVE v22 · REGRESSED AT v23</span>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1536,&quot;height&quot;:1140}}"></script>
+</body>
+</html>

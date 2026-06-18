@@ -1,0 +1,69 @@
+/* ============================================================
+   RUBRIC — COLOR TOKENS
+   Dark-only. Phosphor glow on near-black. No light theme.
+   Ported from the hiring-radar design system; rubric adds the
+   --violet-08 / --cyan-08 tints its nav + heatmap surfaces use.
+   ============================================================ */
+
+:root {
+  /* --- Base surfaces (void → raised) --- */
+  --bg-void: #06080C;      /* page background */
+  --bg-surface: #0B1018;   /* panels */
+  --bg-raised: #111826;    /* cards, popovers */
+  --glass: rgba(17, 24, 38, 0.55); /* overlays, sticky bars (pair w/ blur 16px) */
+
+  /* --- Accents --- */
+  --phosphor: #3DFFA2;                    /* primary accent: actions, the radar */
+  --phosphor-dim: rgba(61, 255, 162, 0.16); /* borders, dividers, grid lines */
+  --cyan: #4CC9F0;                        /* links, info, secondary data viz */
+  --violet: #A78BFA;                      /* AI / agent: traces, badges, scores */
+  --amber: #FFC857;                       /* warnings, pending states */
+  --red: #FF5D5D;                         /* errors, failures, destructive */
+
+  /* --- Text --- */
+  --text-hi: #E8F0F2;      /* headings, primary content */
+  --text-mid: #93A4B3;     /* body, secondary content (>=4.5:1 on surface) */
+  --text-low: #5C6B7A;     /* DECORATIVE ONLY: 11px mono section labels */
+  --text-low-content: #6E7E8F; /* use instead of --text-low when content must be read */
+
+  /* --- Accent tints (low-alpha fills for badges/banners) --- */
+  --phosphor-12: rgba(61, 255, 162, 0.12);
+  --phosphor-08: rgba(61, 255, 162, 0.08);
+  --cyan-12: rgba(76, 201, 240, 0.12);
+  --cyan-08: rgba(76, 201, 240, 0.08);   /* rubric: connection rows, info chips */
+  --violet-16: rgba(167, 139, 250, 0.16);
+  --violet-12: rgba(167, 139, 250, 0.12);
+  --violet-08: rgba(167, 139, 250, 0.08); /* rubric: active nav item, AI segment fill */
+  --amber-14: rgba(255, 200, 87, 0.14);
+  --red-14: rgba(255, 93, 93, 0.14);
+
+  /* --- AI match-strength (violet at fixed opacities) --- */
+  --match-high: rgba(167, 139, 250, 1);
+  --match-med: rgba(167, 139, 250, 0.6);
+  --match-low: rgba(167, 139, 250, 0.35);
+
+  /* ============================================================
+     SEMANTIC ALIASES — prefer these in components
+     ============================================================ */
+  --surface-page: var(--bg-void);
+  --surface-panel: var(--bg-surface);
+  --surface-card: var(--bg-raised);
+  --surface-glass: var(--glass);
+
+  --border: var(--phosphor-dim);
+  --border-strong: rgba(61, 255, 162, 0.28);
+  --divider: rgba(147, 164, 179, 0.10);
+
+  --accent: var(--phosphor);
+  --link: var(--cyan);
+  --ai: var(--violet);
+  --warn: var(--amber);
+  --danger: var(--red);
+
+  --text-heading: var(--text-hi);
+  --text-body: var(--text-mid);
+  --text-muted: var(--text-low-content);
+  --text-label: var(--text-low);
+
+  --focus-ring: var(--phosphor);
+}

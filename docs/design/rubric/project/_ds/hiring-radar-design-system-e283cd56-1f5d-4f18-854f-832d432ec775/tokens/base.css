@@ -1,0 +1,65 @@
+/* ============================================================
+   HIRING RADAR — BASE RESET
+   Minimal, dark-only defaults. Keep components self-styled.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg-void);
+  color: var(--text-body);
+  font: var(--text-base);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  color: var(--text-heading);
+  letter-spacing: var(--tracking-display);
+  font-family: var(--font-display);
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+/* All numeric/code data renders mono — apply to data cells */
+.hr-num, code, kbd, samp {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--phosphor-12);
+  color: var(--text-hi);
+}
+
+/* Tabular mono numbers everywhere they appear */
+:root { font-variant-numeric: tabular-nums; }
+
+/* Custom scrollbars — terminal feel */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(61, 255, 162, 0.18) transparent;
+}
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb {
+  background: rgba(61, 255, 162, 0.18);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: rgba(61, 255, 162, 0.30); background-clip: padding-box; }
+
+/* Visible focus rings — phosphor, 2px offset */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+  border-radius: var(--radius-sm);
+}

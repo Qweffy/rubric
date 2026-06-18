@@ -1,0 +1,50 @@
+/* ============================================================
+   HIRING RADAR — TYPOGRAPHY TOKENS
+   Display: Space Grotesk (600/700) — tight tracking
+   UI/body: Inter (400/500)
+   Data/numbers/code: JetBrains Mono — ALL numeric data is mono
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  /* --- Families --- */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-ui: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* --- Display / heading scale (Space Grotesk) --- */
+  --text-display: 600 40px/1.05 var(--font-display);
+  --text-h1: 700 30px/1.1 var(--font-display);
+  --text-h2: 600 22px/1.15 var(--font-display);
+  --text-h3: 600 17px/1.25 var(--font-display);
+
+  /* --- Body / UI scale (Inter) --- */
+  --text-lg: 400 16px/1.5 var(--font-ui);
+  --text-base: 400 14px/1.5 var(--font-ui);
+  --text-sm: 400 13px/1.45 var(--font-ui);
+  --text-xs: 500 12px/1.4 var(--font-ui);
+
+  /* --- Data / mono scale (JetBrains Mono) --- */
+  --mono-xl: 600 32px/1.1 var(--font-mono);   /* scorecard big numbers */
+  --mono-lg: 500 18px/1.3 var(--font-mono);   /* salaries, key data */
+  --mono-base: 500 14px/1.4 var(--font-mono); /* tags, codes */
+  --mono-sm: 500 12px/1.35 var(--font-mono);  /* timestamps, counts */
+
+  /* --- Terminal section labels: uppercase 11px mono + tracking --- */
+  --label-mono: 600 11px/1.2 var(--font-mono);
+  --label-tracking: 0.14em;
+
+  /* --- Tracking --- */
+  --tracking-display: -0.02em; /* Space Grotesk slightly tight */
+  --tracking-tight: -0.01em;
+  --tracking-wide: 0.04em;
+}
+
+/* Terminal-style section header utility */
+.hr-label {
+  font: var(--label-mono);
+  letter-spacing: var(--label-tracking);
+  text-transform: uppercase;
+  color: var(--text-label);
+}

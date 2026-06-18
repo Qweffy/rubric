@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+  :root{
+    --bg-void:#06080C; --bg-surface:#0B1018; --bg-raised:#111826; --glass:rgba(17,24,38,0.55);
+    --phosphor:#3DFFA2; --phosphor-dim:rgba(61,255,162,0.16);
+    --cyan:#4CC9F0; --violet:#A78BFA; --amber:#FFC857; --red:#FF5D5D; --empty:#5C8A77;
+    --text-hi:#E8F0F2; --text-mid:#93A4B3; --text-low:#5C6B7A; --text-low-content:#6E7E8F;
+    --phosphor-12:rgba(61,255,162,0.12); --phosphor-08:rgba(61,255,162,0.08);
+    --cyan-12:rgba(76,201,240,0.12); --cyan-08:rgba(76,201,240,0.08); --violet-16:rgba(167,139,250,0.16); --violet-12:rgba(167,139,250,0.12); --violet-08:rgba(167,139,250,0.08);
+    --amber-14:rgba(255,200,87,0.14); --amber-08:rgba(255,200,87,0.08); --red-14:rgba(255,93,93,0.14); --red-08:rgba(255,93,93,0.08); --red-20:rgba(255,93,93,0.20);
+    --surface-page:var(--bg-void); --surface-panel:var(--bg-surface); --surface-card:var(--bg-raised); --surface-glass:var(--glass);
+    --border:var(--phosphor-dim); --border-strong:rgba(61,255,162,0.28); --divider:rgba(147,164,179,0.10);
+    --accent:var(--phosphor); --link:var(--cyan); --ai:var(--violet); --warn:var(--amber); --danger:var(--red);
+    --text-heading:var(--text-hi); --text-body:var(--text-mid); --text-muted:var(--text-low-content); --text-label:var(--text-low);
+    --font-display:'Space Grotesk',system-ui,sans-serif; --font-ui:'Inter',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --text-lg:400 16px/1.5 var(--font-ui); --text-base:400 14px/1.5 var(--font-ui); --text-sm:400 13px/1.45 var(--font-ui); --text-xs:500 12px/1.4 var(--font-ui);
+    --radius-card:10px; --radius-control:6px; --radius-sm:4px;
+    --glow-phosphor:0 0 24px rgba(61,255,162,0.25); --glow-phosphor-sm:0 0 12px rgba(61,255,162,0.20);
+    --glow-violet:0 0 24px rgba(167,139,250,0.22); --glow-violet-sm:0 0 14px rgba(167,139,250,0.22); --glow-cyan:0 0 16px rgba(76,201,240,0.20);
+    --glow-amber:0 0 18px rgba(255,200,87,0.26); --glow-red:0 0 16px rgba(255,93,93,0.22);
+    --shadow-card:0 1px 0 rgba(255,255,255,0.02) inset, 0 8px 24px rgba(0,0,0,0.45);
+    --ease-out:cubic-bezier(0.22,1,0.36,1);
+    color-scheme:dark;
+  }
+  body{ background:#04060A; }
+  .hr-label{ font-family:var(--font-mono); font-weight:600; font-size:11px; line-height:1.2; letter-spacing:.14em; text-transform:uppercase; color:var(--text-low); }
+  .mono{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+  .void-tex{ background-color:var(--bg-void); background-image:radial-gradient(rgba(61,255,162,0.04) 1px, transparent 1px); background-size:24px 24px; }
+  .card{ background:var(--surface-card); border:1px solid var(--border); border-radius:var(--radius-card); box-shadow:var(--shadow-card); }
+  .cardhead{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 16px; border-bottom:1px solid var(--divider); }
+  .badge{ display:inline-flex; align-items:center; gap:6px; height:20px; padding:0 7px; border-radius:var(--radius-sm); font-family:var(--font-mono); font-weight:600; font-size:10px; line-height:1; letter-spacing:.10em; text-transform:uppercase; border:1px solid transparent; white-space:nowrap; }
+  .dot{ width:6px; height:6px; border-radius:50%; background:currentColor; flex:none; }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; height:36px; padding:0 14px; border-radius:var(--radius-control); font-family:var(--font-ui); font-weight:600; font-size:13px; line-height:1; border:1px solid transparent; cursor:pointer; white-space:nowrap; }
+  .btn svg{ width:16px; height:16px; }
+  .btn.sm{ height:30px; padding:0 11px; font-size:12px; }
+  .btn.primary{ background:var(--phosphor); color:var(--bg-void); box-shadow:var(--glow-phosphor); }
+  .btn.violet{ background:var(--violet); color:#160E2E; box-shadow:var(--glow-violet-sm); }
+  .btn.secondary{ background:transparent; color:var(--text-hi); border-color:var(--border-strong); }
+  .btn.ghost{ background:transparent; color:var(--text-body); }
+  .kbd{ display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-panel); font-family:var(--font-mono); font-size:11px; color:var(--text-muted); }
+  .nav-item{ display:flex; align-items:center; gap:10px; height:34px; padding:0 12px 0 11px; border-radius:var(--radius-control); color:var(--text-body); position:relative; cursor:pointer; font:var(--text-sm); }
+  .nav-item svg{ width:16px; height:16px; flex:none; }
+  .nav-item .lbl{ flex:1; }
+  .nav-item.active{ background:var(--violet-08); color:var(--text-hi); }
+  .nav-item.active::before{ content:""; position:absolute; left:0; top:6px; bottom:6px; width:2px; border-radius:1px; background:var(--violet); box-shadow:var(--glow-violet-sm); }
+  .nav-item .mtag{ font-family:var(--font-mono); font-size:10px; font-weight:600; letter-spacing:.06em; color:var(--violet); }
+  .colh{ font-family:var(--font-mono); font-weight:600; font-size:10px; letter-spacing:.10em; text-transform:uppercase; color:var(--text-low); }
+  .tag{ display:inline-flex; align-items:center; gap:6px; height:22px; padding:0 8px; border-radius:var(--radius-sm); font-family:var(--font-mono); font-size:10px; font-weight:600; letter-spacing:.06em; border:1px solid var(--border); color:var(--text-body); }
+  .tile{ position:relative; border-radius:var(--radius-control); padding:13px 14px; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden; cursor:pointer; transition:all 140ms var(--ease-out); min-height:0; }
+  .tile .cnt{ font-family:var(--font-mono); font-weight:700; line-height:1; color:var(--text-hi); }
+  .tile .tlabel{ font-family:var(--font-mono); font-weight:500; font-size:12px; line-height:1.25; color:var(--text-hi); }
+  .tile .tscorer{ font-family:var(--font-mono); font-weight:600; font-size:9.5px; letter-spacing:.10em; text-transform:uppercase; }
+  .tile.sel{ box-shadow:0 0 0 1.5px var(--phosphor), var(--glow-phosphor-sm); }
+  .hcell{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; height:46px; border-radius:var(--radius-sm); border:1px solid var(--divider); font-family:var(--font-mono); }
+  .hcell .hn{ font-weight:700; font-size:14px; line-height:1; }
+  .hcell .hg{ font-size:8px; letter-spacing:.10em; line-height:1; }
+  .stepper-dot{ display:flex; align-items:center; gap:7px; font-family:var(--font-mono); font-weight:600; font-size:10px; letter-spacing:.10em; text-transform:uppercase; }
+  .stepper-dot .sd{ width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; flex:none; }
+  .ckbox{ width:18px; height:18px; border-radius:5px; border:1.5px solid var(--border-strong); flex:none; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .ckbox.on{ background:var(--phosphor); border-color:var(--phosphor); box-shadow:var(--glow-phosphor-sm); }
+  .drow{ display:flex; align-items:center; gap:12px; padding:0 13px; height:48px; border-radius:var(--radius-control); border:1px solid var(--border); background:var(--surface-card); cursor:pointer; transition:all 120ms var(--ease-out); }
+  .skel{ background:linear-gradient(90deg, color-mix(in srgb,var(--text-mid) 8%,transparent) 25%, color-mix(in srgb,var(--text-mid) 15%,transparent) 37%, color-mix(in srgb,var(--text-mid) 8%,transparent) 63%); background-size:400% 100%; animation:rb-shimmer 1.6s linear infinite; border-radius:var(--radius-sm); }
+  @keyframes rb-shimmer{ 0%{ background-position:100% 0 } 100%{ background-position:-100% 0 } }
+  .runpulse{ animation:rb-pulse 1.6s var(--ease-out) infinite; }
+  @keyframes rb-pulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(167,139,250,0.34) } 50%{ box-shadow:0 0 0 7px rgba(167,139,250,0) } }
+  .spin{ animation:rb-spin 0.9s linear infinite; }
+  @keyframes rb-spin{ to{ transform:rotate(360deg) } }
+  .toast-in{ animation:rb-toast 0.5s var(--ease-out) both; }
+  @keyframes rb-toast{ 0%{ transform:translateY(10px); opacity:0 } 100%{ transform:translateY(0); opacity:1 } }
+  .stage{ width:max-content; min-width:100%; min-height:100vh; box-sizing:border-box; padding:48px; background:#04060A; }
+  .frame-label{ font-family:var(--font-mono); font-weight:600; font-size:12px; letter-spacing:.10em; text-transform:uppercase; color:var(--text-low); margin:0 0 12px; display:flex; align-items:center; gap:10px; }
+  .frame-label .n{ color:var(--violet); }
+  .shell{ border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:var(--shadow-card); display:flex; flex-direction:column; }
+  a.crumb{ color:var(--cyan); text-decoration:none; } a.crumb:hover{ text-decoration:underline; text-underline-offset:2px; }
+  a.lnk{ color:var(--cyan); text-decoration:none; } a.lnk:hover{ text-decoration:underline; text-underline-offset:2px; }
+  @media (prefers-reduced-motion:reduce){ .skel,.runpulse,.spin,.toast-in{ animation:none } }
+</style>
+</helmet>
+
+<div class="stage">
+
+  <!-- ============================================================ -->
+  <!-- MAIN · ERROR ANALYSIS WORKBENCH · clusters-found (default)   -->
+  <!-- ============================================================ -->
+  <div class="frame-label" data-screen-label="Error Analysis Workbench"><span class="n">ERROR ANALYSIS</span> · checkout-extraction · clusters-found · 1440×1620</div>
+  <div class="shell" style="width:1440px; height:1620px; margin-bottom:48px;">
+
+    <!-- TOPBAR -->
+    <div style="height:56px; flex:none; display:flex; align-items:center; gap:18px; padding:0 16px 0 18px; background:var(--glass); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); position:relative; z-index:50;">
+      <div style="display:flex; align-items:center; gap:9px; flex:none;">
+        <svg viewBox="0 0 32 32" width="26" height="26"><rect x="3.25" y="3.25" width="25.5" height="25.5" rx="6" fill="none" stroke="#3DFFA2" stroke-opacity="0.28" stroke-width="2.5"/><rect x="8" y="18" width="6" height="6" rx="1.4" fill="none" stroke="#3DFFA2" stroke-opacity="0.30" stroke-width="2.5"/><path d="M9 20 l9 -8 l5 4" fill="none" stroke="#3DFFA2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="23" cy="16" r="2" fill="#3DFFA2"/></svg>
+        <span style="font:600 18px/1 var(--font-display); letter-spacing:-0.02em; color:var(--text-hi);">rubric</span>
+      </div>
+      <div style="width:1px; height:24px; background:var(--divider); flex:none;"></div>
+      <div class="mono" style="font-size:13px; display:flex; align-items:center; gap:8px; flex:none;">
+        <a class="crumb" href="#">checkout-extraction</a>
+        <span style="color:var(--text-low);">/</span>
+        <span style="color:var(--violet);">error analysis</span>
+      </div>
+      <button class="mono" style="margin-left:8px; display:flex; align-items:center; gap:10px; height:34px; width:280px; padding:0 8px 0 12px; background:var(--surface-panel); border:1px solid var(--border); border-radius:var(--radius-control); color:var(--text-muted); cursor:text; font-size:13px;">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-label);"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span style="flex:1; text-align:left;">Jump to task, run, case…</span>
+        <span class="kbd">⌘K</span>
+      </button>
+      <div style="flex:1;"></div>
+      <div style="display:flex; align-items:center; gap:7px; flex:none;">
+        <span class="dot" style="color:var(--phosphor); box-shadow:0 0 8px var(--phosphor);"></span>
+        <span class="hr-label" style="color:var(--text-low);">SYNC 09:13 UTC</span>
+      </div>
+      <button class="btn secondary sm mono" style="font-weight:500; gap:7px;">branch: main
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div style="width:30px; height:30px; flex:none; border-radius:var(--radius-control); border:1px solid var(--border); background:var(--surface-card); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:600; font-size:11px; color:var(--text-mid);">AR</div>
+    </div>
+
+    <!-- BODY -->
+    <div style="display:flex; flex:1; min-height:0;">
+
+      <!-- SIDEBAR -->
+      <div style="width:248px; flex:none; background:var(--surface-panel); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:16px 12px 12px;">
+        <div class="hr-label" style="padding:0 11px; margin-bottom:14px;">MISSION CONTROL</div>
+        <div style="display:flex; flex-direction:column; gap:16px; flex:1; overflow:hidden;">
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">MEASURE</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M1/M3</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></svg><span class="lbl">Suites</span></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">JUDGE</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M2</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg><span class="lbl">Judge Calibration</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/></svg><span class="lbl">Model Comparison</span></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">VERSIONS</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M3</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="3" x2="9" y1="12" y2="12"/><line x1="15" x2="21" y1="12" y2="12"/></svg><span class="lbl">Prompt Timeline</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M11 18H8a2 2 0 0 1-2-2V9"/></svg><span class="lbl">Regression Diff</span></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">AGENTS</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M4</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg><span class="lbl">Trajectories</span></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">ANALYZE</span><span class="mono" style="font-size:10px; color:var(--violet); letter-spacing:.06em;">M5</span></div>
+            <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="7.5" r="1.2"/><circle cx="18.5" cy="5.5" r="1.2"/><circle cx="11.5" cy="11.5" r="1.2"/><circle cx="7.5" cy="16.5" r="1.2"/><circle cx="17.5" cy="14.5" r="1.2"/><path d="M3 3v16a2 2 0 0 0 2 2h16"/></svg><span class="lbl">Error Workbench</span><span class="mtag">M5</span></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">SHIP</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M6</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><span class="lbl">CI / Gating</span></div>
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--divider); padding-top:10px; margin-top:10px;">
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="lbl">Settings</span></div>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="void-tex" style="flex:1; min-width:0; display:flex; flex-direction:column; position:relative;">
+        <div style="flex:1; overflow:auto; padding:24px 24px 96px;">
+          <div style="max-width:1320px; margin:0 auto; display:flex; flex-direction:column; gap:18px;">
+
+            <!-- HEADER -->
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <h2 style="font:700 26px/1.05 var(--font-display); letter-spacing:-0.02em; color:var(--text-hi); margin:0;">Error Analysis</h2>
+                <span class="hr-label" style="color:var(--text-low);">M5 · 16 FAILURES · RUN #1487 · EXPORT 09:13 UTC</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="display:flex; align-items:center; gap:4px; padding:4px; background:var(--surface-panel); border:1px solid var(--border); border-radius:var(--radius-control);">
+                  <button class="mono" style="height:28px; padding:0 11px; border-radius:var(--radius-sm); border:1px solid var(--border-strong); background:var(--surface-card); color:var(--text-hi); font-size:12px; font-weight:600; cursor:pointer;">all</button>
+                  <button class="mono" style="height:28px; padding:0 10px; border-radius:var(--radius-sm); border:none; background:transparent; color:var(--text-mid); font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px;">schema<span style="color:var(--red); font-weight:700;">11</span></button>
+                  <button class="mono" style="height:28px; padding:0 10px; border-radius:var(--radius-sm); border:none; background:transparent; color:var(--text-mid); font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px;">judge<span style="color:var(--violet); font-weight:700;">3</span></button>
+                  <button class="mono" style="height:28px; padding:0 10px; border-radius:var(--radius-sm); border:none; background:transparent; color:var(--text-mid); font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px;">exact<span style="color:var(--cyan); font-weight:700;">1</span></button>
+                  <button class="mono" style="height:28px; padding:0 10px; border-radius:var(--radius-sm); border:none; background:transparent; color:var(--text-mid); font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px;">field-acc<span style="color:var(--amber); font-weight:700;">1</span></button>
+                </div>
+                <button class="btn ghost sm" style="border:1px solid var(--border); gap:7px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                  Re-cluster
+                </button>
+              </div>
+            </div>
+
+            <!-- CONTROL STRIP -->
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px;">
+              <div class="card" style="padding:15px 17px; display:flex; flex-direction:column; gap:9px;">
+                <span class="hr-label">TOTAL FAILURES</span>
+                <span class="mono" style="font:700 30px/1 var(--font-mono); color:var(--text-hi);">16</span>
+              </div>
+              <div class="card" style="padding:15px 17px; display:flex; flex-direction:column; gap:9px;">
+                <span class="hr-label">CLUSTERS FOUND</span>
+                <span class="mono" style="font:700 30px/1 var(--font-mono); color:var(--text-hi);">5</span>
+              </div>
+              <div class="card" style="padding:15px 17px; display:flex; flex-direction:column; gap:6px; border-color:color-mix(in srgb,var(--amber) 30%,transparent);">
+                <span class="hr-label" style="color:var(--amber);">NOT-YET-GOLDEN</span>
+                <span class="mono" style="font:700 30px/1 var(--font-mono); color:var(--amber);">9</span>
+                <span class="mono" style="font-size:10px; color:var(--text-low); letter-spacing:.06em;">uncovered</span>
+              </div>
+              <div class="card" style="padding:15px 17px; display:flex; flex-direction:column; gap:6px; border-color:var(--border-strong);">
+                <span class="hr-label" style="color:var(--phosphor);">PROMOTED THIS WEEK</span>
+                <span class="mono" style="font:700 30px/1 var(--font-mono); color:var(--phosphor);">3</span>
+                <span class="mono" style="font-size:10px; color:var(--text-low); letter-spacing:.06em;">golden set +3</span>
+              </div>
+            </div>
+
+            <!-- TWO COLUMN: TREEMAP + DETAIL -->
+            <div style="display:flex; gap:18px; align-items:stretch;">
+
+              <!-- TREEMAP -->
+              <div class="card" style="flex:1 1 55%; display:flex; flex-direction:column;">
+                <div class="cardhead">
+                  <span class="hr-label" style="color:var(--text-mid);">FAILURE CLUSTERS</span>
+                  <span class="mono" style="font-size:11px; color:var(--text-low);">sized by count · tinted by mode</span>
+                </div>
+                <div style="padding:14px; flex:1;">
+                  <div style="display:flex; gap:8px; height:412px;">
+                    <!-- LEFT BIG: missing secondary_payment (6) SELECTED -->
+                    <div class="tile sel" style="flex:6; background:var(--red-14); border:1px solid color-mix(in srgb,var(--red) 34%,transparent);">
+                      <div style="display:flex; align-items:flex-start; justify-content:space-between;">
+                        <span class="cnt" style="font-size:42px; color:var(--red);">6</span>
+                        <span class="badge" style="color:var(--phosphor); background:var(--phosphor-12); border-color:var(--border-strong);"><span class="dot"></span>SELECTED</span>
+                      </div>
+                      <div style="display:flex; flex-direction:column; gap:7px;">
+                        <span class="tlabel" style="font-size:14px;">missing secondary_payment</span>
+                        <span class="tscorer" style="color:var(--red);">▰▰▰ SCHEMA-HEAVY</span>
+                      </div>
+                    </div>
+                    <!-- RIGHT COLUMN -->
+                    <div style="flex:10; display:flex; flex-direction:column; gap:8px;">
+                      <div style="flex:7; display:flex; gap:8px;">
+                        <!-- currency mismatch (4) -->
+                        <div class="tile" style="flex:4; background:var(--red-08); border:1px solid color-mix(in srgb,var(--red) 24%,transparent);">
+                          <span class="cnt" style="font-size:30px; color:var(--red);">4</span>
+                          <div style="display:flex; flex-direction:column; gap:5px;">
+                            <span class="tlabel">currency mismatch</span>
+                            <span class="tscorer" style="color:var(--red);">▰▰ FIELD-ACCURACY</span>
+                          </div>
+                        </div>
+                        <!-- judge out-of-window (3) -->
+                        <div class="tile" style="flex:3; background:var(--violet-12); border:1px solid color-mix(in srgb,var(--violet) 28%,transparent);">
+                          <span class="cnt" style="font-size:28px; color:var(--violet);">3</span>
+                          <div style="display:flex; flex-direction:column; gap:5px;">
+                            <span class="tlabel">judge: out-of-window accepted</span>
+                            <span class="tscorer" style="color:var(--violet);">▰▰ JUDGE</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div style="flex:3; display:flex; gap:8px;">
+                        <!-- whitespace (2) -->
+                        <div class="tile" style="flex:2; background:var(--cyan-08); border:1px solid color-mix(in srgb,var(--cyan) 24%,transparent);">
+                          <div style="display:flex; align-items:center; gap:9px;">
+                            <span class="cnt" style="font-size:24px; color:var(--cyan);">2</span>
+                            <span class="tlabel" style="font-size:11px;">whitespace/<br>normalization</span>
+                          </div>
+                          <span class="tscorer" style="color:var(--cyan);">▰ EXACT-MATCH</span>
+                        </div>
+                        <!-- uncategorized (1) -->
+                        <div class="tile" style="flex:1; background:rgba(147,164,179,0.06); border:1px solid var(--divider);">
+                          <span class="cnt" style="font-size:22px; color:var(--text-mid);">1</span>
+                          <div style="display:flex; flex-direction:column; gap:4px;">
+                            <span class="tlabel" style="font-size:11px; color:var(--text-mid);">uncategorized</span>
+                            <span class="tscorer" style="color:var(--text-low);">NEUTRAL</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- DETAIL PANEL -->
+              <div class="card" style="flex:1 1 45%; display:flex; flex-direction:column;">
+                <div class="cardhead">
+                  <span class="mono" style="font-size:14px; font-weight:600; color:var(--text-hi);">missing secondary_payment</span>
+                  <span class="badge" style="color:var(--red); background:var(--red-14); border-color:color-mix(in srgb,var(--red) 40%,transparent);"><span class="dot"></span>6 CASES</span>
+                </div>
+                <div style="padding:16px 18px; display:flex; flex-direction:column; gap:16px;">
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <span class="hr-label">FAILURE MODE</span>
+                    <p class="mono" style="font-size:13px; line-height:1.55; color:var(--text-mid); margin:0;">omits the second tender on split-payment checkouts</p>
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:2px;">
+                      <span class="tag" style="color:var(--red); border-color:color-mix(in srgb,var(--red) 34%,transparent); background:var(--red-08);"><span class="dot"></span>SCHEMA · DOMINANT</span>
+                    </div>
+                  </div>
+
+                  <div style="height:1px; background:var(--divider);"></div>
+
+                  <div style="display:flex; flex-direction:column; gap:9px;">
+                    <span class="hr-label">SHARED TRAITS</span>
+                    <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                      <span class="tag" style="color:var(--text-hi);"><span style="color:var(--cyan);">tender</span>=split <span style="color:var(--text-low);">·</span> <span style="color:var(--amber);">5/6</span></span>
+                      <span class="tag" style="color:var(--text-hi);"><span style="color:var(--cyan);">currency</span>=USD <span style="color:var(--text-low);">·</span> <span style="color:var(--amber);">4/6</span></span>
+                    </div>
+                  </div>
+
+                  <div style="display:flex; align-items:center; gap:10px; padding:11px 13px; background:var(--amber-08); border:1px solid color-mix(in srgb,var(--amber) 26%,transparent); border-radius:var(--radius-control);">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--amber)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                    <span class="hr-label" style="color:var(--amber); letter-spacing:.08em;">COVERAGE</span>
+                    <span class="mono" style="font-size:13px; color:var(--text-hi); margin-left:auto;">4 of 6 <span style="color:var(--text-muted);">not yet in golden set</span></span>
+                  </div>
+
+                  <div style="display:flex; flex-direction:column; gap:9px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                      <span class="hr-label">REPRESENTATIVE CASES</span>
+                      <span class="mono" style="font-size:10px; color:var(--text-low);">⏎ open · ☑ select</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                      <!-- case_071 canonical, selected -->
+                      <div class="drow" style="border-color:var(--border-strong); background:var(--phosphor-08);">
+                        <div class="ckbox on"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#06080C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+                        <span class="mono" style="font-size:13px; color:var(--text-hi); font-weight:600;">case_071</span>
+                        <span style="font:var(--text-sm); color:var(--text-mid);">split-tender checkout</span>
+                        <span class="badge" style="margin-left:auto; color:var(--phosphor); background:var(--phosphor-12); border-color:var(--border-strong);">CANONICAL</span>
+                        <span class="kbd">⏎</span>
+                      </div>
+                      <!-- case_088 selected -->
+                      <div class="drow" style="border-color:var(--border-strong); background:var(--phosphor-08);">
+                        <div class="ckbox on"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#06080C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+                        <span class="mono" style="font-size:13px; color:var(--text-hi); font-weight:600;">case_088</span>
+                        <span style="font:var(--text-sm); color:var(--text-mid);">gift-card + card split</span>
+                        <span class="tag" style="margin-left:auto; color:var(--red); border-color:color-mix(in srgb,var(--red) 30%,transparent);">schema</span>
+                        <span class="kbd">⏎</span>
+                      </div>
+                      <!-- case_094 selected -->
+                      <div class="drow" style="border-color:var(--border-strong); background:var(--phosphor-08);">
+                        <div class="ckbox on"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#06080C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+                        <span class="mono" style="font-size:13px; color:var(--text-hi); font-weight:600;">case_094</span>
+                        <span style="font:var(--text-sm); color:var(--text-mid);">store-credit remainder</span>
+                        <span class="tag" style="margin-left:auto; color:var(--red); border-color:color-mix(in srgb,var(--red) 30%,transparent);">schema</span>
+                        <span class="kbd">⏎</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CROSS-TAB -->
+            <div class="card">
+              <div class="cardhead">
+                <span class="hr-label" style="color:var(--text-mid);">SCORER × CATEGORY</span>
+                <span class="mono" style="font-size:11px; color:var(--text-low);">where failures concentrate</span>
+              </div>
+              <div style="padding:16px 18px;">
+                <div style="display:grid; grid-template-columns:118px repeat(5,1fr) 64px; gap:6px; align-items:center;">
+                  <!-- header row -->
+                  <div></div>
+                  <div class="colh" style="text-align:center; line-height:1.2;">missing<br>2nd-pay</div>
+                  <div class="colh" style="text-align:center; line-height:1.2;">currency</div>
+                  <div class="colh" style="text-align:center; line-height:1.2;">out-of-<br>window</div>
+                  <div class="colh" style="text-align:center; line-height:1.2;">whitespace</div>
+                  <div class="colh" style="text-align:center; line-height:1.2;">uncat.</div>
+                  <div class="colh" style="text-align:center; color:var(--text-mid);">total</div>
+
+                  <!-- schema row -->
+                  <div class="mono" style="font-size:12px; color:var(--text-hi); font-weight:600;">schema</div>
+                  <div class="hcell" style="background:var(--red-20); border-color:color-mix(in srgb,var(--red) 44%,transparent);"><span class="hn" style="color:var(--red);">6</span><span class="hg" style="color:var(--red);">▰▰▰ HOT</span></div>
+                  <div class="hcell" style="background:var(--red-08);"><span class="hn" style="color:var(--text-mid);">1</span><span class="hg" style="color:var(--text-low);">▰</span></div>
+                  <div class="hcell"><span class="hn" style="color:var(--text-low);">·</span></div>
+                  <div class="hcell"><span class="hn" style="color:var(--text-low);">·</span></div>
+                  <div class="hcell"><span class="hn" style="color:var(--text-low);">·</span></div>
+                  <div class="mono" style="text-align:center; font-size:14px; font-weight:700; color:var(--text-hi);">7</div>
+
+                  <!-- field-acc row -->
+                  <div class="mono" style="font-size:12px; color:var(--text-hi); font-weight:600;">field-acc</div>
+                  <div class="hcell"><span class="hn" style="color:var(--text-low);">·</span></div>
+                  <div class="hcell" style="background:var(--red-14); border-color:color-mix(in srgb,var(--red) 34%,transparent);"><span class="hn" style="color:var(--red);">3</span><span class="hg" style="color:var(--red);">▰▰ HOT</span></div>
+                  <div class="hcell"><span class="hn" style="color:var(--text-low);">·</span></div>
+                  <div class="hcell"><span class="hn" style="color:var(--text-low);">·</span></div>
+                  <div class="hcell"><span class="hn" style="color:var(--text-low);">·</span></div>
+                  <div class="mono" style="text-align:center; font-size:14px; font-weight:700; color:var(--text-hi);">3</div>
+
+                  <!-- judge row -->
+                  <div class="mono" style="font-size:12px; color:var(--text-hi); font-weight:600;">judge</div>
+                  <div class="hcell"><span class="hn" style="color:var(--text-low);">·</span></div>
+                  <div class="hcell"><span class="hn" style="color:var(--text-low);">·</span></div>
+                  <div class="hcell" style="background:var(--violet-16); border-color:color-mix(in srgb,var(--violet) 36%,transparent);"><span class="hn" style="color:var(--violet);">3</span><span class="hg" style="color:var(--violet);">▰▰ HOT</span></div>
+                  <div class="hcell"><span class="hn" style="color:var(--text-low);">·</span></div>
+                  <div class="hcell" style="background:rgba(147,164,179,0.06);"><span class="hn" style="color:var(--text-mid);">1</span><span class="hg" style="color:var(--text-low);">▰</span></div>
+                  <div class="mono" style="text-align:center; font-size:14px; font-weight:700; color:var(--text-hi);">4</div>
+
+                  <!-- exact row -->
+                  <div class="mono" style="font-size:12px; color:var(--text-hi); font-weight:600;">exact</div>
+                  <div class="hcell"><span class="hn" style="color:var(--text-low);">·</span></div>
+                  <div class="hcell"><span class="hn" style="color:var(--text-low);">·</span></div>
+                  <div class="hcell"><span class="hn" style="color:var(--text-low);">·</span></div>
+                  <div class="hcell" style="background:var(--cyan-08); border-color:color-mix(in srgb,var(--cyan) 24%,transparent);"><span class="hn" style="color:var(--cyan);">2</span><span class="hg" style="color:var(--cyan);">▰</span></div>
+                  <div class="hcell"><span class="hn" style="color:var(--text-low);">·</span></div>
+                  <div class="mono" style="text-align:center; font-size:14px; font-weight:700; color:var(--text-hi);">2</div>
+
+                  <!-- col totals -->
+                  <div class="colh" style="color:var(--text-mid);">total</div>
+                  <div class="mono" style="text-align:center; font-size:14px; font-weight:700; color:var(--text-hi);">6</div>
+                  <div class="mono" style="text-align:center; font-size:14px; font-weight:700; color:var(--text-hi);">4</div>
+                  <div class="mono" style="text-align:center; font-size:14px; font-weight:700; color:var(--text-hi);">3</div>
+                  <div class="mono" style="text-align:center; font-size:14px; font-weight:700; color:var(--text-hi);">2</div>
+                  <div class="mono" style="text-align:center; font-size:14px; font-weight:700; color:var(--text-hi);">1</div>
+                  <div class="mono" style="text-align:center; font-size:14px; font-weight:700; color:var(--phosphor);">16</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PROMOTE FLOW PREVIEW PANEL -->
+            <div class="card" style="border-color:var(--border-strong); box-shadow:var(--glow-phosphor-sm), var(--shadow-card);">
+              <div class="cardhead" style="border-color:var(--border);">
+                <div style="display:flex; align-items:center; gap:14px;">
+                  <span class="hr-label" style="color:var(--phosphor);">PROMOTE TO GOLDEN</span>
+                  <div style="display:flex; align-items:center; gap:9px;">
+                    <div class="stepper-dot" style="color:var(--text-low);"><span class="sd" style="background:var(--phosphor-12); color:var(--phosphor); border:1px solid var(--border-strong);">✓</span>SELECT</div>
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="var(--text-low)" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+                    <div class="stepper-dot" style="color:var(--phosphor);"><span class="sd" style="background:var(--phosphor); color:#06080C;">2</span>PREVIEW</div>
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="var(--text-low)" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+                    <div class="stepper-dot" style="color:var(--text-low);"><span class="sd" style="background:var(--surface-panel); color:var(--text-low); border:1px solid var(--divider);">3</span>CONFIRM</div>
+                  </div>
+                </div>
+                <span class="mono" style="font-size:11px; color:var(--text-muted);">review before committing</span>
+              </div>
+              <div style="padding:16px 18px; display:flex; flex-direction:column; gap:13px;">
+                <span class="hr-label" style="color:var(--text-mid);">3 CASES → GOLDEN EXPECTED OUTPUT</span>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  <div style="display:flex; align-items:center; gap:13px; padding:11px 13px; background:var(--surface-panel); border:1px solid var(--border); border-radius:var(--radius-control);">
+                    <span class="mono" style="font-size:13px; color:var(--text-hi); font-weight:600; width:78px; flex:none;">case_071</span>
+                    <span class="mono" style="font-size:12px; color:var(--text-mid); flex:1;"><span style="color:var(--cyan);">payments</span>: [<span style="color:var(--phosphor);">"card"</span>, <span style="color:var(--phosphor);">"gift_card"</span>] <span style="color:var(--text-low);">· total $148.00</span></span>
+                    <span class="tag" style="color:var(--phosphor); border-color:var(--border-strong);">canonical</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:13px; padding:11px 13px; background:var(--surface-panel); border:1px solid var(--border); border-radius:var(--radius-control);">
+                    <span class="mono" style="font-size:13px; color:var(--text-hi); font-weight:600; width:78px; flex:none;">case_088</span>
+                    <span class="mono" style="font-size:12px; color:var(--text-mid); flex:1;"><span style="color:var(--cyan);">payments</span>: [<span style="color:var(--phosphor);">"gift_card"</span>, <span style="color:var(--phosphor);">"card"</span>] <span style="color:var(--text-low);">· total $63.50</span></span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:13px; padding:11px 13px; background:var(--surface-panel); border:1px solid var(--border); border-radius:var(--radius-control);">
+                    <span class="mono" style="font-size:13px; color:var(--text-hi); font-weight:600; width:78px; flex:none;">case_094</span>
+                    <span class="mono" style="font-size:12px; color:var(--text-mid); flex:1;"><span style="color:var(--cyan);">payments</span>: [<span style="color:var(--phosphor);">"store_credit"</span>, <span style="color:var(--phosphor);">"card"</span>] <span style="color:var(--text-low);">· total $209.99</span></span>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:14px; padding-top:4px;">
+                  <span class="hr-label">TARGET SUITE</span>
+                  <button class="mono" style="display:flex; align-items:center; gap:9px; height:32px; padding:0 12px; background:var(--surface-panel); border:1px solid var(--border-strong); border-radius:var(--radius-control); color:var(--text-hi); font-size:13px; cursor:pointer;">
+                    checkout-extraction
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <span class="mono" style="font-size:11px; color:var(--text-low); margin-left:auto;">they'll run in every future eval</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- STICKY PROMOTE BAR -->
+        <div style="position:absolute; left:0; right:0; bottom:0; height:72px; display:flex; align-items:center; gap:16px; padding:0 24px; background:var(--glass); backdrop-filter:blur(16px); border-top:1px solid var(--border-strong); z-index:40;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge" style="color:var(--phosphor); background:var(--phosphor-12); border-color:var(--border-strong); height:24px;"><span class="dot"></span>3 CASES SELECTED</span>
+            <span class="mono" style="font-size:12px; color:var(--text-muted);">from missing secondary_payment</span>
+          </div>
+          <div style="flex:1;"></div>
+          <button class="btn ghost" style="border:1px solid var(--border);">Cancel</button>
+          <button class="btn primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            Confirm promotion · 3 cases
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- STATES GALLERY                                               -->
+  <!-- ============================================================ -->
+  <div class="frame-label" style="margin-top:8px;"><span class="n">STATES</span> · LOADING · EMPTY · ERROR · PROMOTION-PENDING · PROMOTED</div>
+  <div style="display:flex; gap:32px; align-items:flex-start; flex-wrap:wrap; max-width:1860px;">
+
+    <!-- 1 · LOADING -->
+    <div style="flex:none; width:600px;">
+      <div class="frame-label" style="font-size:11px;">1 · <span style="color:var(--text-mid);">LOADING</span> · treemap + panel shimmer</div>
+      <div class="card void-tex" style="height:430px; padding:18px; display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div class="skel" style="width:160px; height:14px;"></div>
+          <div class="skel" style="width:90px; height:24px; border-radius:6px;"></div>
+        </div>
+        <div style="display:flex; gap:12px; flex:1;">
+          <div style="flex:1.3; display:flex; gap:8px;">
+            <div class="skel" style="flex:6; border-radius:6px;"></div>
+            <div style="flex:10; display:flex; flex-direction:column; gap:8px;">
+              <div style="flex:7; display:flex; gap:8px;"><div class="skel" style="flex:4; border-radius:6px;"></div><div class="skel" style="flex:3; border-radius:6px;"></div></div>
+              <div style="flex:3; display:flex; gap:8px;"><div class="skel" style="flex:2; border-radius:6px;"></div><div class="skel" style="flex:1; border-radius:6px;"></div></div>
+            </div>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+            <div class="skel" style="width:70%; height:13px;"></div>
+            <div class="skel" style="width:100%; height:38px; border-radius:6px;"></div>
+            <div class="skel" style="width:55%; height:13px;"></div>
+            <div class="skel" style="width:100%; height:44px; border-radius:6px;"></div>
+            <div class="skel" style="width:100%; height:44px; border-radius:6px;"></div>
+            <div class="skel" style="width:100%; height:44px; border-radius:6px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 · EMPTY -->
+    <div style="flex:none; width:600px;">
+      <div class="frame-label" style="font-size:11px;">2 · <span style="color:var(--text-mid);">EMPTY</span> · clean run, nothing to cluster</div>
+      <div class="card void-tex" style="height:430px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:32px; text-align:center;">
+        <div style="position:relative; width:84px; height:84px; display:flex; align-items:center; justify-content:center;">
+          <div style="position:absolute; inset:0; border-radius:50%; background:var(--phosphor-08); border:1px solid var(--border-strong);"></div>
+          <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="var(--phosphor)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px; align-items:center;">
+          <h3 style="font:600 19px/1.2 var(--font-display); color:var(--text-hi); margin:0;">No failures to analyze</h3>
+          <p style="font:var(--text-base); color:var(--text-muted); margin:0; max-width:340px;">Run #1487 passed everything — nothing to cluster.</p>
+        </div>
+        <span class="badge" style="color:var(--phosphor); background:var(--phosphor-12); border-color:var(--border-strong); height:24px;"><span class="dot"></span>GATE OPEN</span>
+      </div>
+    </div>
+
+    <!-- 3 · ERROR -->
+    <div style="flex:none; width:600px;">
+      <div class="frame-label" style="font-size:11px;">3 · <span style="color:var(--text-mid);">ERROR</span> · parquet export missing</div>
+      <div class="card void-tex" style="height:430px; display:flex; flex-direction:column; padding:0; overflow:hidden;">
+        <!-- control strip survives -->
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:16px; border-bottom:1px solid var(--divider);">
+          <div style="display:flex; flex-direction:column; gap:6px;"><span class="hr-label" style="font-size:9px;">TOTAL FAILURES</span><span class="mono" style="font:700 22px/1 var(--font-mono); color:var(--text-low);">—</span></div>
+          <div style="display:flex; flex-direction:column; gap:6px;"><span class="hr-label" style="font-size:9px;">CLUSTERS</span><span class="mono" style="font:700 22px/1 var(--font-mono); color:var(--text-low);">—</span></div>
+          <div style="display:flex; flex-direction:column; gap:6px;"><span class="hr-label" style="font-size:9px;">NOT-YET-GOLDEN</span><span class="mono" style="font:700 22px/1 var(--font-mono); color:var(--text-low);">—</span></div>
+          <div style="display:flex; flex-direction:column; gap:6px;"><span class="hr-label" style="font-size:9px;">PROMOTED</span><span class="mono" style="font:700 22px/1 var(--font-mono); color:var(--text-low);">—</span></div>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:24px; text-align:center;">
+          <div style="position:relative; width:80px; height:80px; display:flex; align-items:center; justify-content:center;">
+            <div style="position:absolute; inset:0; border-radius:50%; background:var(--red-08); border:1px solid color-mix(in srgb,var(--red) 28%,transparent);"></div>
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="var(--red)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 3-3 2 2 4-5"/><line x1="2" y1="2" x2="22" y2="22" stroke="var(--red)" stroke-width="1.6"/></svg>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:7px; align-items:center;">
+            <h3 style="font:600 18px/1.2 var(--font-display); color:var(--text-hi); margin:0;">Failure export unavailable</h3>
+            <p style="font:var(--text-base); color:var(--text-muted); margin:0; max-width:330px;">The parquet export for this run hasn't been written yet.</p>
+          </div>
+          <button class="btn secondary sm">Retry</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 · PROMOTION-PENDING -->
+    <div style="flex:none; width:600px;">
+      <div class="frame-label" style="font-size:11px;">5 · <span style="color:var(--text-mid);">PROMOTION-PENDING</span> · mid-confirm</div>
+      <div class="card" style="border-color:var(--border-strong); padding:0; overflow:hidden;">
+        <div class="cardhead" style="border-color:var(--border);">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span class="hr-label" style="color:var(--phosphor);">PROMOTE TO GOLDEN</span>
+            <span class="badge runpulse" style="color:var(--violet); background:var(--violet-16); border-color:color-mix(in srgb,var(--violet) 40%,transparent); height:22px;">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+              PROMOTING 3 CASES…
+            </span>
+          </div>
+          <span class="hr-label" style="color:var(--text-low);">3 PENDING</span>
+        </div>
+        <div style="padding:16px 18px; display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; align-items:center; gap:12px; padding:11px 13px; background:var(--surface-panel); border:1px solid var(--border); border-radius:var(--radius-control);">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" class="spin" style="flex:none;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <span class="mono" style="font-size:13px; color:var(--text-hi); font-weight:600;">case_071</span>
+            <span class="mono" style="font-size:11px; color:var(--text-muted); margin-left:auto;">writing to suite…</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; padding:11px 13px; background:var(--surface-panel); border:1px solid var(--border); border-radius:var(--radius-control);">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" class="spin" style="flex:none;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <span class="mono" style="font-size:13px; color:var(--text-hi); font-weight:600;">case_088</span>
+            <span class="mono" style="font-size:11px; color:var(--text-muted); margin-left:auto;">writing to suite…</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; padding:11px 13px; background:var(--surface-panel); border:1px solid var(--border); border-radius:var(--radius-control); opacity:.6;">
+            <span class="dot" style="color:var(--text-low); width:14px;"></span>
+            <span class="mono" style="font-size:13px; color:var(--text-mid); font-weight:600;">case_094</span>
+            <span class="mono" style="font-size:11px; color:var(--text-low); margin-left:auto;">queued</span>
+          </div>
+          <button class="btn primary" style="margin-top:4px; opacity:.7; cursor:default; box-shadow:none;" disabled>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Promoting…
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 · PROMOTED -->
+    <div style="flex:none; width:600px;">
+      <div class="frame-label" style="font-size:11px;">6 · <span style="color:var(--text-mid);">PROMOTED</span> · toast + GOLDEN tags · uncovered 9→6</div>
+      <div class="card void-tex" style="padding:0; overflow:hidden; position:relative;">
+        <!-- toast -->
+        <div class="toast-in" style="position:absolute; top:16px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:11px; padding:11px 15px; background:rgba(10,20,16,0.92); backdrop-filter:blur(12px); border:1px solid var(--border-strong); border-radius:var(--radius-control); box-shadow:var(--glow-phosphor-sm); z-index:10; max-width:90%;">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="var(--phosphor)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          <span class="mono" style="font-size:12px; color:var(--text-hi); line-height:1.4;">3 cases promoted to golden — they'll run on the next sweep.</span>
+        </div>
+        <!-- control strip with updated count -->
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:16px; border-bottom:1px solid var(--divider); margin-top:8px;">
+          <div style="display:flex; flex-direction:column; gap:5px;"><span class="hr-label" style="font-size:9px;">TOTAL FAILURES</span><span class="mono" style="font:700 22px/1 var(--font-mono); color:var(--text-hi);">16</span></div>
+          <div style="display:flex; flex-direction:column; gap:5px;"><span class="hr-label" style="font-size:9px;">CLUSTERS</span><span class="mono" style="font:700 22px/1 var(--font-mono); color:var(--text-hi);">5</span></div>
+          <div style="display:flex; flex-direction:column; gap:5px;"><span class="hr-label" style="font-size:9px; color:var(--amber);">NOT-YET-GOLDEN</span><span class="mono" style="display:flex; align-items:baseline; gap:6px;"><span style="font:700 22px/1 var(--font-mono); color:var(--amber);">6</span><span style="font-size:11px; color:var(--text-low); text-decoration:line-through;">9</span></span></div>
+          <div style="display:flex; flex-direction:column; gap:5px;"><span class="hr-label" style="font-size:9px; color:var(--phosphor);">PROMOTED</span><span class="mono" style="font:700 22px/1 var(--font-mono); color:var(--phosphor);">6</span></div>
+        </div>
+        <!-- cluster detail with cases now GOLDEN and dropped -->
+        <div style="padding:16px 18px; display:flex; flex-direction:column; gap:11px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span class="mono" style="font-size:13px; font-weight:600; color:var(--text-hi);">missing secondary_payment</span>
+            <span class="badge" style="color:var(--red); background:var(--red-14); border-color:color-mix(in srgb,var(--red) 38%,transparent);"><span class="dot"></span>3 REMAINING</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div class="drow" style="border-color:var(--border-strong); background:var(--phosphor-08); cursor:default;">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--phosphor)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <span class="mono" style="font-size:13px; color:var(--text-hi); font-weight:600;">case_071</span>
+              <span style="font:var(--text-sm); color:var(--text-mid);">split-tender checkout</span>
+              <span class="badge" style="margin-left:auto; color:var(--phosphor); background:var(--phosphor-12); border-color:var(--border-strong);"><span class="dot"></span>GOLDEN</span>
+            </div>
+            <div class="drow" style="border-color:var(--divider); cursor:default;">
+              <span class="dot" style="color:var(--red); width:8px; height:8px;"></span>
+              <span class="mono" style="font-size:13px; color:var(--text-hi); font-weight:600;">case_102</span>
+              <span style="font:var(--text-sm); color:var(--text-mid);">three-way split tender</span>
+              <span class="tag" style="margin-left:auto; color:var(--amber); border-color:color-mix(in srgb,var(--amber) 30%,transparent);">uncovered</span>
+            </div>
+            <div class="drow" style="border-color:var(--divider); cursor:default;">
+              <span class="dot" style="color:var(--red); width:8px; height:8px;"></span>
+              <span class="mono" style="font-size:13px; color:var(--text-hi); font-weight:600;">case_119</span>
+              <span style="font:var(--text-sm); color:var(--text-mid);">partial refund + split</span>
+              <span class="tag" style="margin-left:auto; color:var(--amber); border-color:color-mix(in srgb,var(--amber) 30%,transparent);">uncovered</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

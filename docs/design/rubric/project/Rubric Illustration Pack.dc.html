@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/hiring-radar-design-system-e283cd56-1f5d-4f18-854f-832d432ec775/tokens/base.css">
+<style>
+  /* ====== PASTE-BLOCK :root — rubric tokens (embedded so this artifact is self-contained) ====== */
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+  :root{
+    --bg-void:#06080C; --bg-surface:#0B1018; --bg-raised:#111826; --glass:rgba(17,24,38,0.55);
+    --phosphor:#3DFFA2; --phosphor-dim:rgba(61,255,162,0.16);
+    --cyan:#4CC9F0; --violet:#A78BFA; --amber:#FFC857; --red:#FF5D5D; --empty:#5C8A77;
+    --text-hi:#E8F0F2; --text-mid:#93A4B3; --text-low:#5C6B7A; --text-low-content:#6E7E8F;
+    --phosphor-12:rgba(61,255,162,0.12); --phosphor-08:rgba(61,255,162,0.08);
+    --cyan-12:rgba(76,201,240,0.12); --violet-16:rgba(167,139,250,0.16); --violet-12:rgba(167,139,250,0.12);
+    --amber-14:rgba(255,200,87,0.14); --red-14:rgba(255,93,93,0.14);
+    --surface-page:var(--bg-void); --surface-panel:var(--bg-surface); --surface-card:var(--bg-raised); --surface-glass:var(--glass);
+    --border:var(--phosphor-dim); --border-strong:rgba(61,255,162,0.28); --divider:rgba(147,164,179,0.10);
+    --accent:var(--phosphor); --link:var(--cyan); --ai:var(--violet); --warn:var(--amber); --danger:var(--red);
+    --text-heading:var(--text-hi); --text-body:var(--text-mid); --text-muted:var(--text-low-content); --text-label:var(--text-low);
+    --focus-ring:var(--phosphor);
+    --font-display:'Space Grotesk',system-ui,sans-serif; --font-ui:'Inter',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --text-lg:400 16px/1.5 var(--font-ui); --text-base:400 14px/1.5 var(--font-ui); --text-sm:400 13px/1.45 var(--font-ui); --text-xs:500 12px/1.4 var(--font-ui);
+    --radius-card:10px; --radius-control:6px; --radius-sm:4px; --radius-full:0;
+    --glow-phosphor:0 0 24px rgba(61,255,162,0.25); --glow-phosphor-sm:0 0 12px rgba(61,255,162,0.20);
+    --glow-violet:0 0 24px rgba(167,139,250,0.22); --glow-cyan:0 0 16px rgba(76,201,240,0.20); --glow-red:0 0 16px rgba(255,93,93,0.22);
+    --shadow-card:0 1px 0 rgba(255,255,255,0.02) inset, 0 8px 24px rgba(0,0,0,0.45);
+    --ring:0 0 0 2px var(--bg-void), 0 0 0 4px var(--focus-ring);
+    --ease-out:cubic-bezier(0.22,1,0.36,1);
+    color-scheme:dark;
+  }
+  body{ background:var(--bg-void); }
+  /* layout helpers (no semantic color) */
+  .il-card{ background:var(--surface-card); border:1px solid var(--border); border-radius:var(--radius-card); box-shadow:var(--shadow-card); display:flex; flex-direction:column; }
+  .il-art{ height:148px; display:flex; align-items:center; justify-content:center; border-bottom:1px solid var(--divider); background:
+      radial-gradient(rgba(61,255,162,0.035) 1px, transparent 1px) 0 0/20px 20px; }
+  .il-meta{ padding:12px 14px; display:flex; flex-direction:column; gap:5px; }
+  .il-name{ font-family:var(--font-mono); font-weight:600; font-size:13px; color:var(--phosphor); }
+  .il-use{ font:var(--text-sm); color:var(--text-body); }
+  .il-ctx{ display:flex; align-items:center; gap:8px; margin-top:3px; }
+  .il-ctx .ctxnote{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted); letter-spacing:.02em; }
+  .hr-label{ font-family:var(--font-mono); font-weight:600; font-size:11px; line-height:1.2; letter-spacing:.14em; text-transform:uppercase; color:var(--text-low); }
+  .rb-num{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+  .secnum{ font-family:var(--font-mono); font-size:12px; color:var(--phosphor); }
+  .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .grid4{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  /* mini in-context frames */
+  .ctx-frame{ border:1px solid var(--border); border-radius:var(--radius-control); background:var(--surface-panel); display:flex; align-items:center; justify-content:center; }
+  @keyframes rb-sweep-bar{ 0%{ transform:translateX(-10%) } 100%{ transform:translateX(110%) } }
+  @keyframes rb-orb-pulse{ 0%,100%{ opacity:.55 } 50%{ opacity:1 } }
+  .sweep-bar{ animation:rb-sweep-bar 1.8s var(--ease-out) infinite; }
+  .orb-pulse{ animation:rb-orb-pulse 2.4s ease-in-out infinite; }
+  @media (prefers-reduced-motion:reduce){ .sweep-bar{ animation:none; transform:translateX(46%); } .orb-pulse{ animation:none; opacity:1; } }
+</style>
+</helmet>
+
+<div class="hr-void" style="min-height:100vh; padding-bottom:96px; position:relative; z-index:1;">
+<div style="max-width:1280px; margin:0 auto; padding:0 24px; position:relative; z-index:1;">
+
+  <!-- ===== MASTHEAD ===== -->
+  <header data-screen-label="Pack masthead" style="display:flex; align-items:flex-end; justify-content:space-between; gap:24px; padding:40px 0 28px; flex-wrap:wrap;">
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <!-- wordmark -->
+      <div style="display:flex; align-items:center; gap:12px;">
+        <svg viewBox="0 0 32 32" width="38" height="38">
+          <defs><filter id="mh-mk" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <rect x="3.25" y="3.25" width="25.5" height="25.5" rx="6" fill="none" stroke="#3DFFA2" stroke-opacity="0.28" stroke-width="2.5"/>
+          <line x1="16" y1="6" x2="16" y2="26" stroke="#3DFFA2" stroke-opacity="0.18" stroke-width="1.4"/>
+          <line x1="6" y1="16" x2="26" y2="16" stroke="#3DFFA2" stroke-opacity="0.18" stroke-width="1.4"/>
+          <rect x="8" y="18" width="6" height="6" rx="1.4" fill="none" stroke="#3DFFA2" stroke-opacity="0.30" stroke-width="2.5"/>
+          <path d="M9 20 l9 -8 l5 4" fill="none" stroke="#3DFFA2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#mh-mk)"/>
+          <circle cx="23" cy="16" r="2" fill="#3DFFA2" filter="url(#mh-mk)"/>
+        </svg>
+        <span style="font:600 30px/1 var(--font-display); letter-spacing:-0.02em; color:var(--text-hi);">rubric</span>
+        <span class="hr-label" style="color:var(--text-low); align-self:flex-end; padding-bottom:4px;">/ asset pack</span>
+      </div>
+      <p style="font:var(--text-lg); color:var(--text-body); max-width:620px; margin:0;">The canonical illustration + icon-mark pack. Every screen references these <span style="color:var(--text-hi);">by name</span> — improvised art is a failure. Thin-line oscilloscope schematics, stroke-only, faint instrument etching with one glow focal. Transparent backgrounds.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:6px; text-align:right;">
+      <span class="hr-label" style="color:var(--phosphor);">25 NAMED ASSETS</span>
+      <span class="rb-num" style="font-size:11px; color:var(--text-muted);">stroke 1.5 · mark 2.5 · per-instance filter ids</span>
+      <span class="rb-num" style="font-size:11px; color:var(--text-muted);">sibling of hiring-radar</span>
+    </div>
+  </header>
+
+  <!-- legend -->
+  <div class="il-card" style="flex-direction:row; flex-wrap:wrap; gap:18px; padding:14px 18px; box-shadow:var(--shadow-card); margin-bottom:40px; align-items:center;">
+    <span class="hr-label">SEMANTIC PALETTE</span>
+    <div style="display:flex; align-items:center; gap:8px;"><span style="width:12px; height:12px; border-radius:3px; background:#3DFFA2; box-shadow:var(--glow-phosphor-sm);"></span><span class="rb-num" style="font-size:11px; color:var(--text-body);">#3DFFA2 healthy / passing</span></div>
+    <div style="display:flex; align-items:center; gap:8px;"><span style="width:12px; height:12px; border-radius:3px; background:#A78BFA;"></span><span class="rb-num" style="font-size:11px; color:var(--text-body);">#A78BFA judge / agent / AI</span></div>
+    <div style="display:flex; align-items:center; gap:8px;"><span style="width:12px; height:12px; border-radius:3px; background:#FF5D5D;"></span><span class="rb-num" style="font-size:11px; color:var(--text-body);">#FF5D5D regression / error</span></div>
+    <div style="display:flex; align-items:center; gap:8px;"><span style="width:12px; height:12px; border-radius:3px; background:#FFC857;"></span><span class="rb-num" style="font-size:11px; color:var(--text-body);">#FFC857 stale / flaky / bias</span></div>
+    <div style="display:flex; align-items:center; gap:8px;"><span style="width:12px; height:12px; border-radius:3px; background:#5C8A77;"></span><span class="rb-num" style="font-size:11px; color:var(--text-body);">#5C8A77 truly-empty</span></div>
+  </div>
+
+  <!-- ============ 01 IDENTITY ============ -->
+  <section class="il-sec" data-screen-label="Identity" style="margin-bottom:56px;">
+    <div style="display:flex; align-items:center; gap:12px; margin:0 0 20px;">
+      <span class="secnum">01</span><span class="hr-label">Identity · mark · favicon · wordmark</span>
+      <span style="flex:1; height:1px; background:var(--divider);"></span>
+      <span class="rb-num" style="font-size:11px; color:var(--text-muted);">confusion-matrix glyph fused with a rising phosphor trace-tick · 2.5px</span>
+    </div>
+    <div class="grid4">
+      <!-- mark 32 -->
+      <div class="il-card">
+        <div class="il-art" style="gap:28px;">
+          <svg viewBox="0 0 32 32" width="64" height="64">
+            <defs><filter id="mk32" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <rect x="3.25" y="3.25" width="25.5" height="25.5" rx="6" fill="none" stroke="#3DFFA2" stroke-opacity="0.28" stroke-width="2.5"/>
+            <line x1="16" y1="6" x2="16" y2="26" stroke="#3DFFA2" stroke-opacity="0.18" stroke-width="1.4"/>
+            <line x1="6" y1="16" x2="26" y2="16" stroke="#3DFFA2" stroke-opacity="0.18" stroke-width="1.4"/>
+            <rect x="8" y="18" width="6" height="6" rx="1.4" fill="none" stroke="#3DFFA2" stroke-opacity="0.30" stroke-width="2.5"/>
+            <path d="M9 20 l9 -8 l5 4" fill="none" stroke="#3DFFA2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#mk32)"/>
+            <circle cx="23" cy="16" r="2" fill="#3DFFA2" filter="url(#mk32)"/>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">mark</div><div class="il-use">App glyph — topbar, splash, app icon.</div>
+          <div class="il-ctx"><div class="ctx-frame" style="width:32px; height:32px;"><svg viewBox="0 0 32 32" width="28" height="28"><defs><filter id="mk32c" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="3.25" y="3.25" width="25.5" height="25.5" rx="6" fill="none" stroke="#3DFFA2" stroke-opacity="0.28" stroke-width="2.5"/><rect x="8" y="18" width="6" height="6" rx="1.4" fill="none" stroke="#3DFFA2" stroke-opacity="0.30" stroke-width="2.5"/><path d="M9 20 l9 -8 l5 4" fill="none" stroke="#3DFFA2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#mk32c)"/><circle cx="23" cy="16" r="2" fill="#3DFFA2"/></svg></div><span class="ctxnote">topbar @ 32px</span></div>
+        </div>
+      </div>
+      <!-- favicon 16 -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 16 16" width="80" height="80" style="image-rendering:auto;">
+            <rect x="1.5" y="1.5" width="13" height="13" rx="3" fill="none" stroke="#3DFFA2" stroke-opacity="0.30" stroke-width="2.5"/>
+            <path d="M4.5 10 l4.5 -4 l2.5 2" fill="none" stroke="#3DFFA2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="11.5" cy="8" r="1.1" fill="#3DFFA2"/>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">favicon</div><div class="il-use">Browser tab — simplified mark, 2.5px.</div>
+          <div class="il-ctx"><div class="ctx-frame" style="width:16px; height:16px; border-radius:3px;"><svg viewBox="0 0 16 16" width="16" height="16"><rect x="1.5" y="1.5" width="13" height="13" rx="3" fill="none" stroke="#3DFFA2" stroke-opacity="0.30" stroke-width="2.5"/><path d="M4.5 10 l4.5 -4 l2.5 2" fill="none" stroke="#3DFFA2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11.5" cy="8" r="1.1" fill="#3DFFA2"/></svg></div><span class="ctxnote">tab @ 16px</span></div>
+        </div>
+      </div>
+      <!-- wordmark -->
+      <div class="il-card" style="grid-column:span 2;">
+        <div class="il-art">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <svg viewBox="0 0 32 32" width="44" height="44">
+              <defs><filter id="wm-mk" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+              <rect x="3.25" y="3.25" width="25.5" height="25.5" rx="6" fill="none" stroke="#3DFFA2" stroke-opacity="0.28" stroke-width="2.5"/>
+              <line x1="16" y1="6" x2="16" y2="26" stroke="#3DFFA2" stroke-opacity="0.18" stroke-width="1.4"/>
+              <line x1="6" y1="16" x2="26" y2="16" stroke="#3DFFA2" stroke-opacity="0.18" stroke-width="1.4"/>
+              <rect x="8" y="18" width="6" height="6" rx="1.4" fill="none" stroke="#3DFFA2" stroke-opacity="0.30" stroke-width="2.5"/>
+              <path d="M9 20 l9 -8 l5 4" fill="none" stroke="#3DFFA2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#wm-mk)"/>
+              <circle cx="23" cy="16" r="2" fill="#3DFFA2" filter="url(#wm-mk)"/>
+            </svg>
+            <span style="font:600 34px/1 var(--font-display); letter-spacing:-0.02em; color:#E8F0F2;">rubric</span>
+          </div>
+        </div>
+        <div class="il-meta"><div class="il-name">wordmark</div><div class="il-use">Mark + "rubric" in Space Grotesk 600, #E8F0F2. Clear-space = mark height.</div>
+          <div class="il-ctx"><span class="ctxnote">sidebar header · login · footer · docs</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 ZERO-DATA ============ -->
+  <section class="il-sec" data-screen-label="Zero data" style="margin-bottom:56px;">
+    <div style="display:flex; align-items:center; gap:12px; margin:0 0 20px;">
+      <span class="secnum">02</span><span class="hr-label">Empty · zero-data · desaturated green #5C8A77</span>
+      <span style="flex:1; height:1px; background:var(--divider);"></span>
+    </div>
+    <div class="grid3">
+      <!-- empty-board -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs><filter id="eb-g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#5C8A77" stroke-opacity="0.35" stroke-width="1.5"/>
+            <g stroke="#5C8A77" stroke-opacity="0.14" stroke-width="1"><line x1="8" y1="48" x2="112" y2="48"/><line x1="34" y1="8" x2="34" y2="88"/><line x1="60" y1="8" x2="60" y2="88"/><line x1="86" y1="8" x2="86" y2="88"/></g>
+            <line x1="52" y1="48" x2="68" y2="48" stroke="#5C8A77" stroke-opacity="0.5" stroke-width="1.2"/>
+            <line x1="60" y1="40" x2="60" y2="56" stroke="#5C8A77" stroke-opacity="0.5" stroke-width="1.2"/>
+            <line x1="14" y1="48" x2="106" y2="48" stroke="#5C8A77" stroke-width="1.5" stroke-dasharray="2 4" stroke-opacity="0.45"/>
+            <text x="60" y="80" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">NO SIGNAL</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">empty-board</div><div class="il-use">Use: the canonical zero-data illustration — no runs yet.</div>
+          <div class="il-ctx"><span class="ctxnote">EmptyState @ 120 · dashboard / suite-list first-load</span></div>
+        </div>
+      </div>
+      <!-- confusion-empty -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <rect x="30" y="14" width="60" height="60" rx="4" fill="none" stroke="#5C8A77" stroke-opacity="0.35" stroke-width="1.5"/>
+            <line x1="60" y1="14" x2="60" y2="74" stroke="#5C8A77" stroke-opacity="0.22" stroke-width="1.2"/>
+            <line x1="30" y1="44" x2="90" y2="44" stroke="#5C8A77" stroke-opacity="0.22" stroke-width="1.2"/>
+            <line x1="30" y1="10" x2="90" y2="10" stroke="#5C8A77" stroke-opacity="0.18" stroke-width="1"/>
+            <line x1="26" y1="14" x2="26" y2="74" stroke="#5C8A77" stroke-opacity="0.18" stroke-width="1"/>
+            <text x="60" y="86" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">2×2 · UNFILLED</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">confusion-empty</div><div class="il-use">Use: calibration view before any judged cases.</div>
+          <div class="il-ctx"><span class="ctxnote">EmptyState @ 120 · calibration / matrix empty</span></div>
+        </div>
+      </div>
+      <!-- off-bench -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <rect x="14" y="30" width="40" height="36" rx="5" fill="none" stroke="#5C8A77" stroke-opacity="0.35" stroke-width="1.5"/>
+            <g stroke="#5C8A77" stroke-opacity="0.16" stroke-width="1"><line x1="14" y1="48" x2="54" y2="48"/></g>
+            <path d="M34 48 l-2 -3 l4 0 l-2 3" fill="none" stroke="#5C8A77" stroke-opacity="0.5" stroke-width="1.2"/>
+            <path d="M54 48 h10" stroke="#5C8A77" stroke-opacity="0.45" stroke-width="1.5"/>
+            <circle cx="66" cy="48" r="3" fill="none" stroke="#5C8A77" stroke-opacity="0.5" stroke-width="1.5"/>
+            <path d="M78 48 h8" stroke="#5C8A77" stroke-opacity="0.45" stroke-width="1.5" stroke-dasharray="2 3"/>
+            <circle cx="76" cy="48" r="2.4" fill="none" stroke="#5C8A77" stroke-opacity="0.5" stroke-width="1.5"/>
+            <rect x="92" y="36" width="14" height="24" rx="3" fill="none" stroke="#5C8A77" stroke-opacity="0.35" stroke-width="1.5"/>
+            <text x="60" y="80" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">UNPLUGGED</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">off-bench</div><div class="il-use">Use: offline / nothing connected — severed lead.</div>
+          <div class="il-ctx"><span class="ctxnote">EmptyState @ 120 · integrations / CLI not linked</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 HEALTHY ============ -->
+  <section class="il-sec" data-screen-label="Healthy" style="margin-bottom:56px;">
+    <div style="display:flex; align-items:center; gap:12px; margin:0 0 20px;">
+      <span class="secnum">03</span><span class="hr-label">Healthy · passing · phosphor #3DFFA2</span>
+      <span style="flex:1; height:1px; background:var(--divider);"></span>
+    </div>
+    <div class="grid3">
+      <!-- passing-trace -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs><filter id="pt-g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#3DFFA2" stroke-opacity="0.16" stroke-width="1.5"/>
+            <g stroke="#3DFFA2" stroke-opacity="0.10" stroke-width="1"><line x1="8" y1="34" x2="112" y2="34"/><line x1="8" y1="60" x2="112" y2="60"/><line x1="42" y1="8" x2="42" y2="88"/><line x1="76" y1="8" x2="76" y2="88"/></g>
+            <path d="M12 30 C26 30 30 22 44 24 S70 30 84 26 100 22 108 24" fill="none" stroke="#3DFFA2" stroke-width="1.8" stroke-linecap="round" filter="url(#pt-g)"/>
+            <circle cx="108" cy="24" r="3.2" fill="#3DFFA2" filter="url(#pt-g)"/>
+            <text x="60" y="80" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">94.2% PASS</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">passing-trace</div><div class="il-use">Use: all-passing / clean suite — waveform riding high.</div>
+          <div class="il-ctx"><span class="ctxnote">gate clean · suite header hero @ 120</span></div>
+        </div>
+      </div>
+      <!-- clean-signal -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs><filter id="cs-g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <rect x="20" y="12" width="80" height="68" rx="6" fill="none" stroke="#3DFFA2" stroke-opacity="0.16" stroke-width="1.5"/>
+            <line x1="22" y1="78" x2="98" y2="14" stroke="#3DFFA2" stroke-opacity="0.30" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <g fill="#3DFFA2"><circle cx="30" cy="70" r="2"/><circle cx="42" cy="62" r="2"/><circle cx="52" cy="53" r="2"/><circle cx="60" cy="46" r="2"/><circle cx="70" cy="37" r="2"/><circle cx="80" cy="29" r="2"/><circle cx="90" cy="22" r="2.6" filter="url(#cs-g)"/></g>
+            <text x="60" y="90" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">ON DIAGONAL</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">clean-signal</div><div class="il-use">Use: well-calibrated / aligned — tight scatter on diagonal.</div>
+          <div class="il-ctx"><span class="ctxnote">calibration all-clear · dead-letters empty @ 120</span></div>
+        </div>
+      </div>
+      <!-- gate-open -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs><filter id="go-g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <path d="M30 22 L22 22 L22 74 L30 74" fill="none" stroke="#3DFFA2" stroke-opacity="0.45" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M90 22 L98 22 L98 74 L90 74" fill="none" stroke="#3DFFA2" stroke-opacity="0.45" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="30" y1="48" x2="78" y2="48" stroke="#3DFFA2" stroke-opacity="0.5" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <path d="M70 48 l6 -4 m-6 4 l6 4" fill="none" stroke="#3DFFA2" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="60" cy="33" r="9" fill="none" stroke="#3DFFA2" stroke-width="1.6" filter="url(#go-g)"/>
+            <path d="M56 33 l3 3 l5 -6" fill="none" stroke="#3DFFA2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" filter="url(#go-g)"/>
+            <text x="60" y="84" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">GATE OPEN</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">gate-open</div><div class="il-use">Use: CI gating clean — clear path + check.</div>
+          <div class="il-ctx"><span class="ctxnote">PR gate passed banner-hero @ 96–120</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 FAILURE ============ -->
+  <section class="il-sec" data-screen-label="Failure" style="margin-bottom:56px;">
+    <div style="display:flex; align-items:center; gap:12px; margin:0 0 20px;">
+      <span class="secnum">04</span><span class="hr-label">Failure · regression · red #FF5D5D</span>
+      <span style="flex:1; height:1px; background:var(--divider);"></span>
+    </div>
+    <div class="grid3">
+      <!-- regression-drop -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs><filter id="rd-g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#3DFFA2" stroke-opacity="0.14" stroke-width="1.5"/>
+            <g stroke="#3DFFA2" stroke-opacity="0.09" stroke-width="1"><line x1="8" y1="34" x2="112" y2="34"/><line x1="8" y1="60" x2="112" y2="60"/></g>
+            <path d="M12 30 C24 30 32 26 44 28 S58 30 62 32" fill="none" stroke="#3DFFA2" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M62 32 L66 66 C70 70 76 70 80 68 S96 66 108 66" fill="none" stroke="#FF5D5D" stroke-width="1.8" stroke-linecap="round" filter="url(#rd-g)"/>
+            <line x1="62" y1="22" x2="62" y2="74" stroke="#FF5D5D" stroke-opacity="0.30" stroke-width="1" stroke-dasharray="2 3"/>
+            <circle cx="64" cy="49" r="3" fill="#FF5D5D" filter="url(#rd-g)"/>
+            <text x="60" y="82" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">−4.2 PT CLIFF</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">regression-drop</div><div class="il-use">Use: REGRESSED states — phosphor breaks into red at a cliff.</div>
+          <div class="il-ctx"><span class="ctxnote">gate blocked detail · regression card @ 120</span></div>
+        </div>
+      </div>
+      <!-- broken-feed -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs><filter id="bf-g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#FF5D5D" stroke-opacity="0.18" stroke-width="1.5"/>
+            <path d="M12 46 h14 l5 -10 l4 18 l6 -8 h6" fill="none" stroke="#FF5D5D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#bf-g)"/>
+            <path d="M64 60 h8 l4 -14 l3 10 h6" fill="none" stroke="#FF5D5D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.8"/>
+            <g stroke="#FF5D5D" stroke-opacity="0.5" stroke-width="1.4"><line x1="48" y1="30" x2="56" y2="30"/><line x1="92" y1="36" x2="100" y2="36"/><line x1="40" y1="68" x2="48" y2="68"/><line x1="86" y1="64" x2="96" y2="64"/></g>
+            <line x1="52" y1="14" x2="52" y2="82" stroke="#FF5D5D" stroke-opacity="0.22" stroke-width="1" stroke-dasharray="3 4"/>
+            <text x="60" y="82" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">SIGNAL LOST</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">broken-feed</div><div class="il-use">Use: ERROR / load failure / store unreachable.</div>
+          <div class="il-ctx"><span class="ctxnote">ErrorState full-page · inline error band @ 96</span></div>
+        </div>
+      </div>
+      <!-- gate-blocked -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs><filter id="gb-g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <path d="M30 22 L22 22 L22 74 L30 74" fill="none" stroke="#FF5D5D" stroke-opacity="0.45" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M90 22 L98 22 L98 74 L90 74" fill="none" stroke="#FF5D5D" stroke-opacity="0.45" stroke-width="1.8" stroke-linecap="round"/>
+            <g stroke="#FF5D5D" stroke-opacity="0.5" stroke-width="1.6"><line x1="40" y1="34" x2="80" y2="34"/><line x1="40" y1="48" x2="80" y2="48"/><line x1="40" y1="62" x2="80" y2="62"/></g>
+            <circle cx="60" cy="48" r="11" fill="none" stroke="#FF5D5D" stroke-width="1.8" filter="url(#gb-g)"/>
+            <line x1="53" y1="55" x2="67" y2="41" stroke="#FF5D5D" stroke-width="1.8" stroke-linecap="round" filter="url(#gb-g)"/>
+            <text x="60" y="86" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">GATE BLOCKED</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">gate-blocked</div><div class="il-use">Use: CI blocked — barred threshold + slash.</div>
+          <div class="il-ctx"><span class="ctxnote">PR gate blocked banner-hero @ 96–120</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 STALE / FLAKY / DRIFT ============ -->
+  <section class="il-sec" data-screen-label="Stale flaky drift" style="margin-bottom:56px;">
+    <div style="display:flex; align-items:center; gap:12px; margin:0 0 20px;">
+      <span class="secnum">05</span><span class="hr-label">Stale · flaky · bias · amber #FFC857</span>
+      <span style="flex:1; height:1px; background:var(--divider);"></span>
+    </div>
+    <div class="grid3">
+      <!-- flatline-stale -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs><filter id="fs-g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#3DFFA2" stroke-opacity="0.12" stroke-width="1.5"/>
+            <g stroke="#3DFFA2" stroke-opacity="0.08" stroke-width="1"><line x1="8" y1="48" x2="112" y2="48"/></g>
+            <path d="M12 50 C22 50 26 40 34 42 S46 52 54 48" fill="none" stroke="#3DFFA2" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.5"/>
+            <line x1="54" y1="48" x2="104" y2="48" stroke="#FFC857" stroke-width="1.6" stroke-dasharray="3 4" stroke-linecap="round"/>
+            <circle cx="104" cy="48" r="3" fill="#FFC857" filter="url(#fs-g)"/>
+            <text x="60" y="80" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">31H STALE</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">flatline-stale</div><div class="il-use">Use: STALE / no-recent-run — trace fades to amber dash.</div>
+          <div class="il-ctx"><span class="ctxnote">stale banner art · calibration stale @ 96</span></div>
+        </div>
+      </div>
+      <!-- flatline-flaky -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs><filter id="ff-g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#FFC857" stroke-opacity="0.16" stroke-width="1.5"/>
+            <g stroke="#FFC857" stroke-opacity="0.10" stroke-width="1"><line x1="8" y1="36" x2="112" y2="36"/><line x1="8" y1="60" x2="112" y2="60"/></g>
+            <path d="M12 36 L24 36 L24 60 L36 60 L36 36 L48 36 L48 60 L60 60 L60 36 L72 36 L72 60 L84 60 L84 36 L96 36 L96 60 L108 60" fill="none" stroke="#FFC857" stroke-width="1.6" stroke-linejoin="round" filter="url(#ff-g)"/>
+            <text x="60" y="82" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">FLAKY ±</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">flatline-flaky</div><div class="il-use">Use: FLAKY suite/case — jittering pass/fail baseline.</div>
+          <div class="il-ctx"><span class="ctxnote">flaky case empty · flake-rate panel @ 96</span></div>
+        </div>
+      </div>
+      <!-- scatter-drift -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs><filter id="sd-g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <rect x="20" y="12" width="80" height="68" rx="6" fill="none" stroke="#FFC857" stroke-opacity="0.14" stroke-width="1.5"/>
+            <line x1="22" y1="78" x2="98" y2="14" stroke="#FFC857" stroke-opacity="0.30" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <g fill="#FFC857"><circle cx="34" cy="66" r="2"/><circle cx="44" cy="60" r="2"/><circle cx="54" cy="56" r="2"/><circle cx="64" cy="50" r="2"/><circle cx="74" cy="48" r="2"/><circle cx="84" cy="44" r="2.6" filter="url(#sd-g)"/></g>
+            <path d="M86 40 l8 -2 l-3 6" fill="none" stroke="#FFC857" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="60" y="90" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">DRIFT +BIAS</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">scatter-drift</div><div class="il-use">Use: drifted / biased / under-calibrated — pulling off the ideal.</div>
+          <div class="il-ctx"><span class="ctxnote">drift warning · under-calibrated empty @ 120</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 JUDGE / AI ============ -->
+  <section class="il-sec" data-screen-label="Judge AI" style="margin-bottom:56px;">
+    <div style="display:flex; align-items:center; gap:12px; margin:0 0 20px;">
+      <span class="secnum">06</span><span class="hr-label">Judge · agent · AI identity · violet #A78BFA</span>
+      <span style="flex:1; height:1px; background:var(--divider);"></span>
+      <span class="rb-num" style="font-size:11px; color:var(--text-muted);">violet core + tilted elliptical orbit rings</span>
+    </div>
+    <div class="grid3">
+      <!-- judge-orb-idle -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 110" width="150" height="138">
+            <g transform="translate(60 52)">
+              <ellipse rx="42" ry="17" fill="none" stroke="#A78BFA" stroke-opacity="0.20" stroke-width="1.5" transform="rotate(-24)"/>
+              <ellipse rx="42" ry="17" fill="none" stroke="#A78BFA" stroke-opacity="0.14" stroke-width="1.5" transform="rotate(28)"/>
+              <circle r="9" fill="none" stroke="#A78BFA" stroke-opacity="0.40" stroke-width="1.6"/>
+              <circle r="2.6" fill="#A78BFA" fill-opacity="0.55"/>
+            </g>
+            <text x="60" y="100" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">JUDGE IDLE</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">judge-orb-idle</div><div class="il-use">Use: judge dormant — agent empties, judge panel resting.</div>
+          <div class="il-ctx"><span class="ctxnote">agent avatar @ 40 · judge empty @ 120</span></div>
+        </div>
+      </div>
+      <!-- judge-orb-active -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 110" width="150" height="138">
+            <defs><filter id="joa-g" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <g transform="translate(60 52)">
+              <ellipse rx="42" ry="17" fill="none" stroke="#A78BFA" stroke-opacity="0.45" stroke-width="1.6" transform="rotate(-24)"/>
+              <ellipse rx="42" ry="17" fill="none" stroke="#A78BFA" stroke-opacity="0.32" stroke-width="1.6" transform="rotate(28)"/>
+              <circle class="orb-pulse" r="13" fill="#A78BFA" fill-opacity="0.10"/>
+              <circle r="9" fill="none" stroke="#A78BFA" stroke-width="1.8" filter="url(#joa-g)"/>
+              <circle r="3.4" fill="#A78BFA" filter="url(#joa-g)"/>
+              <circle cx="-32" cy="-8" r="2" fill="#A78BFA" fill-opacity="0.8"/>
+              <circle cx="34" cy="9" r="2" fill="#A78BFA" fill-opacity="0.8"/>
+            </g>
+            <text x="60" y="100" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">JUDGE ACTIVE</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">judge-orb-active</div><div class="il-use">Use: judge running / AI-degraded banner — bright violet glow.</div>
+          <div class="il-ctx"><span class="ctxnote">calibrating state @ 120 · degraded banner @ 96</span></div>
+        </div>
+      </div>
+      <!-- divergence-fork (paired with judge col for balance) -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs><filter id="df-g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <path d="M14 48 H52" fill="none" stroke="#3DFFA2" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.6"/>
+            <circle cx="52" cy="48" r="3" fill="none" stroke="#A78BFA" stroke-width="1.5"/>
+            <path d="M55 46 C70 40 86 30 104 28" fill="none" stroke="#3DFFA2" stroke-width="1.8" stroke-linecap="round" filter="url(#df-g)"/>
+            <path d="M55 50 C70 56 86 66 104 68" fill="none" stroke="#FFC857" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="4 3"/>
+            <circle cx="104" cy="28" r="2.8" fill="#3DFFA2" filter="url(#df-g)"/>
+            <circle cx="104" cy="68" r="2.8" fill="#FFC857"/>
+            <text x="60" y="86" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">FORK · ALT PATH</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">divergence-fork</div><div class="il-use">Use: trajectory diverged-but-correct, alignment empty.</div>
+          <div class="il-ctx"><span class="ctxnote">trajectory diff · alignment empty @ 120</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 07 CLUSTERS ============ -->
+  <section class="il-sec" data-screen-label="Clusters" style="margin-bottom:56px;">
+    <div style="display:flex; align-items:center; gap:12px; margin:0 0 20px;">
+      <span class="secnum">07</span><span class="hr-label">Error analysis · clusters · mixed signal</span>
+      <span style="flex:1; height:1px; background:var(--divider);"></span>
+    </div>
+    <div class="grid3">
+      <!-- cluster-bloom -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs><filter id="cb-g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <path d="M22 36 Q20 22 36 22 Q52 20 52 36 Q54 50 38 50 Q22 50 22 36 Z" fill="#3DFFA2" fill-opacity="0.06" stroke="#3DFFA2" stroke-opacity="0.30" stroke-width="1.2"/>
+            <g fill="none" stroke="#3DFFA2" stroke-width="1.4" stroke-opacity="0.7"><rect x="29" y="29" width="5" height="5" rx="1"/><rect x="40" y="32" width="5" height="5" rx="1"/><rect x="34" y="40" width="5" height="5" rx="1"/></g>
+            <path d="M72 30 Q70 18 84 18 Q98 18 98 32 Q98 44 84 44 Q72 44 72 30 Z" fill="#FFC857" fill-opacity="0.06" stroke="#FFC857" stroke-opacity="0.30" stroke-width="1.2"/>
+            <g fill="none" stroke="#FFC857" stroke-width="1.4" stroke-opacity="0.7"><rect x="79" y="25" width="5" height="5" rx="1"/><rect x="88" y="30" width="5" height="5" rx="1"/></g>
+            <path d="M44 70 Q42 58 56 58 Q72 58 72 70 Q72 82 56 82 Q44 82 44 70 Z" fill="#FF5D5D" fill-opacity="0.06" stroke="#FF5D5D" stroke-opacity="0.30" stroke-width="1.2"/>
+            <g fill="none" stroke="#FF5D5D" stroke-width="1.4" stroke-opacity="0.8"><rect x="51" y="64" width="5" height="5" rx="1"/><rect x="60" y="68" width="5" height="5" rx="1"/><rect x="54" y="73" width="5" height="5" rx="1" filter="url(#cb-g)"/></g>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">cluster-bloom</div><div class="il-use">Use: error-analysis empty / failure clusters — blips in faint hulls.</div>
+          <div class="il-ctx"><span class="ctxnote">error-analysis empty · cluster panel @ 120</span></div>
+        </div>
+      </div>
+      <!-- trace-sprite -->
+      <div class="il-card">
+        <div class="il-art" style="gap:26px;">
+          <svg viewBox="0 0 16 16" width="84" height="84">
+            <defs><filter id="ts-g" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="0.9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <path d="M1 11 L5 11 L7 5 L9 9 L11 7 L15 7" fill="none" stroke="#3DFFA2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#ts-g)"/>
+            <circle cx="15" cy="7" r="1.4" fill="#3DFFA2"/>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">trace-sprite</div><div class="il-use">Use: tiny inline blip in list rows / dense readouts.</div>
+          <div class="il-ctx"><div class="ctx-frame" style="width:auto; padding:5px 9px; gap:8px; border-radius:var(--radius-sm);"><span class="rb-num" style="font-size:11px; color:var(--text-hi);">summarize-v4</span><svg viewBox="0 0 16 16" width="16" height="16"><path d="M1 11 L5 11 L7 5 L9 9 L11 7 L15 7" fill="none" stroke="#3DFFA2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="7" r="1.4" fill="#3DFFA2"/></svg></div><span class="ctxnote">DataRow @ 16px</span></div>
+        </div>
+      </div>
+      <!-- loading-sweep -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs>
+              <clipPath id="ls-clip"><rect x="8" y="8" width="104" height="80" rx="7"/></clipPath>
+              <linearGradient id="ls-bar" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3DFFA2" stop-opacity="0"/><stop offset="0.5" stop-color="#3DFFA2" stop-opacity="0.45"/><stop offset="1" stop-color="#3DFFA2" stop-opacity="0"/></linearGradient>
+            </defs>
+            <rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#3DFFA2" stroke-opacity="0.16" stroke-width="1.5"/>
+            <g stroke="#3DFFA2" stroke-opacity="0.08" stroke-width="1"><line x1="8" y1="34" x2="112" y2="34"/><line x1="8" y1="60" x2="112" y2="60"/><line x1="42" y1="8" x2="42" y2="88"/><line x1="76" y1="8" x2="76" y2="88"/></g>
+            <g clip-path="url(#ls-clip)"><rect class="sweep-bar" x="0" y="8" width="34" height="80" fill="url(#ls-bar)"/></g>
+            <text x="60" y="80" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">SCANNING…</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">loading-sweep</div><div class="il-use">Use: loading / shimmer — sweep bar; static under reduced-motion.</div>
+          <div class="il-ctx"><span class="ctxnote">panel skeleton · run-in-progress @ 120</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 08 SYSTEM STATES ============ -->
+  <section class="il-sec" data-screen-label="System states" style="margin-bottom:56px;">
+    <div style="display:flex; align-items:center; gap:12px; margin:0 0 20px;">
+      <span class="secnum">08</span><span class="hr-label">System · 404 · expired · offline</span>
+      <span style="flex:1; height:1px; background:var(--divider);"></span>
+    </div>
+    <div class="grid3">
+      <!-- not-found-404 -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs><filter id="nf-g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <rect x="8" y="8" width="92" height="80" rx="7" fill="none" stroke="#5C8A77" stroke-opacity="0.30" stroke-width="1.5"/>
+            <g stroke="#5C8A77" stroke-opacity="0.12" stroke-width="1"><line x1="8" y1="48" x2="100" y2="48"/><line x1="38" y1="8" x2="38" y2="88"/><line x1="70" y1="8" x2="70" y2="88"/></g>
+            <line x1="14" y1="48" x2="96" y2="48" stroke="#5C8A77" stroke-opacity="0.40" stroke-width="1.4" stroke-dasharray="2 4"/>
+            <circle cx="110" cy="30" r="9" fill="none" stroke="#5C8A77" stroke-opacity="0.5" stroke-width="1.5" filter="url(#nf-g)"/>
+            <text x="110" y="34" text-anchor="middle" fill="#5C8A77" font-family="JetBrains Mono, monospace" font-weight="600" font-size="11">?</text>
+            <path d="M100 40 L106 36" stroke="#5C8A77" stroke-opacity="0.4" stroke-width="1.2" stroke-dasharray="2 2"/>
+            <text x="54" y="80" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">OFF-SCREEN</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">not-found-404</div><div class="il-use">Use: 404 / not-found — blip drifted off the grid.</div>
+          <div class="il-ctx"><span class="ctxnote">404 route full-page @ 160</span></div>
+        </div>
+      </div>
+      <!-- session-expired -->
+      <div class="il-card">
+        <div class="il-art">
+          <svg viewBox="0 0 120 96" width="170" height="136">
+            <defs><filter id="se-g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#FFC857" stroke-opacity="0.14" stroke-width="1.5"/>
+            <g stroke="#FFC857" stroke-opacity="0.08" stroke-width="1"><line x1="8" y1="34" x2="112" y2="34"/><line x1="8" y1="60" x2="112" y2="60"/></g>
+            <path d="M12 40 C22 40 26 30 34 32 S44 42 50 40" fill="none" stroke="#FFC857" stroke-width="1.6" stroke-linecap="round" stroke-opacity="0.45"/>
+            <line x1="50" y1="40" x2="56" y2="40" stroke="#FFC857" stroke-width="1.6" stroke-opacity="0.45"/>
+            <rect x="50" y="44" width="20" height="16" rx="2.5" fill="none" stroke="#FFC857" stroke-width="1.6" filter="url(#se-g)"/>
+            <path d="M54 44 v-4 a6 6 0 0 1 12 0 v4" fill="none" stroke="#FFC857" stroke-width="1.6"/>
+            <circle cx="60" cy="52" r="1.8" fill="#FFC857"/>
+            <text x="60" y="82" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">FROZEN · LOCKED</text>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">session-expired</div><div class="il-use">Use: session expired — frozen trace + lock motif.</div>
+          <div class="il-ctx"><span class="ctxnote">re-auth modal · expired page @ 120</span></div>
+        </div>
+      </div>
+      <!-- empty card repeating loading-sweep reduced-motion note -->
+      <div class="il-card">
+        <div class="il-art" style="flex-direction:column; gap:10px; padding:14px;">
+          <svg viewBox="0 0 120 96" width="150" height="120">
+            <rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#3DFFA2" stroke-opacity="0.16" stroke-width="1.5"/>
+            <g stroke="#3DFFA2" stroke-opacity="0.08" stroke-width="1"><line x1="8" y1="48" x2="112" y2="48"/><line x1="60" y1="8" x2="60" y2="88"/></g>
+            <rect x="46" y="8" width="34" height="80" fill="#3DFFA2" fill-opacity="0.12"/>
+            <line x1="46" y1="8" x2="46" y2="88" stroke="#3DFFA2" stroke-opacity="0.35" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <div class="il-meta"><div class="il-name">loading-sweep · reduced-motion</div><div class="il-use">Static fallback frame when prefers-reduced-motion is set.</div>
+          <div class="il-ctx"><span class="ctxnote">no animation · centered bar held</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ IN-CONTEXT STRIP ============ -->
+  <section class="il-sec" data-screen-label="In context" style="margin-bottom:48px;">
+    <div style="display:flex; align-items:center; gap:12px; margin:0 0 20px;">
+      <span class="secnum">09</span><span class="hr-label">In context · how screens consume the pack</span>
+      <span style="flex:1; height:1px; background:var(--divider);"></span>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
+      <!-- empty-state consuming empty-board -->
+      <div class="il-card" style="padding:28px 20px; align-items:center; text-align:center; gap:6px; box-shadow:var(--shadow-card);">
+        <svg viewBox="0 0 120 96" width="120" height="96" style="margin-bottom:4px;">
+          <defs><filter id="ic1" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#5C8A77" stroke-opacity="0.35" stroke-width="1.5"/>
+          <g stroke="#5C8A77" stroke-opacity="0.14" stroke-width="1"><line x1="8" y1="48" x2="112" y2="48"/><line x1="60" y1="8" x2="60" y2="88"/></g>
+          <line x1="14" y1="48" x2="106" y2="48" stroke="#5C8A77" stroke-width="1.5" stroke-dasharray="2 4" stroke-opacity="0.45"/>
+        </svg>
+        <h3 style="font:600 17px/1.25 var(--font-display); color:var(--text-hi); letter-spacing:-0.02em; margin:0;">No runs yet</h3>
+        <p style="font:var(--text-sm); color:var(--text-muted); max-width:240px; margin:0;">Point the CLI at a suite and push. The first sweep populates every view.</p>
+        <span class="hr-label" style="margin-top:10px; color:var(--text-low);">DASHBOARD · empty-board @ 120</span>
+      </div>
+      <!-- banner consuming judge-orb-active -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--violet-12); border-top:1px solid color-mix(in srgb,var(--violet) 38%,transparent); border-bottom:1px solid color-mix(in srgb,var(--violet) 38%,transparent);">
+          <svg viewBox="0 0 120 110" width="40" height="37" style="flex:none;">
+            <defs><filter id="ic2" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <g transform="translate(60 52)"><ellipse rx="42" ry="17" fill="none" stroke="#A78BFA" stroke-opacity="0.45" stroke-width="2" transform="rotate(-24)"/><circle r="9" fill="none" stroke="#A78BFA" stroke-width="2.4" filter="url(#ic2)"/><circle r="3.4" fill="#A78BFA"/></g>
+          </svg>
+          <span style="flex:1; font:var(--text-sm); color:var(--text-hi);">Judge model degraded — 12 verdicts below confidence floor.</span>
+        </div>
+        <div class="il-card" style="padding:14px 16px; align-items:center; text-align:center; gap:4px;">
+          <svg viewBox="0 0 120 96" width="96" height="77">
+            <defs><filter id="ic3" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <path d="M30 22 L22 22 L22 74 L30 74" fill="none" stroke="#FF5D5D" stroke-opacity="0.45" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M90 22 L98 22 L98 74 L90 74" fill="none" stroke="#FF5D5D" stroke-opacity="0.45" stroke-width="1.8" stroke-linecap="round"/>
+            <g stroke="#FF5D5D" stroke-opacity="0.5" stroke-width="1.6"><line x1="40" y1="34" x2="80" y2="34"/><line x1="40" y1="48" x2="80" y2="48"/><line x1="40" y1="62" x2="80" y2="62"/></g>
+            <circle cx="60" cy="48" r="11" fill="none" stroke="#FF5D5D" stroke-width="1.8" filter="url(#ic3)"/>
+            <line x1="53" y1="55" x2="67" y2="41" stroke="#FF5D5D" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span class="hr-label" style="margin-top:6px; color:var(--text-low);">PR GATE · gate-blocked @ 96</span>
+        </div>
+      </div>
+      <!-- error state consuming broken-feed -->
+      <div class="il-card" style="padding:28px 20px; align-items:center; text-align:center; gap:6px; box-shadow:var(--shadow-card);">
+        <svg viewBox="0 0 120 96" width="120" height="96" style="margin-bottom:4px;">
+          <defs><filter id="ic4" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#FF5D5D" stroke-opacity="0.18" stroke-width="1.5"/>
+          <path d="M12 46 h14 l5 -10 l4 18 l6 -8 h6" fill="none" stroke="#FF5D5D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#ic4)"/>
+          <path d="M64 60 h8 l4 -14 l3 10 h6" fill="none" stroke="#FF5D5D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.8"/>
+          <g stroke="#FF5D5D" stroke-opacity="0.5" stroke-width="1.4"><line x1="48" y1="30" x2="56" y2="30"/><line x1="40" y1="68" x2="48" y2="68"/></g>
+        </svg>
+        <h3 style="font:600 17px/1.25 var(--font-display); color:var(--text-hi); letter-spacing:-0.02em; margin:0;">Couldn't reach the run store</h3>
+        <p style="font:var(--text-sm); color:var(--text-muted); max-width:240px; margin:0;">The feed dropped mid-fetch. Retry the request.</p>
+        <span class="hr-label" style="margin-top:10px; color:var(--text-low);">ERRORSTATE · broken-feed @ 120</span>
+      </div>
+    </div>
+  </section>
+
+  <footer style="display:flex; align-items:center; justify-content:space-between; padding-top:16px; border-top:1px solid var(--divider); color:var(--text-muted);">
+    <span class="rb-num" style="font-size:11px;">rubric · asset pack · 25 named assets · the only illustrations allowed in screens</span>
+    <span class="hr-label">REFERENCE BY NAME · NEVER IMPROVISE</span>
+  </footer>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}"></script>
+</body>
+</html>

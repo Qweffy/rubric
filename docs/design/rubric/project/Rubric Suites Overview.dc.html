@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+  :root{
+    --bg-void:#06080C; --bg-surface:#0B1018; --bg-raised:#111826; --glass:rgba(17,24,38,0.55);
+    --phosphor:#3DFFA2; --phosphor-dim:rgba(61,255,162,0.16);
+    --cyan:#4CC9F0; --violet:#A78BFA; --amber:#FFC857; --red:#FF5D5D; --empty:#5C8A77;
+    --text-hi:#E8F0F2; --text-mid:#93A4B3; --text-low:#5C6B7A; --text-low-content:#6E7E8F;
+    --phosphor-12:rgba(61,255,162,0.12); --phosphor-08:rgba(61,255,162,0.08);
+    --cyan-12:rgba(76,201,240,0.12); --violet-16:rgba(167,139,250,0.16); --violet-12:rgba(167,139,250,0.12);
+    --amber-14:rgba(255,200,87,0.14); --red-14:rgba(255,93,93,0.14);
+    --surface-page:var(--bg-void); --surface-panel:var(--bg-surface); --surface-card:var(--bg-raised); --surface-glass:var(--glass);
+    --border:var(--phosphor-dim); --border-strong:rgba(61,255,162,0.28); --divider:rgba(147,164,179,0.10);
+    --accent:var(--phosphor); --link:var(--cyan); --ai:var(--violet); --warn:var(--amber); --danger:var(--red);
+    --text-heading:var(--text-hi); --text-body:var(--text-mid); --text-muted:var(--text-low-content); --text-label:var(--text-low);
+    --focus-ring:var(--phosphor);
+    --font-display:'Space Grotesk',system-ui,sans-serif; --font-ui:'Inter',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --text-lg:400 16px/1.5 var(--font-ui); --text-base:400 14px/1.5 var(--font-ui); --text-sm:400 13px/1.45 var(--font-ui); --text-xs:500 12px/1.4 var(--font-ui);
+    --radius-card:10px; --radius-control:6px; --radius-sm:4px; --radius-full:0;
+    --glow-phosphor:0 0 24px rgba(61,255,162,0.25); --glow-phosphor-sm:0 0 12px rgba(61,255,162,0.20);
+    --glow-violet:0 0 24px rgba(167,139,250,0.22); --glow-cyan:0 0 16px rgba(76,201,240,0.20); --glow-red:0 0 16px rgba(255,93,93,0.22);
+    --shadow-card:0 1px 0 rgba(255,255,255,0.02) inset, 0 8px 24px rgba(0,0,0,0.45);
+    --ring:0 0 0 2px var(--bg-void), 0 0 0 4px var(--focus-ring);
+    --ease-out:cubic-bezier(0.22,1,0.36,1);
+    color-scheme:dark;
+  }
+  body{ background:#04060A; }
+  .hr-label{ font-family:var(--font-mono); font-weight:600; font-size:11px; line-height:1.2; letter-spacing:.14em; text-transform:uppercase; color:var(--text-low); }
+  .mono{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+  .void-tex{ background-color:var(--bg-void); background-image:radial-gradient(rgba(61,255,162,0.04) 1px, transparent 1px); background-size:24px 24px; }
+  .card{ background:var(--surface-card); border:1px solid var(--border); border-radius:var(--radius-card); box-shadow:var(--shadow-card); }
+  .row{ display:grid; align-items:center; gap:14px; padding:11px 14px; background:var(--surface-card); border:1px solid var(--border); border-radius:var(--radius-card); position:relative; transition:all 120ms var(--ease-out); }
+  .row.sel{ border-color:var(--border-strong); background:var(--phosphor-08); box-shadow:var(--glow-phosphor-sm); }
+  .row.hov{ border-color:var(--border-strong); box-shadow:var(--glow-phosphor-sm); }
+  .row.reg{ border-color:color-mix(in srgb,var(--red) 40%,transparent); background:var(--red-14); }
+  .row.reg::before{ content:""; position:absolute; left:0; top:8px; bottom:8px; width:2px; border-radius:1px; background:var(--red); box-shadow:0 0 8px var(--red); }
+  .badge{ display:inline-flex; align-items:center; gap:6px; height:20px; padding:0 7px; border-radius:var(--radius-sm); font-family:var(--font-mono); font-weight:600; font-size:10px; line-height:1; letter-spacing:.10em; text-transform:uppercase; border:1px solid transparent; white-space:nowrap; }
+  .dot{ width:6px; height:6px; border-radius:50%; background:currentColor; flex:none; }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; height:36px; padding:0 14px; border-radius:var(--radius-control); font-family:var(--font-ui); font-weight:600; font-size:13px; line-height:1; border:1px solid transparent; cursor:pointer; white-space:nowrap; }
+  .btn svg{ width:16px; height:16px; }
+  .btn.sm{ height:30px; padding:0 11px; font-size:12px; }
+  .btn.primary{ background:var(--phosphor); color:var(--bg-void); box-shadow:var(--glow-phosphor); }
+  .btn.secondary{ background:transparent; color:var(--text-hi); border-color:var(--border-strong); }
+  .btn.ghost{ background:transparent; color:var(--text-body); }
+  .iconbtn{ display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:var(--radius-control); border:1px solid var(--border); background:transparent; color:var(--text-body); cursor:pointer; }
+  .iconbtn svg{ width:18px; height:18px; }
+  .kebab{ display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:var(--radius-control); color:var(--text-muted); cursor:pointer; }
+  .kbd{ display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-panel); font-family:var(--font-mono); font-size:11px; color:var(--text-muted); }
+  .nav-item{ display:flex; align-items:center; gap:10px; height:34px; padding:0 12px 0 11px; border-radius:var(--radius-control); color:var(--text-body); position:relative; cursor:pointer; font:var(--text-sm); }
+  .nav-item svg{ width:16px; height:16px; flex:none; }
+  .nav-item .lbl{ flex:1; }
+  .nav-item.active{ background:var(--phosphor-08); color:var(--text-hi); }
+  .nav-item.active::before{ content:""; position:absolute; left:0; top:6px; bottom:6px; width:2px; border-radius:1px; background:var(--phosphor); box-shadow:var(--glow-phosphor-sm); }
+  .nav-item .mtag{ font-family:var(--font-mono); font-size:10px; font-weight:600; letter-spacing:.06em; color:var(--cyan); }
+  /* table */
+  .colh{ font-family:var(--font-mono); font-weight:600; font-size:10px; letter-spacing:.10em; text-transform:uppercase; color:var(--text-low); }
+  .scorer{ width:14px; height:14px; border-radius:3px; border:1px solid; box-sizing:border-box; }
+  .vtag{ display:inline-flex; align-items:center; height:18px; padding:0 6px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-mono); font-size:10px; color:var(--text-mid); white-space:nowrap; }
+  /* tab */
+  .tab{ display:inline-flex; align-items:center; gap:7px; padding:9px 11px; font:500 13px/1 var(--font-ui); color:var(--text-body); border-bottom:2px solid transparent; cursor:pointer; }
+  .tab.active{ color:var(--text-hi); border-bottom-color:var(--phosphor); }
+  .chip{ font-family:var(--font-mono); font-size:11px; font-weight:500; padding:1px 6px; border-radius:var(--radius-sm); background:var(--divider); color:var(--text-muted); }
+  .tab.active .chip{ background:var(--phosphor-12); color:var(--phosphor); }
+  .field{ display:flex; align-items:center; gap:8px; height:32px; padding:0 11px; background:var(--surface-panel); border:1px solid var(--border); border-radius:var(--radius-control); color:var(--text-muted); font-family:var(--font-mono); font-size:12px; }
+  .field svg{ width:14px; height:14px; color:var(--text-label); }
+  .stale-chip{ display:inline-flex; align-items:center; gap:6px; height:22px; padding:0 8px; border-radius:var(--radius-sm); border:1px solid color-mix(in srgb,var(--amber) 38%,transparent); background:var(--amber-14); color:var(--amber); font-family:var(--font-mono); font-weight:500; font-size:11px; }
+  .skel{ background:linear-gradient(90deg, color-mix(in srgb,var(--text-mid) 8%,transparent) 25%, color-mix(in srgb,var(--text-mid) 15%,transparent) 37%, color-mix(in srgb,var(--text-mid) 8%,transparent) 63%); background-size:400% 100%; animation:rb-shimmer 1.6s linear infinite; border-radius:var(--radius-sm); }
+  @keyframes rb-shimmer{ 0%{ background-position:100% 0 } 100%{ background-position:-100% 0 } }
+  .stage{ width:max-content; min-width:100%; min-height:100vh; box-sizing:border-box; padding:48px; background:#04060A; }
+  .frame-label{ font-family:var(--font-mono); font-weight:600; font-size:12px; letter-spacing:.10em; text-transform:uppercase; color:var(--text-low); margin:0 0 12px; display:flex; align-items:center; gap:10px; }
+  .frame-label .n{ color:var(--phosphor); }
+  .shell{ border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:var(--shadow-card); display:flex; flex-direction:column; }
+  .sweep-host{ position:relative; overflow:hidden; }
+  .sweep-host::after{ content:""; position:absolute; top:0; bottom:0; width:140px; left:-140px; background:linear-gradient(90deg, transparent, rgba(61,255,162,0.10), transparent); animation:rb-sweep 1.8s var(--ease-out) infinite; pointer-events:none; }
+  @keyframes rb-sweep{ 0%{ transform:translateX(0) } 100%{ transform:translateX(calc(100% + 280px)) } }
+  @media (prefers-reduced-motion:reduce){ .skel{ animation:none } .sweep-host::after{ animation:none; display:none } }
+  a.crumb{ color:var(--cyan); text-decoration:none; }
+  a.crumb:hover{ text-decoration:underline; text-underline-offset:2px; }
+  a.sha{ color:var(--cyan); text-decoration:none; }
+  a.sha:hover{ text-decoration:underline; text-underline-offset:2px; }
+</style>
+</helmet>
+
+<div class="stage">
+
+  <!-- ============================================================ -->
+  <!-- SUITES OVERVIEW · the control tower                          -->
+  <!-- ============================================================ -->
+  <div class="frame-label" data-screen-label="Suites overview"><span class="n">SUITES OVERVIEW</span> · the control tower · hero · 1440×1040</div>
+  <div class="shell" style="width:1440px; height:1040px; margin-bottom:48px;">
+
+    <!-- TOPBAR -->
+    <div style="height:56px; flex:none; display:flex; align-items:center; gap:18px; padding:0 16px 0 18px; background:var(--glass); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); position:relative; z-index:50;">
+      <div style="display:flex; align-items:center; gap:9px; flex:none;">
+        <svg viewBox="0 0 32 32" width="26" height="26"><defs><filter id="tb-mk" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="3.25" y="3.25" width="25.5" height="25.5" rx="6" fill="none" stroke="#3DFFA2" stroke-opacity="0.28" stroke-width="2.5"/><rect x="8" y="18" width="6" height="6" rx="1.4" fill="none" stroke="#3DFFA2" stroke-opacity="0.30" stroke-width="2.5"/><path d="M9 20 l9 -8 l5 4" fill="none" stroke="#3DFFA2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#tb-mk)"/><circle cx="23" cy="16" r="2" fill="#3DFFA2"/></svg>
+        <span style="font:600 18px/1 var(--font-display); letter-spacing:-0.02em; color:var(--text-hi);">rubric</span>
+      </div>
+      <div style="width:1px; height:24px; background:var(--divider); flex:none;"></div>
+      <div class="mono" style="font-size:13px; display:flex; align-items:center; gap:8px; flex:none;">
+        <span style="color:var(--phosphor);">Suites</span>
+      </div>
+      <button class="mono" style="margin-left:8px; display:flex; align-items:center; gap:10px; height:34px; width:300px; padding:0 8px 0 12px; background:var(--surface-panel); border:1px solid var(--border); border-radius:var(--radius-control); color:var(--text-muted); cursor:text; font-size:13px;">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-label);"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span style="flex:1; text-align:left;">Jump to suite, run, case…</span>
+        <span class="kbd">⌘K</span>
+      </button>
+      <div style="flex:1;"></div>
+      <div style="display:flex; align-items:center; gap:7px; flex:none;">
+        <span class="dot" style="color:var(--phosphor); box-shadow:0 0 8px var(--phosphor);"></span>
+        <span class="hr-label" style="color:var(--text-low);">SYNC 09:12 UTC</span>
+      </div>
+      <button class="btn secondary sm mono" style="font-weight:500; gap:7px;">branch: main
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div style="width:30px; height:30px; flex:none; border-radius:var(--radius-control); border:1px solid var(--border); background:var(--surface-card); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:600; font-size:11px; color:var(--text-mid);">AR</div>
+    </div>
+
+    <!-- BODY -->
+    <div style="display:flex; flex:1; min-height:0;">
+
+      <!-- SIDEBAR -->
+      <div style="width:248px; flex:none; background:var(--surface-panel); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:16px 12px 12px;">
+        <div class="hr-label" style="padding:0 11px; margin-bottom:14px;">MISSION CONTROL</div>
+        <div style="display:flex; flex-direction:column; gap:16px; flex:1; overflow:hidden;">
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">MEASURE</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M1/M3</span></div>
+            <div class="nav-item active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>
+              <span class="lbl">Suites</span><span class="mtag">M1</span><span class="dot" style="color:var(--red); box-shadow:0 0 6px var(--red);"></span>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">JUDGE</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M2</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg><span class="lbl">Judge Calibration</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/></svg><span class="lbl">Model Comparison</span></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">VERSIONS</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M3</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="3" x2="9" y1="12" y2="12"/><line x1="15" x2="21" y1="12" y2="12"/></svg><span class="lbl">Prompt Timeline</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M11 18H8a2 2 0 0 1-2-2V9"/></svg><span class="lbl">Regression Diff</span></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">AGENTS</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M4</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg><span class="lbl">Trajectories</span></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">ANALYZE</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M5</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="7.5" r="1.2"/><circle cx="18.5" cy="5.5" r="1.2"/><circle cx="11.5" cy="11.5" r="1.2"/><circle cx="7.5" cy="16.5" r="1.2"/><circle cx="17.5" cy="14.5" r="1.2"/><path d="M3 3v16a2 2 0 0 0 2 2h16"/></svg><span class="lbl">Error Workbench</span></div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:7px; padding:0 11px; margin-bottom:6px;"><span class="hr-label">SHIP</span><span class="mono" style="font-size:10px; color:var(--cyan); letter-spacing:.06em;">M6</span></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><span class="lbl">CI / Gating</span><span class="dot" style="color:var(--red); box-shadow:0 0 6px var(--red);"></span></div>
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--divider); padding-top:10px; margin-top:10px;">
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="lbl">Settings</span></div>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="void-tex" style="flex:1; min-width:0; display:flex; flex-direction:column;">
+        <div style="flex:1; overflow:auto; padding:24px;">
+          <div style="max-width:1280px; margin:0 auto; display:flex; flex-direction:column; gap:20px;">
+
+            <!-- PAGE HEADER -->
+            <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:16px;">
+              <div>
+                <h1 style="font:700 30px/1.1 var(--font-display); letter-spacing:-0.02em; color:var(--text-hi); margin:0 0 8px;">Suites</h1>
+                <span class="hr-label" style="color:var(--text-low);">REGRESSION GATING · 6 SUITES · LAST RUN 09:12 UTC</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <button class="btn ghost mono" style="gap:7px;">Search <span class="kbd">⌘K</span></button>
+                <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>Run all</button>
+              </div>
+            </div>
+
+            <!-- KPI STRIP -->
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:24px;">
+              <div class="card" style="padding:16px; min-width:240px;">
+                <div class="hr-label" style="margin-bottom:10px;">OVERALL PASS-RATE</div>
+                <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:8px;">
+                  <div class="mono" style="font:600 32px/1.1 var(--font-mono); color:var(--phosphor);">89.5<span style="font-size:18px; color:var(--text-muted);">%</span></div>
+                  <svg viewBox="0 0 72 24" width="72" height="24"><defs><linearGradient id="k1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3DFFA2" stop-opacity="0.22"/><stop offset="1" stop-color="#3DFFA2" stop-opacity="0"/></linearGradient></defs><path d="M2 6 L16 7 L30 8 L44 10 L58 12 L70 14 L70 22 L2 22 Z" fill="url(#k1)"/><path d="M2 6 L16 7 L30 8 L44 10 L58 12 L70 14" fill="none" stroke="#3DFFA2" stroke-width="1.5" stroke-linecap="round"/><circle cx="70" cy="14" r="1.8" fill="#3DFFA2"/></svg>
+                </div>
+                <div class="mono" style="font-size:12px; margin-top:8px; color:var(--red);">▼ 1.2 pts <span style="color:var(--text-muted);">vs baseline</span></div>
+              </div>
+              <div class="card" style="padding:16px; min-width:240px;">
+                <div class="hr-label" style="margin-bottom:10px;">SUITES REGRESSED</div>
+                <div class="mono" style="font:600 32px/1.1 var(--font-mono); color:var(--red);">1</div>
+                <div class="mono" style="font-size:12px; margin-top:8px; color:var(--text-muted);">checkout-extraction</div>
+              </div>
+              <div class="card" style="padding:16px; min-width:240px;">
+                <div class="hr-label" style="margin-bottom:10px;">JUDGE AGREEMENT</div>
+                <div class="mono" style="font:600 32px/1.1 var(--font-mono); color:var(--violet);">κ 0.81</div>
+                <div class="mono" style="font-size:12px; margin-top:8px; color:var(--text-muted);">claude-opus-4</div>
+              </div>
+              <div class="card" style="padding:16px; min-width:240px;">
+                <div class="hr-label" style="margin-bottom:10px;">OPEN GATES</div>
+                <div class="mono" style="font:600 32px/1.1 var(--font-mono); color:var(--amber);">1</div>
+                <div class="mono" style="font-size:12px; margin-top:8px; color:var(--text-muted);">PR #214 blocked</div>
+              </div>
+            </div>
+
+            <!-- FILTER BAR -->
+            <div class="card" style="padding:0; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:0 14px;">
+              <div style="display:flex; align-items:center; gap:2px;">
+                <span class="tab active">All <span class="chip">6</span></span>
+                <span class="tab">Regressed <span class="chip">1</span></span>
+                <span class="tab">Passing <span class="chip">3</span></span>
+                <span class="tab">Flaky <span class="chip">1</span></span>
+                <span class="tab">Stale <span class="chip">1</span></span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; padding:9px 0;">
+                <div class="field" style="width:180px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span style="flex:1;">filter suites…</span></div>
+                <span class="vtag" style="height:24px; color:var(--cyan); border-color:color-mix(in srgb,var(--cyan) 38%,transparent); font-size:11px; gap:6px;">branch: all <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
+                <button class="btn ghost sm mono" style="gap:6px;">by pass-rate <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+              </div>
+            </div>
+
+            <!-- SUITES TABLE -->
+            <div class="card" style="padding:0; overflow:hidden;">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:11px 16px; border-bottom:1px solid var(--divider);">
+                <span class="hr-label">SUITES</span>
+                <span class="mono" style="font-size:11px; color:var(--text-muted);">6 of 6 · sorted by pass-rate</span>
+              </div>
+              <!-- column header -->
+              <div style="display:grid; grid-template-columns:minmax(220px,1.4fr) 112px 96px 70px 104px 86px 150px 132px 60px 30px; gap:14px; align-items:center; padding:8px 16px; border-bottom:1px solid var(--divider);">
+                <span class="colh">SUITE</span><span class="colh">STATUS</span><span class="colh">PASS-RATE</span><span class="colh">Δ</span><span class="colh">TREND</span><span class="colh">SCORERS</span><span class="colh">LAST RUN</span><span class="colh">VERSION</span><span class="colh">COST</span><span></span>
+              </div>
+              <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+
+                <!-- 1 checkout-extraction REGRESSED hero -->
+                <div class="row reg" style="grid-template-columns:minmax(220px,1.4fr) 112px 96px 70px 104px 86px 150px 132px 60px 30px;">
+                  <div style="display:flex; flex-direction:column; gap:3px; padding-left:4px;">
+                    <div style="display:flex; align-items:center; gap:7px;"><span style="font:600 15px/1.2 var(--font-display); letter-spacing:-0.01em; color:var(--text-hi);">checkout-extraction</span><span class="dot" style="color:var(--amber); box-shadow:0 0 8px var(--amber); width:7px; height:7px;" title="edited on a feature branch"></span></div>
+                    <span class="mono" style="font-size:11px; color:var(--text-muted);">acme/checkout · 142 cases · 4 scorers</span>
+                  </div>
+                  <span class="badge" style="color:var(--red); background:var(--red-14); border-color:color-mix(in srgb,var(--red) 40%,transparent);"><span class="dot"></span>REGRESSED</span>
+                  <div style="display:flex; flex-direction:column;"><span class="mono" style="font:500 18px/1.2 var(--font-mono); color:var(--amber);">88.7%</span><span class="mono" style="font-size:10px; color:var(--text-muted);">126/142</span></div>
+                  <span class="mono" style="font-size:13px; color:var(--red);">▼5.6</span>
+                  <svg viewBox="0 0 100 24" width="100" height="24"><path d="M2 7 L20 7 L36 8 L50 9 L58 10 L64 20 L82 21 L98 21" fill="none" stroke="#FF5D5D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="98" cy="21" r="1.8" fill="#FF5D5D"/></svg>
+                  <div style="display:flex; gap:4px;"><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);" title="schema 142/142"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);" title="exact-match 138/142"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--red) 50%,transparent); background:var(--red-14);" title="field-accuracy 101/142 — culprit"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--violet) 50%,transparent); background:var(--violet-16);" title="judge 129/142"></span></div>
+                  <div style="display:flex; flex-direction:column; gap:2px;"><a class="sha mono" href="#" style="font-size:12px;" title="2026-06-17 09:12 UTC">a3f9c21</a><span class="mono" style="font-size:11px; color:var(--text-muted);">12m ago</span></div>
+                  <div style="display:flex; flex-direction:column; gap:3px; align-items:flex-start;"><span class="vtag">v23</span><span class="vtag" style="color:var(--amber); border-color:color-mix(in srgb,var(--amber) 38%,transparent);" title="feat/stricter-schema">feat/stricter-schema</span></div>
+                  <span class="mono" style="font-size:13px; color:var(--text-mid);">$0.83</span>
+                  <span class="kebab"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
+                </div>
+
+                <!-- 2 support-router PASSING -->
+                <div class="row hov" style="grid-template-columns:minmax(220px,1.4fr) 112px 96px 70px 104px 86px 150px 132px 60px 30px;">
+                  <div style="display:flex; flex-direction:column; gap:3px; padding-left:4px;">
+                    <span style="font:600 15px/1.2 var(--font-display); letter-spacing:-0.01em; color:var(--text-hi);">support-router</span>
+                    <span class="mono" style="font-size:11px; color:var(--text-muted);">acme/support</span>
+                  </div>
+                  <span class="badge" style="color:var(--phosphor); background:var(--phosphor-12); border-color:color-mix(in srgb,var(--phosphor) 30%,transparent);"><span class="dot"></span>PASSING</span>
+                  <span class="mono" style="font:500 18px/1.2 var(--font-mono); color:var(--phosphor);">96.1%</span>
+                  <span class="mono" style="font-size:13px; color:var(--phosphor);">▲1.3</span>
+                  <svg viewBox="0 0 100 24" width="100" height="24"><path d="M2 18 L18 16 L34 15 L50 12 L66 10 L82 7 L98 5" fill="none" stroke="#3DFFA2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="98" cy="5" r="1.8" fill="#3DFFA2"/></svg>
+                  <div style="display:flex; gap:4px;"><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);" title="schema pass"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);" title="exact-match pass"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);" title="field-accuracy pass"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--violet) 50%,transparent); background:var(--violet-16);" title="judge pass"></span></div>
+                  <div style="display:flex; flex-direction:column; gap:2px;"><a class="sha mono" href="#" style="font-size:12px;" title="2026-06-17 08:14 UTC">9c2e7b1</a><span class="mono" style="font-size:11px; color:var(--text-muted);">1h ago</span></div>
+                  <div style="display:flex; flex-direction:column; gap:3px; align-items:flex-start;"><span class="vtag">v14</span><span class="vtag" style="color:var(--cyan); border-color:color-mix(in srgb,var(--cyan) 38%,transparent);">main</span></div>
+                  <span class="mono" style="font-size:13px; color:var(--text-mid);">$0.41</span>
+                  <span class="kebab"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
+                </div>
+
+                <!-- 3 invoice-parser PASSING -->
+                <div class="row" style="grid-template-columns:minmax(220px,1.4fr) 112px 96px 70px 104px 86px 150px 132px 60px 30px;">
+                  <div style="display:flex; flex-direction:column; gap:3px; padding-left:4px;">
+                    <span style="font:600 15px/1.2 var(--font-display); letter-spacing:-0.01em; color:var(--text-hi);">invoice-parser</span>
+                    <span class="mono" style="font-size:11px; color:var(--text-muted);">acme/invoice</span>
+                  </div>
+                  <span class="badge" style="color:var(--phosphor); background:var(--phosphor-12); border-color:color-mix(in srgb,var(--phosphor) 30%,transparent);"><span class="dot"></span>PASSING</span>
+                  <span class="mono" style="font:500 18px/1.2 var(--font-mono); color:var(--phosphor);">99.0%</span>
+                  <span class="mono" style="font-size:13px; color:var(--text-muted);">0.0</span>
+                  <svg viewBox="0 0 100 24" width="100" height="24"><path d="M2 6 L20 5 L38 6 L56 5 L74 6 L98 5" fill="none" stroke="#3DFFA2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="98" cy="5" r="1.8" fill="#3DFFA2"/></svg>
+                  <div style="display:flex; gap:4px;"><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--violet) 50%,transparent); background:var(--violet-16);"></span></div>
+                  <div style="display:flex; flex-direction:column; gap:2px;"><a class="sha mono" href="#" style="font-size:12px;" title="2026-06-17 06:30 UTC">4471aa2</a><span class="mono" style="font-size:11px; color:var(--text-muted);">3h ago</span></div>
+                  <div style="display:flex; flex-direction:column; gap:3px; align-items:flex-start;"><span class="vtag">v8</span><span class="vtag" style="color:var(--cyan); border-color:color-mix(in srgb,var(--cyan) 38%,transparent);">main</span></div>
+                  <span class="mono" style="font-size:13px; color:var(--text-mid);">$0.55</span>
+                  <span class="kebab"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
+                </div>
+
+                <!-- 4 refund-agent PARTIAL -->
+                <div class="row" style="grid-template-columns:minmax(220px,1.4fr) 112px 96px 70px 104px 86px 150px 132px 60px 30px;">
+                  <div style="display:flex; flex-direction:column; gap:3px; padding-left:4px;">
+                    <span style="font:600 15px/1.2 var(--font-display); letter-spacing:-0.01em; color:var(--text-hi);">refund-agent</span>
+                    <span class="mono" style="font-size:11px; color:var(--text-muted);">trajectory suite · 40 tasks · tool-sel 90.5%</span>
+                  </div>
+                  <span class="badge" style="color:var(--amber); background:var(--amber-14); border-color:color-mix(in srgb,var(--amber) 38%,transparent);">PARTIAL</span>
+                  <span class="mono" style="font:500 18px/1.2 var(--font-mono); color:var(--amber);">82.4%</span>
+                  <span class="mono" style="font-size:13px; color:var(--amber);">▼0.8</span>
+                  <svg viewBox="0 0 100 24" width="100" height="24"><path d="M2 12 L16 9 L30 13 L44 10 L58 13 L72 10 L86 12 L98 11" fill="none" stroke="#FFC857" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="98" cy="11" r="1.8" fill="#FFC857"/></svg>
+                  <div style="display:flex; gap:4px;"><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--violet) 50%,transparent); background:var(--violet-16);" title="judge — trajectory grader"></span></div>
+                  <div style="display:flex; flex-direction:column; gap:2px;"><a class="sha mono" href="#" style="font-size:12px;" title="2026-06-17 04:10 UTC">bb71e03</a><span class="mono" style="font-size:11px; color:var(--text-muted);">5h ago</span></div>
+                  <div style="display:flex; flex-direction:column; gap:3px; align-items:flex-start;"><span class="vtag">v6</span><span class="vtag" style="color:var(--cyan); border-color:color-mix(in srgb,var(--cyan) 38%,transparent);">main</span></div>
+                  <span class="mono" style="font-size:13px; color:var(--text-mid);">$1.10</span>
+                  <span class="kebab"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
+                </div>
+
+                <!-- 5 email-summarize FLAKY -->
+                <div class="row" style="grid-template-columns:minmax(220px,1.4fr) 112px 96px 70px 104px 86px 150px 132px 60px 30px;">
+                  <div style="display:flex; flex-direction:column; gap:3px; padding-left:4px;">
+                    <span style="font:600 15px/1.2 var(--font-display); letter-spacing:-0.01em; color:var(--text-hi);">email-summarize</span>
+                    <span class="mono" style="font-size:11px; color:var(--text-muted);">acme/email</span>
+                  </div>
+                  <span class="badge" style="color:var(--amber); background:var(--amber-14); border-color:color-mix(in srgb,var(--amber) 38%,transparent);">FLAKY</span>
+                  <span class="mono" style="font:500 18px/1.2 var(--font-mono); color:var(--red);">78.9%</span>
+                  <span class="mono" style="font-size:13px; color:var(--red);">▼2.1</span>
+                  <svg viewBox="0 0 100 24" width="100" height="24"><path d="M2 10 L14 16 L26 8 L38 17 L50 9 L62 16 L74 10 L86 15 L98 12" fill="none" stroke="#FFC857" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="98" cy="12" r="1.8" fill="#FFC857"/></svg>
+                  <div style="display:flex; gap:4px;"><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--amber) 50%,transparent); background:var(--amber-14);" title="judge — flaky verdicts"></span></div>
+                  <div style="display:flex; flex-direction:column; gap:2px;"><a class="sha mono" href="#" style="font-size:12px;" title="2026-06-17 04:02 UTC">2d9f0c4</a><span class="mono" style="font-size:11px; color:var(--text-muted);">5h ago</span></div>
+                  <div style="display:flex; flex-direction:column; gap:3px; align-items:flex-start;"><span class="vtag">v11</span><span class="vtag" style="color:var(--cyan); border-color:color-mix(in srgb,var(--cyan) 38%,transparent);">main</span></div>
+                  <span class="mono" style="font-size:13px; color:var(--text-mid);">$0.62</span>
+                  <span class="kebab"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
+                </div>
+
+                <!-- 6 pii-redactor STALE -->
+                <div class="row" style="grid-template-columns:minmax(220px,1.4fr) 112px 96px 70px 104px 86px 150px 132px 60px 30px;">
+                  <div style="display:flex; flex-direction:column; gap:3px; padding-left:4px;">
+                    <div style="display:flex; align-items:center; gap:7px;"><span style="font:600 15px/1.2 var(--font-display); letter-spacing:-0.01em; color:var(--text-hi);">pii-redactor</span><span class="dot" style="color:var(--amber); box-shadow:0 0 8px var(--amber); width:7px; height:7px;" title="stale — no recent run"></span></div>
+                    <span class="mono" style="font-size:11px; color:var(--text-muted);">acme/pii</span>
+                  </div>
+                  <span class="badge" style="color:var(--amber); background:var(--amber-14); border-color:color-mix(in srgb,var(--amber) 38%,transparent);">STALE</span>
+                  <span class="mono" style="font:500 18px/1.2 var(--font-mono); color:var(--phosphor);">92.0%</span>
+                  <span class="mono" style="font-size:13px; color:var(--text-muted);">—</span>
+                  <svg viewBox="0 0 100 24" width="100" height="24"><path d="M2 10 L20 9 L38 10 L54 10" fill="none" stroke="#FFC857" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.6"/><path d="M54 10 L72 11 L98 11" fill="none" stroke="#FFC857" stroke-width="1.5" stroke-dasharray="3 4" stroke-linecap="round"/><circle cx="98" cy="11" r="1.8" fill="#FFC857"/></svg>
+                  <div style="display:flex; gap:4px;"><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--phosphor) 45%,transparent); background:var(--phosphor-12);"></span><span class="scorer" style="border-color:color-mix(in srgb,var(--violet) 50%,transparent); background:var(--violet-16);"></span></div>
+                  <div style="display:flex; flex-direction:column; gap:2px;"><a class="sha mono" href="#" style="font-size:12px;" title="2026-06-08 09:00 UTC">e1c4a77</a><span class="mono" style="font-size:11px; color:var(--text-muted);">9d ago</span></div>
+                  <div style="display:flex; flex-direction:column; gap:3px; align-items:flex-start;"><span class="vtag">v3</span><span class="vtag" style="color:var(--cyan); border-color:color-mix(in srgb,var(--cyan) 38%,transparent);">main</span></div>
+                  <span class="mono" style="font-size:13px; color:var(--text-mid);">$0.62</span>
+                  <span class="kebab"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- keyboard hint strip -->
+        <div style="flex:none; height:38px; border-top:1px solid var(--divider); background:var(--surface-panel); display:flex; align-items:center; gap:16px; padding:0 20px;">
+          <span class="hr-label" style="color:var(--text-low);">KEYS</span>
+          <div style="display:flex; align-items:center; gap:6px;"><span class="kbd">⌘K</span><span class="mono" style="font-size:11px; color:var(--text-muted);">palette</span></div>
+          <div style="display:flex; align-items:center; gap:6px;"><span class="kbd">j</span><span class="kbd">k</span><span class="mono" style="font-size:11px; color:var(--text-muted);">row nav</span></div>
+          <div style="display:flex; align-items:center; gap:6px;"><span class="kbd">↵</span><span class="mono" style="font-size:11px; color:var(--text-muted);">open suite</span></div>
+          <div style="display:flex; align-items:center; gap:6px;"><span class="kbd">esc</span><span class="mono" style="font-size:11px; color:var(--text-muted);">close drawer</span></div>
+          <div style="display:flex; align-items:center; gap:6px;"><span class="kbd">g</span><span class="kbd">s</span><span class="mono" style="font-size:11px; color:var(--text-muted);">go suites</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- STATES                                                       -->
+  <!-- ============================================================ -->
+  <div class="frame-label" data-screen-label="Suites states"><span class="n">STATES</span> · shell always survives · only the changed region in full detail</div>
+
+  <div style="width:1440px; display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+
+    <!-- 1 LOADING -->
+    <div>
+      <div class="frame-label"><span class="n">1</span> · LOADING · skeletons + sweep · reduced-motion static</div>
+      <div class="card void-tex sweep-host" style="height:400px; overflow:hidden; padding:18px; display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between;"><div class="skel" style="height:28px; width:130px;"></div><div class="skel" style="height:34px; width:110px; border-radius:var(--radius-control);"></div></div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+          <div class="card" style="padding:14px;"><div class="skel" style="height:10px; width:70%; margin-bottom:12px;"></div><div class="skel" style="height:26px; width:60%;"></div></div>
+          <div class="card" style="padding:14px;"><div class="skel" style="height:10px; width:70%; margin-bottom:12px;"></div><div class="skel" style="height:26px; width:60%;"></div></div>
+          <div class="card" style="padding:14px;"><div class="skel" style="height:10px; width:70%; margin-bottom:12px;"></div><div class="skel" style="height:26px; width:60%;"></div></div>
+          <div class="card" style="padding:14px;"><div class="skel" style="height:10px; width:70%; margin-bottom:12px;"></div><div class="skel" style="height:26px; width:60%;"></div></div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div class="row" style="grid-template-columns:1fr 90px 80px 100px; padding:12px 14px;"><div class="skel" style="height:15px; width:46%;"></div><div class="skel" style="height:15px; width:70%;"></div><div class="skel" style="height:18px; width:60%; border-radius:var(--radius-sm);"></div><div class="skel" style="height:16px; width:80%;"></div></div>
+          <div class="row" style="grid-template-columns:1fr 90px 80px 100px; padding:12px 14px;"><div class="skel" style="height:15px; width:38%;"></div><div class="skel" style="height:15px; width:62%;"></div><div class="skel" style="height:18px; width:55%; border-radius:var(--radius-sm);"></div><div class="skel" style="height:16px; width:75%;"></div></div>
+          <div class="row" style="grid-template-columns:1fr 90px 80px 100px; padding:12px 14px;"><div class="skel" style="height:15px; width:50%;"></div><div class="skel" style="height:15px; width:55%;"></div><div class="skel" style="height:18px; width:64%; border-radius:var(--radius-sm);"></div><div class="skel" style="height:16px; width:70%;"></div></div>
+          <div class="row" style="grid-template-columns:1fr 90px 80px 100px; padding:12px 14px;"><div class="skel" style="height:15px; width:42%;"></div><div class="skel" style="height:15px; width:66%;"></div><div class="skel" style="height:18px; width:58%; border-radius:var(--radius-sm);"></div><div class="skel" style="height:16px; width:78%;"></div></div>
+          <div class="row" style="grid-template-columns:1fr 90px 80px 100px; padding:12px 14px;"><div class="skel" style="height:15px; width:48%;"></div><div class="skel" style="height:15px; width:58%;"></div><div class="skel" style="height:18px; width:62%; border-radius:var(--radius-sm);"></div><div class="skel" style="height:16px; width:72%;"></div></div>
+          <div class="row" style="grid-template-columns:1fr 90px 80px 100px; padding:12px 14px;"><div class="skel" style="height:15px; width:44%;"></div><div class="skel" style="height:15px; width:60%;"></div><div class="skel" style="height:18px; width:56%; border-radius:var(--radius-sm);"></div><div class="skel" style="height:16px; width:74%;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 EMPTY -->
+    <div>
+      <div class="frame-label"><span class="n">2</span> · EMPTY · no suites yet</div>
+      <div class="card void-tex" style="height:400px; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:24px; text-align:center;">
+        <svg viewBox="0 0 120 96" width="130" height="104"><defs><filter id="eb2" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#5C8A77" stroke-opacity="0.35" stroke-width="1.5"/><g stroke="#5C8A77" stroke-opacity="0.14" stroke-width="1"><line x1="8" y1="48" x2="112" y2="48"/><line x1="60" y1="8" x2="60" y2="88"/></g><line x1="14" y1="48" x2="106" y2="48" stroke="#5C8A77" stroke-width="1.5" stroke-dasharray="2 4" stroke-opacity="0.45"/><text x="60" y="80" text-anchor="middle" fill="#6E7E8F" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1.5">NO SIGNAL</text></svg>
+        <h3 style="font:600 17px/1.25 var(--font-display); color:var(--text-hi); letter-spacing:-0.02em; margin:6px 0 0;">No suites yet</h3>
+        <p style="font:var(--text-sm); color:var(--text-muted); max-width:340px; margin:0;">Point rubric at a YAML repo and your first eval run will appear here.</p>
+        <button class="btn primary" style="margin-top:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/><path d="M6 6h.01"/><path d="M6 18h.01"/></svg>Connect a project</button>
+      </div>
+    </div>
+
+    <!-- 3 EMPTY-FILTERED -->
+    <div>
+      <div class="frame-label"><span class="n">3</span> · EMPTY-FILTERED · "Regressed" → 0</div>
+      <div class="card void-tex" style="height:400px; overflow:hidden; display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:2px; padding:0 14px; border-bottom:1px solid var(--divider); flex:none;">
+          <span class="tab">All <span class="chip">6</span></span>
+          <span class="tab active">Regressed <span class="chip">0</span></span>
+          <span class="tab">Passing <span class="chip">3</span></span>
+          <span class="tab">Flaky <span class="chip">1</span></span>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:24px; text-align:center;">
+          <svg viewBox="0 0 120 96" width="120" height="96" style="opacity:0.6;"><defs><filter id="ff3" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#3DFFA2" stroke-opacity="0.12" stroke-width="1.5"/><g stroke="#3DFFA2" stroke-opacity="0.07" stroke-width="1"><line x1="8" y1="48" x2="112" y2="48"/></g><path d="M12 50 C22 50 26 40 34 42 S46 52 54 48" fill="none" stroke="#3DFFA2" stroke-width="1.6" stroke-linecap="round" stroke-opacity="0.5"/><line x1="54" y1="48" x2="104" y2="48" stroke="#FFC857" stroke-width="1.6" stroke-dasharray="3 4" stroke-linecap="round"/><circle cx="104" cy="48" r="3" fill="#FFC857" filter="url(#ff3)"/></svg>
+          <h3 style="font:600 17px/1.25 var(--font-display); color:var(--text-hi); letter-spacing:-0.02em; margin:6px 0 0;">Nothing regressed</h3>
+          <p style="font:var(--text-sm); color:var(--text-muted); max-width:330px; margin:0;">All suites are passing their gates. Clear the filter to see everything.</p>
+          <button class="btn ghost" style="margin-top:12px;">Clear filter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 PARTIAL ERROR -->
+    <div>
+      <div class="frame-label"><span class="n">4</span> · PARTIAL ERROR · one KPI fails · table OK</div>
+      <div class="card void-tex" style="height:400px; overflow:hidden; padding:18px; display:flex; flex-direction:column; gap:14px;">
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+          <div class="card" style="padding:14px;"><div class="hr-label" style="margin-bottom:8px;">PASS-RATE</div><div class="mono" style="font:600 24px/1.1 var(--font-mono); color:var(--phosphor);">89.5%</div></div>
+          <div class="card" style="padding:14px;"><div class="hr-label" style="margin-bottom:8px;">REGRESSED</div><div class="mono" style="font:600 24px/1.1 var(--font-mono); color:var(--red);">1</div></div>
+          <div class="card" style="padding:14px; border-color:color-mix(in srgb,var(--red) 38%,transparent);">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;"><span class="hr-label">JUDGE AGREEMENT</span><span class="iconbtn" style="width:22px; height:22px; border-color:color-mix(in srgb,var(--red) 38%,transparent); color:var(--red);"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg></span></div>
+            <div class="mono" style="font:600 24px/1.1 var(--font-mono); color:var(--red);">—</div>
+            <div class="mono" style="font-size:11px; margin-top:6px; color:var(--red);">couldn't load</div>
+          </div>
+          <div class="card" style="padding:14px;"><div class="hr-label" style="margin-bottom:8px;">OPEN GATES</div><div class="mono" style="font:600 24px/1.1 var(--font-mono); color:var(--amber);">1</div></div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div class="row reg" style="grid-template-columns:1fr 110px 80px 90px; padding:11px 14px;"><span style="color:var(--text-hi); font:var(--text-sm); padding-left:4px;">checkout-extraction</span><span class="badge" style="color:var(--red); background:var(--red-14); border-color:color-mix(in srgb,var(--red) 40%,transparent);"><span class="dot"></span>REGRESSED</span><span class="mono" style="font-size:14px; color:var(--amber);">88.7%</span><span class="mono" style="font-size:12px; color:var(--red);">▼5.6</span></div>
+          <div class="row" style="grid-template-columns:1fr 110px 80px 90px; padding:11px 14px;"><span style="color:var(--text-hi); font:var(--text-sm); padding-left:4px;">support-router</span><span class="badge" style="color:var(--phosphor); background:var(--phosphor-12); border-color:color-mix(in srgb,var(--phosphor) 30%,transparent);"><span class="dot"></span>PASSING</span><span class="mono" style="font-size:14px; color:var(--phosphor);">96.1%</span><span class="mono" style="font-size:12px; color:var(--phosphor);">▲1.3</span></div>
+          <div class="row" style="grid-template-columns:1fr 110px 80px 90px; padding:11px 14px;"><span style="color:var(--text-hi); font:var(--text-sm); padding-left:4px;">invoice-parser</span><span class="badge" style="color:var(--phosphor); background:var(--phosphor-12); border-color:color-mix(in srgb,var(--phosphor) 30%,transparent);"><span class="dot"></span>PASSING</span><span class="mono" style="font-size:14px; color:var(--phosphor);">99.0%</span><span class="mono" style="font-size:12px; color:var(--text-muted);">0.0</span></div>
+        </div>
+        <span class="mono" style="font-size:11px; color:var(--text-muted); margin-top:auto;">One widget failed — the page never blanks. Table renders normally.</span>
+      </div>
+    </div>
+
+    <!-- 5 ERROR -->
+    <div>
+      <div class="frame-label"><span class="n">5</span> · ERROR · table fails · KPI strip survives</div>
+      <div class="card void-tex" style="height:400px; overflow:hidden; padding:18px; display:flex; flex-direction:column; gap:14px;">
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+          <div class="card" style="padding:14px;"><div class="hr-label" style="margin-bottom:8px;">PASS-RATE</div><div class="mono" style="font:600 24px/1.1 var(--font-mono); color:var(--phosphor);">89.5%</div></div>
+          <div class="card" style="padding:14px;"><div class="hr-label" style="margin-bottom:8px;">REGRESSED</div><div class="mono" style="font:600 24px/1.1 var(--font-mono); color:var(--red);">1</div></div>
+          <div class="card" style="padding:14px;"><div class="hr-label" style="margin-bottom:8px;">JUDGE κ</div><div class="mono" style="font:600 24px/1.1 var(--font-mono); color:var(--violet);">0.81</div></div>
+          <div class="card" style="padding:14px;"><div class="hr-label" style="margin-bottom:8px;">OPEN GATES</div><div class="mono" style="font:600 24px/1.1 var(--font-mono); color:var(--amber);">1</div></div>
+        </div>
+        <div class="card" style="flex:1; border-color:color-mix(in srgb,var(--red) 28%,transparent); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; padding:18px;">
+          <svg viewBox="0 0 120 96" width="108" height="86"><defs><filter id="bf5" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#FF5D5D" stroke-opacity="0.18" stroke-width="1.5"/><path d="M12 46 h14 l5 -10 l4 18 l6 -8 h6" fill="none" stroke="#FF5D5D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#bf5)"/><path d="M64 60 h8 l4 -14 l3 10 h6" fill="none" stroke="#FF5D5D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.8"/><g stroke="#FF5D5D" stroke-opacity="0.5" stroke-width="1.4"><line x1="48" y1="30" x2="56" y2="30"/><line x1="40" y1="68" x2="48" y2="68"/></g></svg>
+          <h3 style="font:600 16px/1.25 var(--font-display); color:var(--text-hi); letter-spacing:-0.02em; margin:4px 0 0;">Couldn't load suites</h3>
+          <p style="font:var(--text-sm); color:var(--text-muted); max-width:320px; margin:0;">The run store didn't answer. Retry, or check Settings.</p>
+          <button class="btn secondary sm" style="margin-top:8px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>Retry</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 REGRESSED -->
+    <div>
+      <div class="frame-label"><span class="n">6</span> · REGRESSED · red banner under topbar</div>
+      <div class="card void-tex" style="height:400px; overflow:hidden; display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:12px; padding:11px 14px; background:var(--red-14); border-bottom:1px solid color-mix(in srgb,var(--red) 40%,transparent); flex:none;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--red)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+          <span style="flex:1; font:var(--text-sm); color:var(--text-hi);">1 suite regressed — checkout-extraction dropped 5.6pts on run #1487. PR #214 is blocked.</span>
+          <button class="btn secondary sm" style="border-color:color-mix(in srgb,var(--red) 42%,transparent); color:var(--red);">Open diff</button>
+        </div>
+        <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:8px;">
+          <div class="row reg" style="grid-template-columns:1fr 110px 80px 90px 104px; padding:12px 14px;">
+            <div style="padding-left:4px; display:flex; flex-direction:column; gap:2px;"><span style="font:600 14px/1.2 var(--font-display); color:var(--text-hi);">checkout-extraction</span><span class="mono" style="font-size:11px; color:var(--text-muted);">acme/checkout · 126/142</span></div>
+            <span class="badge" style="color:var(--red); background:var(--red-14); border-color:color-mix(in srgb,var(--red) 40%,transparent);"><span class="dot"></span>REGRESSED</span>
+            <span class="mono" style="font-size:16px; color:var(--amber);">88.7%</span>
+            <span class="mono" style="font-size:13px; color:var(--red);">▼5.6</span>
+            <svg viewBox="0 0 100 24" width="100" height="24"><path d="M2 7 L20 7 L36 8 L50 9 L58 10 L64 20 L82 21 L98 21" fill="none" stroke="#FF5D5D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="98" cy="21" r="1.8" fill="#FF5D5D"/></svg>
+          </div>
+          <div class="row" style="grid-template-columns:1fr 110px 80px 90px 104px; padding:12px 14px;">
+            <div style="padding-left:4px; display:flex; flex-direction:column; gap:2px;"><span style="font:600 14px/1.2 var(--font-display); color:var(--text-hi);">support-router</span><span class="mono" style="font-size:11px; color:var(--text-muted);">acme/support</span></div>
+            <span class="badge" style="color:var(--phosphor); background:var(--phosphor-12); border-color:color-mix(in srgb,var(--phosphor) 30%,transparent);"><span class="dot"></span>PASSING</span>
+            <span class="mono" style="font-size:16px; color:var(--phosphor);">96.1%</span>
+            <span class="mono" style="font-size:13px; color:var(--phosphor);">▲1.3</span>
+            <svg viewBox="0 0 100 24" width="100" height="24"><path d="M2 18 L18 16 L34 15 L50 12 L66 10 L82 7 L98 5" fill="none" stroke="#3DFFA2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="98" cy="5" r="1.8" fill="#3DFFA2"/></svg>
+          </div>
+          <span class="mono" style="font-size:11px; color:var(--text-muted); margin-top:4px;">Default emphasis — banner action routes to Regression Diff.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 STALE -->
+    <div>
+      <div class="frame-label"><span class="n">7</span> · STALE · amber banner</div>
+      <div class="card void-tex" style="height:400px; overflow:hidden; display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:12px; padding:11px 14px; background:var(--amber-14); border-bottom:1px solid color-mix(in srgb,var(--amber) 38%,transparent); flex:none;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span style="flex:1; font:var(--text-sm); color:var(--text-hi);">pii-redactor hasn't run in 9 days.</span>
+          <button class="btn secondary sm" style="border-color:color-mix(in srgb,var(--amber) 38%,transparent); color:var(--amber);">Run now</button>
+        </div>
+        <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;"><span class="hr-label">pii-redactor · acme/pii</span><span class="stale-chip"><span class="dot"></span>9d old · 06-08</span></div>
+          <div class="row" style="grid-template-columns:1fr 96px 80px 104px; padding:12px 14px;">
+            <div style="padding-left:4px; display:flex; align-items:center; gap:7px;"><span style="font:600 14px/1.2 var(--font-display); color:var(--text-hi);">pii-redactor</span><span class="dot" style="color:var(--amber); box-shadow:0 0 8px var(--amber); width:7px; height:7px;"></span></div>
+            <span class="badge" style="color:var(--amber); background:var(--amber-14); border-color:color-mix(in srgb,var(--amber) 38%,transparent);">STALE</span>
+            <span class="mono" style="font-size:16px; color:var(--phosphor);">92.0%</span>
+            <svg viewBox="0 0 100 24" width="100" height="24"><path d="M2 10 L20 9 L38 10 L54 10" fill="none" stroke="#FFC857" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.6"/><path d="M54 10 L72 11 L98 11" fill="none" stroke="#FFC857" stroke-width="1.5" stroke-dasharray="3 4" stroke-linecap="round"/><circle cx="98" cy="11" r="1.8" fill="#FFC857"/></svg>
+          </div>
+          <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+            <svg viewBox="0 0 120 96" width="130" height="104"><defs><filter id="fs7" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="8" y="8" width="104" height="80" rx="7" fill="none" stroke="#3DFFA2" stroke-opacity="0.12" stroke-width="1.5"/><g stroke="#3DFFA2" stroke-opacity="0.07" stroke-width="1"><line x1="8" y1="48" x2="112" y2="48"/></g><path d="M12 50 C22 50 26 40 34 42 S46 52 54 48" fill="none" stroke="#3DFFA2" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.5"/><line x1="54" y1="48" x2="104" y2="48" stroke="#FFC857" stroke-width="1.6" stroke-dasharray="3 4" stroke-linecap="round"/><circle cx="104" cy="48" r="3" fill="#FFC857" filter="url(#fs7)"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="width:1440px; display:flex; align-items:center; justify-content:space-between; padding-top:24px; margin-top:28px; border-top:1px solid var(--divider);">
+    <span class="mono" style="font-size:11px; color:var(--text-muted);">rubric · suites overview · the control tower · all numbers mono + tabular</span>
+    <span class="hr-label">REGRESSION GATING · LAST RUN 09:12 UTC</span>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1536,&quot;height&quot;:1100}}"></script>
+</body>
+</html>

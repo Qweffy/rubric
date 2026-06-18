@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+/* Rubric design-system tokens — ported from the hiring-radar handoff
+   (docs/design/rubric/project/_ds/.../tokens/), re-wired for next/font.
+   Tokens are law. */
+@import "./tokens/colors.css";
+@import "./tokens/typography.css";
+@import "./tokens/spacing.css";
+@import "./tokens/effects.css";
+@import "./tokens/base.css";
+
+/* Expose the core palette to Tailwind utilities (bg-surface, text-hi, border-dim, …) */
+@theme inline {
+  --color-void: var(--bg-void);
+  --color-surface: var(--bg-surface);
+  --color-raised: var(--bg-raised);
+  --color-phosphor: var(--phosphor);
+  --color-cyan: var(--cyan);
+  --color-cyan-08: var(--cyan-08);
+  --color-violet: var(--violet);
+  --color-violet-08: var(--violet-08);
+  --color-amber: var(--amber);
+  --color-red: var(--red);
+  --color-hi: var(--text-hi);
+  --color-mid: var(--text-mid);
+  --color-low: var(--text-low);
+  --color-low-content: var(--text-low-content);
+  --color-dim: var(--phosphor-dim);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-ui);
+  --font-mono: var(--font-mono);
+  --radius-card: var(--radius-card);
+  --radius-control: var(--radius-control);
+}
+
+/* Skeleton shimmer — phosphor-tinted, reduced-motion safe */
+@keyframes hr-shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+.hr-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-raised) 25%,
+    rgba(61, 255, 162, 0.07) 50%,
+    var(--bg-raised) 75%
+  );
+  background-size: 200% 100%;
+  animation: hr-shimmer 1.6s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hr-skeleton { animation: none; }
+}
+
+/* ============================================================
+   RUBRIC MOTION PRIMITIVES
+   The instrument's animations: score-gauge arc sweep, sparkline
+   draw, confusion-heatmap / badge pulse, panel scan, blip ping,
+   spinner, toast rise. Every one degrades to static under
+   prefers-reduced-motion. Keep these in sync with the handoff
+   (docs/design/rubric/project/*.dc.html — the rb-* keyframes).
+   ============================================================ */
+
+/* Gauge arc + sparkline: stroke-dashoffset draw-on. Element sets
+   --len to its path length; the sweep fills it from offset to 0. */
+@keyframes rb-trace { from { stroke-dashoffset: var(--len); } to { stroke-dashoffset: 0; } }
+@keyframes rb-spark { from { stroke-dashoffset: var(--len); } to { stroke-dashoffset: 0; } }
+
+/* Heatmap cell / status badge pulse — a soft violet ring that
+   breathes to flag the live or failing cell. */
+@keyframes rb-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.34); }
+  50% { box-shadow: 0 0 0 6px rgba(167, 139, 250, 0); }
+}
+/* Destructive / regression block — red variant of the pulse. */
+@keyframes rb-blockpulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 93, 93, 0.30); }
+  50% { box-shadow: 0 0 0 6px rgba(255, 93, 93, 0); }
+}
+
+/* Blip ping + expanding ring — new run / new signal landing. */
+@keyframes rb-ping { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(2.6); opacity: 0; } }
+@keyframes rb-ring { 0% { transform: scale(0.8); opacity: 0.9; } 100% { transform: scale(1.8); opacity: 0; } }
+
+/* Horizontal panel scan line — element sets --sw to its travel. */
+@keyframes rb-sweep {
+  0% { transform: translateX(0); opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { transform: translateX(var(--sw)); opacity: 0; }
+}
+/* Indeterminate progress bar sweep. */
+@keyframes rb-sweep-bar { 0% { transform: translateX(-10%); } 100% { transform: translateX(110%); } }
+
+/* Spinner + toast rise. */
+@keyframes rb-spin { to { transform: rotate(360deg); } }
+@keyframes rb-toast { 0% { transform: translateY(10px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+
+.rb-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: rb-spin 0.7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-spinner,
+  .rb-trace-path,
+  .rb-spark-path,
+  .rb-sweep-line,
+  .rb-ping,
+  .rb-ring,
+  .rb-pulse,
+  .rb-blockpulse { animation: none !important; }
+  /* Draw-on paths settle fully drawn rather than mid-sweep. */
+  .rb-trace-path,
+  .rb-spark-path { stroke-dashoffset: 0 !important; }
+  .rb-sweep-line { opacity: 0 !important; }
+}
+
+/* Horizontal scroller — hidden scrollbar + optional x-snap. Filter chips,
+   scorecards and stage tabs reuse it where a row overflows a phone viewport. */
+.hr-xscroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.hr-xscroll::-webkit-scrollbar { display: none; }
+
+/* Keyboard hints are meaningless on touch — hide every keycap on phones. */
+@media (max-width: 768px) {
+  .hr-kbd { display: none !important; }
+  /* Fixed bottom-anchored toasts must clear the 62px tab bar + home indicator. */
+  .hr-toast-anchor { bottom: calc(62px + env(safe-area-inset-bottom) + 12px) !important; }
+}
