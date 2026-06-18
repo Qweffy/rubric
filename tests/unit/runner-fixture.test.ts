@@ -163,7 +163,7 @@ describe("makeTarget", () => {
 /* ------------------------------------------------------------------ */
 /* End-to-end seam: fixture output → store → read back, on a temp DB.   */
 /* RUBRIC_DB is pointed at a fresh tmp file BEFORE @/db is loaded, so    */
-/* the store's better-sqlite3 singleton binds to it. The schema is       */
+/* the store's libSQL singleton binds to it. The schema is              */
 /* materialized by running the real drizzle migrations. No network.      */
 /* ------------------------------------------------------------------ */
 
@@ -192,7 +192,7 @@ describe("fixture output persisted to a temp SQLite DB", () => {
 
   it("runs a fixture, seeds minimal rows, persists the run and reads it back", async () => {
     // Dynamic imports so @/db initializes against the tmp RUBRIC_DB above.
-    const { migrate } = await import("drizzle-orm/better-sqlite3/migrator");
+    const { migrate } = await import("drizzle-orm/libsql/migrator");
     const { db } = await import("@/db");
     const { runs } = await import("@/db/schema");
     const { eq } = await import("drizzle-orm");
@@ -200,17 +200,17 @@ describe("fixture output persisted to a temp SQLite DB", () => {
       "@/lib/store"
     );
 
-    migrate(db, {
+    await migrate(db, {
       migrationsFolder: join(process.cwd(), "db", "migrations"),
     });
 
     // Minimal parent rows the run FKs require.
-    const suite = upsertSuite({
+    const suite = await upsertSuite({
       slug: "settle-bill-review",
       title: "Settle Bill Review",
       repo: "rubric",
     });
-    const promptVersionId = upsertPromptVersion({
+    const promptVersionId = await upsertPromptVersion({
       suiteId: suite.id,
       label: "v1",
       body: "system prompt",
@@ -223,7 +223,7 @@ describe("fixture output persisted to a temp SQLite DB", () => {
     });
     const actual = await target.run(caseInput("rec-001"));
 
-    const { runId, caseCount, scorerCount } = persistRun({
+    const { runId, caseCount, scorerCount } = await persistRun({
       suiteId: suite.id,
       promptVersionId,
       sha: "abc1234",
@@ -250,7 +250,7 @@ describe("fixture output persisted to a temp SQLite DB", () => {
     expect(caseCount).toBe(1);
     expect(scorerCount).toBe(1);
 
-    const row = db.select().from(runs).where(eq(runs.id, runId)).get();
+    const row = await db.select().from(runs).where(eq(runs.id, runId)).get();
     expect(row).toBeDefined();
     expect(row?.suiteId).toBe(suite.id);
     expect(row?.total).toBe(1);
@@ -260,7 +260,7 @@ describe("fixture output persisted to a temp SQLite DB", () => {
 
     // The fixture's parsed output round-trips through the JSON column.
     const { cases: casesTable } = await import("@/db/schema");
-    const caseRow = db
+    const caseRow = await db
       .select()
       .from(casesTable)
       .where(eq(casesTable.runId, runId))

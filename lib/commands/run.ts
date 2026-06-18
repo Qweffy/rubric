@@ -222,7 +222,7 @@ export async function run(
 
   let runId: number | null = null;
   if (opts.noStore !== true) {
-    const persisted = persistSuiteRun({
+    const persisted = await persistSuiteRun({
       spec,
       summaries,
       summary,
@@ -282,14 +282,14 @@ interface PersistArgs {
 }
 
 /** Upsert the suite + prompt version, then persist the run. Wrapped for ActionResult. */
-function persistSuiteRun(args: PersistArgs): ActionResult<number> {
+async function persistSuiteRun(args: PersistArgs): Promise<ActionResult<number>> {
   try {
-    const suite = upsertSuite({
+    const suite = await upsertSuite({
       slug: args.spec.suite,
       title: args.spec.title,
       repo: args.spec.repo ?? "local",
     });
-    const promptVersionId = upsertPromptVersion({
+    const promptVersionId = await upsertPromptVersion({
       suiteId: suite.id,
       label: args.spec.prompt.version,
       body: args.spec.prompt.ref ?? args.spec.prompt.version,
@@ -302,7 +302,7 @@ function persistSuiteRun(args: PersistArgs): ActionResult<number> {
       args.summary.total,
     );
 
-    const result = persistRun({
+    const result = await persistRun({
       suiteId: suite.id,
       promptVersionId,
       sha: specSha(args.spec),

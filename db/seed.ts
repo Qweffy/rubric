@@ -9,7 +9,7 @@
 import "@/lib/env";
 
 import { and, eq } from "drizzle-orm";
-import { migrate } from "drizzle-orm/better-sqlite3/migrator";
+import { migrate } from "drizzle-orm/libsql/migrator";
 
 import { db } from "@/db";
 import {
@@ -578,9 +578,14 @@ const JUDGES: JudgeSeed[] = [
 /* a re-seed replaces rather than duplicates. cases / case_results /    */
 /* judge_verdicts / error_clusters / trajectory_tasks cascade on delete.*/
 /* ------------------------------------------------------------------ */
-function deleteRunBySha(sha: string): void {
-  for (const r of db.select({ id: runsTable.id }).from(runsTable).where(eq(runsTable.sha, sha)).all()) {
-    db.delete(runsTable).where(eq(runsTable.id, r.id)).run();
+async function deleteRunBySha(sha: string): Promise<void> {
+  const rows = await db
+    .select({ id: runsTable.id })
+    .from(runsTable)
+    .where(eq(runsTable.sha, sha))
+    .all();
+  for (const r of rows) {
+    await db.delete(runsTable).where(eq(runsTable.id, r.id)).run();
   }
 }
 
@@ -589,8 +594,9 @@ function deleteRunBySha(sha: string): void {
  * rather than appends. calibration_runs has no unique index and the store
  * helper always inserts, so the seed owns this idempotency.
  */
-function deleteCalibration(suiteId: number, judgeId: number): void {
-  db.delete(calibrationRunsTable)
+async function deleteCalibration(suiteId: number, judgeId: number): Promise<void> {
+  await db
+    .delete(calibrationRunsTable)
     .where(
       and(
         eq(calibrationRunsTable.suiteId, suiteId),
@@ -601,13 +607,13 @@ function deleteCalibration(suiteId: number, judgeId: number): void {
 }
 
 /** Resolve a run's case row id by (runId, caseId) — judge verdicts need it. */
-function caseRowId(runId: number, caseId: string): number {
-  const match = db
+async function caseRowId(runId: number, caseId: string): Promise<number> {
+  const rows = await db
     .select({ id: casesTable.id, caseId: casesTable.caseId })
     .from(casesTable)
     .where(eq(casesTable.runId, runId))
-    .all()
-    .find((c) => c.caseId === caseId);
+    .all();
+  const match = rows.find((c) => c.caseId === caseId);
   if (match === undefined) throw new Error(`case ${caseId} not found in run ${String(runId)}`);
   return match.id;
 }
@@ -617,9 +623,10 @@ function caseRowId(runId: number, caseId: string): number {
  * error_clusters yet, so the seed writes it through the shared db connection.
  * Idempotent on (runId, name): the prior cluster for this run is cleared first.
  */
-function persistErrorCluster(runId: number): void {
-  db.delete(errorClustersTable).where(eq(errorClustersTable.runId, runId)).run();
-  db.insert(errorClustersTable)
+async function persistErrorCluster(runId: number): Promise<void> {
+  await db.delete(errorClustersTable).where(eq(errorClustersTable.runId, runId)).run();
+  await db
+    .insert(errorClustersTable)
     .values({
       runId,
       name: "missing-secondary-payment",
@@ -640,13 +647,13 @@ async function main(): Promise<void> {
   };
 
   // Apply schema migrations first so `npm run seed` works against an empty DB.
-  migrate(db, { migrationsFolder: `${import.meta.dirname}/migrations` });
+  await migrate(db, { migrationsFolder: `${import.meta.dirname}/migrations` });
   log("migrations applied");
 
   // 1) Suites — idempotent on slug.
   const suiteIdBy = new Map<string, number>();
   for (const s of SUITES) {
-    const row = upsertSuite({
+    const row = await upsertSuite({
       slug: s.slug,
       title: s.title,
       repo: s.repo,
@@ -663,7 +670,7 @@ async function main(): Promise<void> {
   //    (suiteId, judgeId).
   const judgeIdBy = new Map<string, number>();
   for (const j of JUDGES) {
-    const row = upsertJudge({
+    const row = await upsertJudge({
       name: j.name,
       provider: j.provider,
       isDefault: j.isDefault,
@@ -672,8 +679,8 @@ async function main(): Promise<void> {
       status: j.status,
     });
     judgeIdBy.set(j.name, row.id);
-    deleteCalibration(checkoutId, row.id);
-    persistCalibrationRun({
+    await deleteCalibration(checkoutId, row.id);
+    await persistCalibrationRun({
       suiteId: checkoutId,
       judgeId: row.id,
       n: j.n,
@@ -692,13 +699,13 @@ async function main(): Promise<void> {
   log(`judges: ${String(judgeIdBy.size)} upserted + calibrated`);
 
   // 3) checkout-extraction prompt versions v22 (baseline) + v23 (head).
-  const v22Id = upsertPromptVersion({
+  const v22Id = await upsertPromptVersion({
     suiteId: checkoutId,
     label: "v22",
     body: V22_BODY,
     ref: "7b1d004",
   });
-  const v23Id = upsertPromptVersion({
+  const v23Id = await upsertPromptVersion({
     suiteId: checkoutId,
     label: "v23",
     body: V23_BODY,
@@ -707,7 +714,7 @@ async function main(): Promise<void> {
 
   // 4) Baseline run #1462 (v22, 134/142). A coarse pass/fail split is enough —
   //    the per-scorer detail lives on the head run.
-  deleteRunBySha("7b1d004");
+  await deleteRunBySha("7b1d004");
   const baselineCases: CaseSummaryInput[] = [];
   for (let i = 1; i <= 142; i += 1) {
     const pass = i > 8; // 134 pass / 8 fail = 142
@@ -730,7 +737,7 @@ async function main(): Promise<void> {
       })),
     });
   }
-  const baseline = persistRun({
+  const baseline = await persistRun({
     suiteId: checkoutId,
     promptVersionId: v22Id,
     sha: "7b1d004",
@@ -749,10 +756,10 @@ async function main(): Promise<void> {
 
   // 5) Head run #1487 (v23, 126/142) — the regression, with full per-scorer
   //    reconciliation.
-  deleteRunBySha("a3f9c21");
+  await deleteRunBySha("a3f9c21");
   const headSlots = buildHeadCases();
   const headCases = headSlots.map(toCaseSummary);
-  const head = persistRun({
+  const head = await persistRun({
     suiteId: checkoutId,
     promptVersionId: v23Id,
     sha: "a3f9c21",
@@ -770,7 +777,7 @@ async function main(): Promise<void> {
   log(`head run #${String(head.runId)} (v23): ${String(head.caseCount)} cases`);
 
   // Point the suite at the head run + grade it regressed.
-  setSuiteLatestRun(checkoutId, head.runId, "regressed");
+  await setSuiteLatestRun(checkoutId, head.runId, "regressed");
 
   // 6) Judge verdicts on the head run: the default judge claude-opus-4 grades
   //    every judge-scored case. case_103 is the false-pass (3/5 PASS vs human
@@ -783,8 +790,8 @@ async function main(): Promise<void> {
     const judgePass = slot.scorerPass.judge;
     const isCase103 = slot.caseId === padId(103);
     const score = isCase103 ? 3 : judgePass ? 5 : 2;
-    persistJudgeVerdict({
-      caseRowId: caseRowId(head.runId, slot.caseId),
+    await persistJudgeVerdict({
+      caseRowId: await caseRowId(head.runId, slot.caseId),
       judgeId: opusId,
       score,
       pass: isCase103 ? true : judgePass,
@@ -805,7 +812,7 @@ async function main(): Promise<void> {
   log("judge verdicts: seeded for head run (case_103 false-pass)");
 
   // 7) Human gold label: case_103 = fail (the disagreement vs the judge's PASS).
-  persistHumanLabel({
+  await persistHumanLabel({
     suiteId: checkoutId,
     caseId: padId(103),
     label: "fail",
@@ -815,7 +822,7 @@ async function main(): Promise<void> {
 
   // 8) Error cluster on the head run — missing-secondary-payment (size 6,
   //    schema-dominant, contains case_071, not yet in the golden set).
-  persistErrorCluster(head.runId);
+  await persistErrorCluster(head.runId);
   log("error cluster: missing-secondary-payment (size 6)");
 
   // 9) Refund-agent trajectory: book_flight_multi_leg — diverged-but-correct
@@ -823,7 +830,7 @@ async function main(): Promise<void> {
   //    search_flights at step 2.
   const refundId = suiteIdBy.get("refund-agent");
   if (refundId === undefined) throw new Error("refund-agent suite missing");
-  persistTrajectoryTask({
+  await persistTrajectoryTask({
     suiteId: refundId,
     runId: null,
     taskId: "book_flight_multi_leg",
@@ -881,13 +888,13 @@ async function main(): Promise<void> {
   for (const r of SIMPLE_RUNS) {
     const suiteId = suiteIdBy.get(r.suiteSlug);
     if (suiteId === undefined) throw new Error(`suite ${r.suiteSlug} missing`);
-    const versionId = upsertPromptVersion({
+    const versionId = await upsertPromptVersion({
       suiteId,
       label: r.versionLabel,
       body: r.versionBody,
       ref: r.versionRef,
     });
-    deleteRunBySha(r.sha);
+    await deleteRunBySha(r.sha);
     const passCount = Math.round(r.passRate * r.total);
     const simpleCases: CaseSummaryInput[] = [];
     for (let i = 1; i <= r.total; i += 1) {
@@ -911,7 +918,7 @@ async function main(): Promise<void> {
         })),
       });
     }
-    const run = persistRun({
+    const run = await persistRun({
       suiteId,
       promptVersionId: versionId,
       sha: r.sha,
@@ -926,7 +933,7 @@ async function main(): Promise<void> {
       suiteStatus: r.suiteStatus,
       cases: simpleCases,
     });
-    setSuiteLatestRun(suiteId, run.runId, r.suiteStatus);
+    await setSuiteLatestRun(suiteId, run.runId, r.suiteStatus);
     log(`suite ${r.suiteSlug}: run #${String(run.runId)} (${String(passCount)}/${String(r.total)})`);
   }
 

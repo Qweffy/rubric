@@ -17,8 +17,8 @@
     "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "@libsql/client": "^0.17.4",
     "ajv": "^8.17.1",
-    "better-sqlite3": "^11.10.0",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
     "groq-sdk": "^1.2.1",
@@ -31,7 +31,6 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

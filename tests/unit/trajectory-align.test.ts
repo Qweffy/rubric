@@ -2,12 +2,9 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-// better-sqlite3's CJS default export shares the name of a named export; the
-// default is the one we want, so silence the cosmetic no-named-as-default warning.
-// eslint-disable-next-line import-x/no-named-as-default
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import { migrate } from "drizzle-orm/better-sqlite3/migrator";
+import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
+import { migrate } from "drizzle-orm/libsql/migrator";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { type AlignOp, alignTools } from "@/lib/trajectory/align";
@@ -133,15 +130,15 @@ describe("alignTools", () => {
 describe("book_flight_multi_leg trajectory persistence", () => {
   let tmpDir = "";
 
-  beforeAll(() => {
+  beforeAll(async () => {
     tmpDir = mkdtempSync(join(tmpdir(), "rubric-trajectory-"));
     const dbPath = join(tmpDir, "trajectory.db");
     process.env.RUBRIC_DB = dbPath;
 
     // Migrate a fresh client up to the checked-in schema, then close it; the
     // db singleton reopens the same file on first import below.
-    const client = new Database(dbPath);
-    migrate(drizzle(client), { migrationsFolder: "./db/migrations" });
+    const client = createClient({ url: `file:${dbPath}` });
+    await migrate(drizzle(client), { migrationsFolder: "./db/migrations" });
     client.close();
   });
 
@@ -161,13 +158,13 @@ describe("book_flight_multi_leg trajectory persistence", () => {
     );
     expect(toolSelectionAccuracy).toBeCloseTo(0.905, 3);
 
-    const suite = upsertSuite({
+    const suite = await upsertSuite({
       slug: "refund-agent",
       title: "Refund Agent",
       repo: "rubric/refund-agent",
     });
 
-    const { taskRowId, stepCount } = persistTrajectoryTask({
+    const { taskRowId, stepCount } = await persistTrajectoryTask({
       suiteId: suite.id,
       runId: null,
       taskId: "book_flight_multi_leg",
@@ -229,14 +226,14 @@ describe("book_flight_multi_leg trajectory persistence", () => {
       BOOK_FLIGHT_EXPECTED,
       BOOK_FLIGHT_ACTUAL,
     );
-    const suite = upsertSuite({
+    const suite = await upsertSuite({
       slug: "refund-agent",
       title: "Refund Agent",
       repo: "rubric/refund-agent",
     });
 
     // Persist a second time — idempotent on (taskId, idx); steps converge.
-    persistTrajectoryTask({
+    await persistTrajectoryTask({
       suiteId: suite.id,
       runId: null,
       taskId: "book_flight_multi_leg",

@@ -17,10 +17,10 @@ import {
 /**
  * Persist a completed run and its full case tree in one transaction.
  *
- * rubric runs on better-sqlite3, which — unlike hiring-radar's neon-http —
- * supports synchronous transactions. persistRun wraps the whole fan-out in a
- * single db.transaction(): the run row, every case, every case_result, and the
- * suite's latestRunId/status update all commit atomically or not at all. A
+ * rubric runs on libSQL, which — unlike hiring-radar's neon-http — supports
+ * transactions, though async ones. persistRun wraps the whole fan-out in a
+ * single await db.transaction(): the run row, every case, every case_result, and
+ * the suite's latestRunId/status update all commit atomically or not at all. A
  * half-written run never becomes visible to a reader.
  *
  * The case / case_result writes go through the idempotent insert* primitives,
@@ -113,11 +113,11 @@ function tallyVerdicts(caseSummaries: readonly CaseSummaryInput[]): VerdictTally
  * Persist a run and its entire case/scorer tree atomically, then point the suite
  * at it. Returns the new run id and the counts written.
  */
-export function persistRun(summary: RunSummary): PersistRunResult {
+export async function persistRun(summary: RunSummary): Promise<PersistRunResult> {
   const tally = tallyVerdicts(summary.cases);
 
-  return db.transaction((tx) => {
-    const runId = insertRun(
+  return db.transaction(async (tx) => {
+    const runId = await insertRun(
       {
         suiteId: summary.suiteId,
         promptVersionId: summary.promptVersionId,
@@ -141,7 +141,7 @@ export function persistRun(summary: RunSummary): PersistRunResult {
 
     let scorerCount = 0;
     for (const c of summary.cases) {
-      const caseRowId = insertCase(
+      const caseRowId = await insertCase(
         {
           runId,
           caseId: c.caseId,
@@ -157,7 +157,7 @@ export function persistRun(summary: RunSummary): PersistRunResult {
       );
 
       for (const s of c.scorers) {
-        insertCaseResult(
+        await insertCaseResult(
           {
             caseRowId,
             scorerName: s.scorerName,
@@ -174,7 +174,7 @@ export function persistRun(summary: RunSummary): PersistRunResult {
       }
     }
 
-    updateSuiteLatestRun(summary.suiteId, runId, summary.suiteStatus, new Date(), tx);
+    await updateSuiteLatestRun(summary.suiteId, runId, summary.suiteStatus, new Date(), tx);
 
     return { runId, caseCount: summary.cases.length, scorerCount };
   });

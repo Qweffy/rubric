@@ -263,7 +263,7 @@ export async function label(
     return err("usage: rubric label <suite> [--limit N] [--all]");
   }
 
-  if (suiteIdBySlug(suiteSlug) === null) {
+  if ((await suiteIdBySlug(suiteSlug)) === null) {
     return err(`suite "${suiteSlug}" not found`);
   }
 
@@ -292,8 +292,8 @@ export async function label(
     result = await runLabeling({
       cases: candidates,
       ask,
-      persist: (caseId, humanLabel) => {
-        persistHumanLabel({ suiteId: loaded.suiteId, caseId, label: humanLabel });
+      persist: async (caseId, humanLabel) => {
+        await persistHumanLabel({ suiteId: loaded.suiteId, caseId, label: humanLabel });
       },
       onInvalid: (raw) => {
         process.stdout.write(

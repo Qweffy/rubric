@@ -17,7 +17,7 @@ It exists because an audit of two shipped products found this exact gap: prompts
 
 - **Next.js dashboard** — read-only lens over the run store: suites, runs, prompt-version timelines, regression diffs, judge calibration, agent trajectories. Dark-only terminal aesthetic.
 - **TypeScript CLI eval engine** (`bin/rubric.ts`) — the product. Runs suites, scores cases, persists runs, prints terminal reports. CLI-first by design; the dashboard is the last thing built.
-- **SQLite run store** — single local file, every run and case score recorded, idempotent on re-run.
+- **libSQL run store** — SQLite over the libSQL driver: a single local file for dev (and CI), or hosted [Turso](https://turso.tech) for serverless/prod. Every run and case score recorded, idempotent on re-run.
 - **Groq judge** — the LLM-as-judge model, pinned and calibrated. Pluggable behind the scorer interface.
 - **Python (pandas)** — error-analysis workflow over exported run data: failure clustering, promote-real-traffic-to-golden-set.
 
@@ -28,9 +28,13 @@ The two surfaces meet only at the store: the CLI writes, the dashboard reads. Se
 ```bash
 npm install            # install deps
 cp .env.example .env.local   # then fill GROQ_API_KEY
-npm run seed           # create the SQLite store, seed the demo golden set + a baseline run
+npm run seed           # create the local libSQL file, seed the demo golden set + a baseline run
 npm run dev            # dashboard → http://localhost:3000
 ```
+
+The store is libSQL. Leave `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` empty for local
+file dev — the driver falls back to a plain SQLite file at `RUBRIC_DB` (`./rubric.db`).
+Set both to point at hosted [Turso](https://turso.tech) for serverless/prod (e.g. Vercel).
 
 Run an eval from the CLI:
 

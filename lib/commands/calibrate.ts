@@ -112,7 +112,7 @@ export async function calibrate(
 
   let suiteId: number | null = null;
   if (opts.suite !== undefined) {
-    suiteId = suiteIdBySlug(opts.suite);
+    suiteId = await suiteIdBySlug(opts.suite);
     if (suiteId === null) return err(`suite "${opts.suite}" not found`);
   }
 
@@ -138,7 +138,7 @@ export async function calibrate(
     // representative suite (calibrationRuns require a suiteId FK).
     const targetSuite = suiteId ?? [...suiteIds][0] ?? null;
     if (targetSuite !== null) {
-      persistCalibrationRun({
+      await persistCalibrationRun({
         suiteId: targetSuite,
         judgeId: judge.id,
         n: pairs.length,

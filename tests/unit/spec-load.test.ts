@@ -356,8 +356,8 @@ describe("spec → db round-trip", () => {
     const dbMod = await import("@/db");
     db = dbMod.db;
     schema = dbMod.schema;
-    const { migrate } = await import("drizzle-orm/better-sqlite3/migrator");
-    migrate(db, {
+    const { migrate } = await import("drizzle-orm/libsql/migrator");
+    await migrate(db, {
       migrationsFolder: join(import.meta.dirname, "..", "..", "db", "migrations"),
     });
 

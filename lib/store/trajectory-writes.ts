@@ -9,9 +9,9 @@ import { insertTrajectoryStep, insertTrajectoryTask } from "./primitives";
 /**
  * Persist an agent-trajectory task and its ordered steps atomically.
  *
- * persistTrajectoryTask wraps the task row plus all of its steps in one
- * better-sqlite3 transaction so a task is never visible with a partial step
- * sequence. The task is upserted on its natural key (suiteId, taskId, runId) via
+ * persistTrajectoryTask wraps the task row plus all of its steps in one libSQL
+ * transaction so a task is never visible with a partial step sequence. The task
+ * is upserted on its natural key (suiteId, taskId, runId) via
  * the insertTrajectoryTask primitive; steps are idempotent against the
  * (taskId, idx) unique index, so re-persisting the same trajectory converges
  * instead of duplicating.
@@ -50,11 +50,11 @@ export interface PersistTrajectoryResult {
  * Persist a trajectory task and its steps atomically. Returns the task row id
  * and the number of steps written.
  */
-export function persistTrajectoryTask(
+export async function persistTrajectoryTask(
   input: TrajectoryTaskInput,
-): PersistTrajectoryResult {
-  return db.transaction((tx) => {
-    const taskRowId = insertTrajectoryTask(
+): Promise<PersistTrajectoryResult> {
+  return db.transaction(async (tx) => {
+    const taskRowId = await insertTrajectoryTask(
       {
         suiteId: input.suiteId,
         runId: input.runId ?? null,
@@ -69,7 +69,7 @@ export function persistTrajectoryTask(
     );
 
     for (const step of input.steps) {
-      insertTrajectoryStep(
+      await insertTrajectoryStep(
         {
           taskId: taskRowId,
           idx: step.idx,

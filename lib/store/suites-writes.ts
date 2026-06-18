@@ -32,9 +32,12 @@ export interface UpsertSuiteInput {
  * the human-facing columns refresh and updatedAt bumps; createdAt and
  * latestRunId are preserved. Returns the persisted row.
  */
-export function upsertSuite(input: UpsertSuiteInput, exec: Executor = db): Suite {
+export async function upsertSuite(
+  input: UpsertSuiteInput,
+  exec: Executor = db,
+): Promise<Suite> {
   const now = new Date();
-  const id = insertSuite(
+  const id = await insertSuite(
     {
       slug: input.slug,
       title: input.title,
@@ -46,7 +49,7 @@ export function upsertSuite(input: UpsertSuiteInput, exec: Executor = db): Suite
     exec,
   );
 
-  const row = exec.select().from(suites).where(eq(suites.id, id)).limit(1).get();
+  const row = await exec.select().from(suites).where(eq(suites.id, id)).limit(1).get();
   if (row === undefined) throw new Error("suite upsert returned no row");
   return row;
 }
@@ -63,10 +66,10 @@ export interface UpsertPromptVersionInput {
  * label is stable within a suite. On conflict body and ref refresh. Returns the
  * persisted version id.
  */
-export function upsertPromptVersion(
+export async function upsertPromptVersion(
   input: UpsertPromptVersionInput,
   exec: Executor = db,
-): number {
+): Promise<number> {
   return insertPromptVersion(
     {
       suiteId: input.suiteId,
@@ -83,18 +86,21 @@ export function upsertPromptVersion(
  * Point a suite at its most recent run and grade it. Bumps updatedAt so the
  * suite sorts fresh after a run lands.
  */
-export function setSuiteLatestRun(
+export async function setSuiteLatestRun(
   suiteId: number,
   runId: number,
   status: SuiteStatus,
   exec: Executor = db,
-): void {
-  updateSuiteLatestRun(suiteId, runId, status, new Date(), exec);
+): Promise<void> {
+  await updateSuiteLatestRun(suiteId, runId, status, new Date(), exec);
 }
 
 /** Resolve a suite id by slug — null when the slug is unknown. */
-export function suiteIdBySlug(slug: string, exec: Executor = db): number | null {
-  const row = exec
+export async function suiteIdBySlug(
+  slug: string,
+  exec: Executor = db,
+): Promise<number | null> {
+  const row = await exec
     .select({ id: suites.id })
     .from(suites)
     .where(eq(suites.slug, slug))

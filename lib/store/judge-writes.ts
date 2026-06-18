@@ -43,8 +43,11 @@ export interface UpsertJudgeInput {
  * cost/latency/default metadata refresh on conflict; the calibration metrics
  * (kappa/agreement/biases) are owned by persistCalibrationRun. Returns the row.
  */
-export function upsertJudge(input: UpsertJudgeInput, exec: Executor = db): Judge {
-  const id = insertJudge(
+export async function upsertJudge(
+  input: UpsertJudgeInput,
+  exec: Executor = db,
+): Promise<Judge> {
+  const id = await insertJudge(
     {
       name: input.name,
       provider: input.provider,
@@ -57,7 +60,7 @@ export function upsertJudge(input: UpsertJudgeInput, exec: Executor = db): Judge
     exec,
   );
 
-  const row = exec.select().from(judges).where(eq(judges.id, id)).limit(1).get();
+  const row = await exec.select().from(judges).where(eq(judges.id, id)).limit(1).get();
   if (row === undefined) throw new Error("judge upsert returned no row");
   return row;
 }
@@ -78,10 +81,10 @@ export interface PersistJudgeVerdictInput {
  * (caseRowId, judgeId) — a judge may legitimately re-grade across calibration
  * passes — so this always inserts. Returns the new verdict id.
  */
-export function persistJudgeVerdict(
+export async function persistJudgeVerdict(
   input: PersistJudgeVerdictInput,
   exec: Executor = db,
-): number {
+): Promise<number> {
   return insertJudgeVerdict(
     {
       caseRowId: input.caseRowId,
@@ -110,10 +113,10 @@ export interface PersistHumanLabelInput {
  * one canonical verdict per suite. A re-label overwrites the prior verdict and
  * annotator. Returns the persisted label id.
  */
-export function persistHumanLabel(
+export async function persistHumanLabel(
   input: PersistHumanLabelInput,
   exec: Executor = db,
-): number {
+): Promise<number> {
   return insertHumanLabel(
     {
       suiteId: input.suiteId,
@@ -151,11 +154,11 @@ export interface PersistCalibrationRunInput {
  * together so the judge never points at a calibration it doesn't carry. Returns
  * the persisted calibration row.
  */
-export function persistCalibrationRun(
+export async function persistCalibrationRun(
   input: PersistCalibrationRunInput,
-): CalibrationRun {
-  return db.transaction((tx) => {
-    const id = insertCalibrationRun(
+): Promise<CalibrationRun> {
+  return db.transaction(async (tx) => {
+    const id = await insertCalibrationRun(
       {
         suiteId: input.suiteId,
         judgeId: input.judgeId,
@@ -174,7 +177,7 @@ export function persistCalibrationRun(
       tx,
     );
 
-    tx
+    await tx
       .update(judges)
       .set({
         kappa: input.kappa,
@@ -188,7 +191,7 @@ export function persistCalibrationRun(
       .where(eq(judges.id, input.judgeId))
       .run();
 
-    const row = tx
+    const row = await tx
       .select()
       .from(calibrationRuns)
       .where(eq(calibrationRuns.id, id))

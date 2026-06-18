@@ -78,7 +78,7 @@ beforeAll(async () => {
   const dbMod = await import("@/db");
   const schemaMod = await import("@/db/schema");
   const drizzleMod = await import("drizzle-orm");
-  const { migrate } = await import("drizzle-orm/better-sqlite3/migrator");
+  const { migrate } = await import("drizzle-orm/libsql/migrator");
   const runMod = await import("@/lib/commands/run");
 
   db = dbMod.db;
@@ -87,7 +87,7 @@ beforeAll(async () => {
   run = runMod.run;
 
   // 3. Materialize the schema by running the committed migrations.
-  migrate(db, { migrationsFolder: MIGRATIONS_DIR });
+  await migrate(db, { migrationsFolder: MIGRATIONS_DIR });
 });
 
 afterAll(() => {
@@ -138,7 +138,7 @@ describe("settle-bill-review (M1 offline end-to-end)", () => {
     expect(runId).not.toBeNull();
     if (runId === null) return;
 
-    const row = db
+    const row = await db
       .select({ actual: casesTable.actual, verdict: casesTable.verdict })
       .from(casesTable)
       .where(eq(casesTable.runId, runId))

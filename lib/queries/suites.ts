@@ -83,7 +83,7 @@ interface LatestRunShape {
 
 /**
  * The most-recent run per suite, joined to its prompt-version label. Drizzle on
- * better-sqlite3 has no window functions in the query builder, so we resolve
+ * libSQL has no window functions in the query builder, so we resolve
  * "latest" by suites.latestRunId (kept current by the CLI writer) and fall back
  * to a per-suite max(startedAt) for suites whose pointer is null.
  */

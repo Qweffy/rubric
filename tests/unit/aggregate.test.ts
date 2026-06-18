@@ -313,8 +313,8 @@ describe("getGateStatus — DB-backed gate", () => {
     process.env.RUBRIC_DB = join(tmpDir, "test.db");
 
     const { db, schema } = await import("@/db");
-    const { migrate } = await import("drizzle-orm/better-sqlite3/migrator");
-    migrate(db, {
+    const { migrate } = await import("drizzle-orm/libsql/migrator");
+    await migrate(db, {
       migrationsFolder: join(import.meta.dirname, "..", "..", "db", "migrations"),
     });
 

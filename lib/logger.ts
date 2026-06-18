@@ -1,6 +1,6 @@
 // Structured logger. Intentionally dependency-light and NOT `server-only` so
 // server actions, the seed/eval CLIs (tsx) and any future API route can all
-// import it. Rubric runs on a local better-sqlite3 file with no error-events
+// import it. Rubric runs on a libSQL store with no error-events
 // table, so this logger emits a greppable JSON line to the console only — there
 // is no durable sink to write to. Keep it that way until a sink table exists.
 

@@ -1,6 +1,6 @@
-// Low-level, single-table write primitives for the SQLite store. better-sqlite3
-// IS transactional (unlike neon-http) and synchronous, so every primitive is
-// sync and takes an `Executor` (the base `db` or a `tx`) — that's what lets the
+// Low-level, single-table write primitives for the SQLite store. libSQL IS
+// transactional (unlike neon-http) but async, so every primitive is async and
+// takes an `Executor` (the base `db` or a `tx`) — that's what lets the
 // higher-level persist* helpers (runs/judge/trajectory-writes) compose them
 // inside one transaction. Each primitive is an idempotent upsert keyed on a
 // unique index, or a look-up-then-update for tables without a natural unique
@@ -49,8 +49,8 @@ function requireId(id: number | undefined, what: string): number {
 }
 
 /** Insert a suite, or update the existing row on its unique slug. Returns the id. */
-export function insertSuite(input: NewSuite, exec: Executor = db): number {
-  const row = exec
+export async function insertSuite(input: NewSuite, exec: Executor = db): Promise<number> {
+  const row = await exec
     .insert(suites)
     .values(input)
     .onConflictDoUpdate({
@@ -69,14 +69,14 @@ export function insertSuite(input: NewSuite, exec: Executor = db): number {
 }
 
 /** Point a suite at its latest run (a second pass once the run row exists). */
-export function updateSuiteLatestRun(
+export async function updateSuiteLatestRun(
   suiteId: number,
   latestRunId: number,
   status: NewSuite["status"],
   updatedAt: Date,
   exec: Executor = db,
-): void {
-  exec
+): Promise<void> {
+  await exec
     .update(suites)
     .set({ latestRunId, status, updatedAt })
     .where(eq(suites.id, suiteId))
@@ -84,11 +84,11 @@ export function updateSuiteLatestRun(
 }
 
 /** Insert a prompt version, or update on its unique (suiteId, label). Returns the id. */
-export function insertPromptVersion(
+export async function insertPromptVersion(
   input: NewPromptVersion,
   exec: Executor = db,
-): number {
-  const row = exec
+): Promise<number> {
+  const row = await exec
     .insert(promptVersions)
     .values(input)
     .onConflictDoUpdate({
@@ -101,8 +101,8 @@ export function insertPromptVersion(
 }
 
 /** Insert a run row. runs has no natural unique key, so this always inserts. */
-export function insertRun(input: NewRun, exec: Executor = db): number {
-  const row = exec
+export async function insertRun(input: NewRun, exec: Executor = db): Promise<number> {
+  const row = await exec
     .insert(runs)
     .values(input)
     .returning({ id: runs.id })
@@ -111,8 +111,8 @@ export function insertRun(input: NewRun, exec: Executor = db): number {
 }
 
 /** Insert a case, or update on its unique (runId, caseId). Returns the case row id. */
-export function insertCase(input: NewCase, exec: Executor = db): number {
-  const row = exec
+export async function insertCase(input: NewCase, exec: Executor = db): Promise<number> {
+  const row = await exec
     .insert(cases)
     .values(input)
     .onConflictDoUpdate({
@@ -133,8 +133,11 @@ export function insertCase(input: NewCase, exec: Executor = db): number {
 }
 
 /** Insert a scorer result, or update on its unique (caseRowId, scorerName). */
-export function insertCaseResult(input: NewCaseResult, exec: Executor = db): void {
-  exec
+export async function insertCaseResult(
+  input: NewCaseResult,
+  exec: Executor = db,
+): Promise<void> {
+  await exec
     .insert(caseResults)
     .values(input)
     .onConflictDoUpdate({
@@ -152,8 +155,8 @@ export function insertCaseResult(input: NewCaseResult, exec: Executor = db): voi
 }
 
 /** Insert a judge, or update on its unique name. Returns the judge id. */
-export function insertJudge(input: NewJudge, exec: Executor = db): number {
-  const row = exec
+export async function insertJudge(input: NewJudge, exec: Executor = db): Promise<number> {
+  const row = await exec
     .insert(judges)
     .values(input)
     .onConflictDoUpdate({
@@ -179,11 +182,11 @@ export function insertJudge(input: NewJudge, exec: Executor = db): number {
 }
 
 /** Insert a judge verdict. No natural unique key, so this always inserts. */
-export function insertJudgeVerdict(
+export async function insertJudgeVerdict(
   input: NewJudgeVerdict,
   exec: Executor = db,
-): number {
-  const row = exec
+): Promise<number> {
+  const row = await exec
     .insert(judgeVerdicts)
     .values(input)
     .returning({ id: judgeVerdicts.id })
@@ -192,11 +195,11 @@ export function insertJudgeVerdict(
 }
 
 /** Insert a human label, or update on its unique (suiteId, caseId). Returns the id. */
-export function insertHumanLabel(
+export async function insertHumanLabel(
   input: NewHumanLabelRow,
   exec: Executor = db,
-): number {
-  const row = exec
+): Promise<number> {
+  const row = await exec
     .insert(humanLabels)
     .values(input)
     .onConflictDoUpdate({
@@ -209,11 +212,11 @@ export function insertHumanLabel(
 }
 
 /** Insert a calibration run. No natural unique key, so this always inserts. */
-export function insertCalibrationRun(
+export async function insertCalibrationRun(
   input: NewCalibrationRun,
   exec: Executor = db,
-): number {
-  const row = exec
+): Promise<number> {
+  const row = await exec
     .insert(calibrationRuns)
     .values(input)
     .returning({ id: calibrationRuns.id })
@@ -226,12 +229,12 @@ export function insertCalibrationRun(
  * key (suiteId, taskId, runId — which may be null). trajectoryTasks has no
  * unique index, so identity is resolved by look-up. Returns the task row id.
  */
-export function insertTrajectoryTask(
+export async function insertTrajectoryTask(
   input: NewTrajectoryTask,
   exec: Executor = db,
-): number {
+): Promise<number> {
   const runId = input.runId ?? null;
-  const existing = exec
+  const existing = await exec
     .select({ id: trajectoryTasks.id })
     .from(trajectoryTasks)
     .where(
@@ -247,7 +250,7 @@ export function insertTrajectoryTask(
     .get();
 
   if (existing !== undefined) {
-    exec
+    await exec
       .update(trajectoryTasks)
       .set(input)
       .where(eq(trajectoryTasks.id, existing.id))
@@ -255,7 +258,7 @@ export function insertTrajectoryTask(
     return existing.id;
   }
 
-  const row = exec
+  const row = await exec
     .insert(trajectoryTasks)
     .values(input)
     .returning({ id: trajectoryTasks.id })
@@ -264,11 +267,11 @@ export function insertTrajectoryTask(
 }
 
 /** Insert a trajectory step, or update on its unique (taskId, idx). */
-export function insertTrajectoryStep(
+export async function insertTrajectoryStep(
   input: NewTrajectoryStep,
   exec: Executor = db,
-): void {
-  exec
+): Promise<void> {
+  await exec
     .insert(trajectorySteps)
     .values(input)
     .onConflictDoUpdate({
@@ -289,11 +292,11 @@ export function insertTrajectoryStep(
  * key (runId, name). errorClusters has no unique index, so identity is resolved
  * by look-up — re-seeding the same cluster updates it in place.
  */
-export function insertErrorCluster(
+export async function insertErrorCluster(
   input: NewErrorCluster,
   exec: Executor = db,
-): number {
-  const existing = exec
+): Promise<number> {
+  const existing = await exec
     .select({ id: errorClusters.id })
     .from(errorClusters)
     .where(
@@ -303,7 +306,7 @@ export function insertErrorCluster(
     .get();
 
   if (existing !== undefined) {
-    exec
+    await exec
       .update(errorClusters)
       .set(input)
       .where(eq(errorClusters.id, existing.id))
@@ -311,7 +314,7 @@ export function insertErrorCluster(
     return existing.id;
   }
 
-  const row = exec
+  const row = await exec
     .insert(errorClusters)
     .values(input)
     .returning({ id: errorClusters.id })

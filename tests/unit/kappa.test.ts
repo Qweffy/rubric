@@ -163,10 +163,10 @@ describe("getCalibration (tmp SQLite, real query)", () => {
     const queries = await import("@/lib/queries/calibration");
     getCalibration = queries.getCalibration;
 
-    // Create the tables directly from the drizzle schema's SQL. We pull the
-    // underlying better-sqlite3 handle and exec the same DDL drizzle-kit emits.
-    const { migrate } = await import("drizzle-orm/better-sqlite3/migrator");
-    migrate(db, { migrationsFolder: "db/migrations" });
+    // Apply the checked-in migrations to the fresh temp DB through the libSQL
+    // migrator — the same DDL drizzle-kit emits.
+    const { migrate } = await import("drizzle-orm/libsql/migrator");
+    await migrate(db, { migrationsFolder: "db/migrations" });
 
     const now = new Date("2026-06-17T00:00:00Z");
 

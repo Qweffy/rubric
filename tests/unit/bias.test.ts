@@ -141,26 +141,6 @@ describe("lengthBias (slope + r² on known samples)", () => {
 /* DB round-trip: compute → persist → read, on a throwaway SQLite file. */
 /* ------------------------------------------------------------------ */
 
-/**
- * Materialize the full schema into the open SQLite connection. No migration
- * SQL is checked into the repo, so we derive the CREATE statements straight
- * from db/schema.ts via drizzle-kit's API (the same engine `db:generate` uses)
- * and run them. This keeps the test in lockstep with the schema — a column
- * rename can't silently rot the fixture.
- */
-async function createSchema(
-  client: { exec: (sql: string) => void },
-  schema: Record<string, unknown>,
-): Promise<void> {
-  const { generateSQLiteDrizzleJson, generateSQLiteMigration } = await import(
-    "drizzle-kit/api"
-  );
-  const empty = await generateSQLiteDrizzleJson({});
-  const filled = await generateSQLiteDrizzleJson(schema);
-  const statements = await generateSQLiteMigration(empty, filled);
-  for (const stmt of statements) client.exec(stmt);
-}
-
 // Loaded lazily after RUBRIC_DB is set, to honour the load-time DB binding.
 type DbModule = typeof import("@/db");
 type SchemaModule = typeof import("@/db/schema");
@@ -187,14 +167,13 @@ describe("bias persists and round-trips through the real DB layer", () => {
     store = await import("@/lib/store");
     queries = await import("@/lib/queries/calibration");
 
-    // 3. Materialize the full schema into the throwaway DB.
-    const sqlite = (db as unknown as { $client: { exec: (sql: string) => void } })
-      .$client;
-    await createSchema(sqlite, schema);
+    // 3. Materialize the schema by running the committed migrations.
+    const { migrate } = await import("drizzle-orm/libsql/migrator");
+    await migrate(db, { migrationsFolder: "./db/migrations" });
 
     // 4. Seed a single suite to satisfy the calibration_runs FK.
     const now = new Date();
-    const inserted = db
+    const inserted = await db
       .insert(schema.suites)
       .values({
         slug: "bias-suite",
@@ -223,13 +202,13 @@ describe("bias persists and round-trips through the real DB layer", () => {
     ]);
     expect(fit.slope).toBeCloseTo(0.01, 12);
 
-    const judge = store.upsertJudge({
+    const judge = await store.upsertJudge({
       name: "length-biased-judge",
       provider: "recorded",
       isDefault: true,
     });
 
-    store.persistCalibrationRun({
+    await store.persistCalibrationRun({
       suiteId,
       judgeId: judge.id,
       n: fit.n,
@@ -268,12 +247,12 @@ describe("bias persists and round-trips through the real DB layer", () => {
     ]);
     expect(fit.slope).toBe(-2);
 
-    const judge = store.upsertJudge({
+    const judge = await store.upsertJudge({
       name: "position-biased-judge",
       provider: "recorded",
     });
 
-    store.persistCalibrationRun({
+    await store.persistCalibrationRun({
       suiteId,
       judgeId: judge.id,
       n: fit.n,
@@ -294,7 +273,7 @@ describe("bias persists and round-trips through the real DB layer", () => {
   });
 
   it("reports null biases for a judge that was never calibrated", async () => {
-    store.upsertJudge({ name: "uncalibrated-judge", provider: "recorded" });
+    await store.upsertJudge({ name: "uncalibrated-judge", provider: "recorded" });
 
     const cal = await queries.getCalibration("uncalibrated-judge");
     expect(cal).not.toBeNull();

@@ -271,13 +271,13 @@ describe("jsonSchema scorer — errors persist through case_results", () => {
     tmpDir = mkdtempSync(join(tmpdir(), "rubric-json-schema-"));
     process.env.RUBRIC_DB = join(tmpDir, "test.db");
 
-    // Import AFTER RUBRIC_DB is set so the better-sqlite3 client opens the tmp file.
+    // Import AFTER RUBRIC_DB is set so the libSQL client opens the tmp file.
     const dbModule = await import("@/db");
-    const { migrate } = await import("drizzle-orm/better-sqlite3/migrator");
+    const { migrate } = await import("drizzle-orm/libsql/migrator");
     // Anchor the migrations folder to the repo root (this file is at
     // tests/unit/), so the run is independent of the process cwd.
     const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
-    migrate(dbModule.db, { migrationsFolder: join(repoRoot, "db", "migrations") });
+    await migrate(dbModule.db, { migrationsFolder: join(repoRoot, "db", "migrations") });
 
     store = await import("@/lib/store");
     dbSchema = await import("@/db/schema");
@@ -297,9 +297,9 @@ describe("jsonSchema scorer — errors persist through case_results", () => {
     delete process.env.RUBRIC_DB;
   });
 
-  it("round-trips the structured ajv errors through the JSON column", () => {
+  it("round-trips the structured ajv errors through the JSON column", async () => {
     const now = new Date();
-    const suiteId = store.insertSuite({
+    const suiteId = await store.insertSuite({
       slug: "settle-bill-review",
       title: "Settle Bill Review",
       repo: "rubric",
@@ -307,13 +307,13 @@ describe("jsonSchema scorer — errors persist through case_results", () => {
       createdAt: now,
       updatedAt: now,
     });
-    const promptVersionId = store.insertPromptVersion({
+    const promptVersionId = await store.insertPromptVersion({
       suiteId,
       label: "v1",
       body: "extract the invoice",
       createdAt: now,
     });
-    const runId = store.insertRun({
+    const runId = await store.insertRun({
       suiteId,
       promptVersionId,
       sha: "deadbeef",
@@ -321,7 +321,7 @@ describe("jsonSchema scorer — errors persist through case_results", () => {
       status: "completed",
       startedAt: now,
     });
-    const caseRowId = store.insertCase({
+    const caseRowId = await store.insertCase({
       runId,
       caseId: ctx.caseId,
       input: { receipt: "..." },
@@ -331,7 +331,7 @@ describe("jsonSchema scorer — errors persist through case_results", () => {
       score: 0,
     });
 
-    store.insertCaseResult({
+    await store.insertCaseResult({
       caseRowId,
       scorerName: "invoice-shape",
       pass: false,
@@ -340,7 +340,7 @@ describe("jsonSchema scorer — errors persist through case_results", () => {
       errors: formattedErrors,
     });
 
-    const row = store.db
+    const row = await store.db
       .select()
       .from(dbSchema.caseResults)
       .where(eq(dbSchema.caseResults.caseRowId, caseRowId))

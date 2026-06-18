@@ -285,14 +285,14 @@ describe("parsed verdict persists to a temp SQLite via the store", () => {
     // resolve only after the env var above is set.
     const dbModule = await import("@/db");
     db = dbModule.db;
-    const { migrate } = await import("drizzle-orm/better-sqlite3/migrator");
-    migrate(db, { migrationsFolder: "./db/migrations" });
+    const { migrate } = await import("drizzle-orm/libsql/migrator");
+    await migrate(db, { migrationsFolder: "./db/migrations" });
 
     store = await import("@/lib/store");
 
     // Minimal seed: a suite → prompt version → run → one case, plus a judge.
     const now = new Date();
-    const suiteId = store.insertSuite({
+    const suiteId = await store.insertSuite({
       slug: "demo-suite",
       title: "Demo suite",
       repo: "acme/demo",
@@ -301,14 +301,14 @@ describe("parsed verdict persists to a temp SQLite via the store", () => {
       createdAt: now,
       updatedAt: now,
     });
-    const promptVersionId = store.insertPromptVersion({
+    const promptVersionId = await store.insertPromptVersion({
       suiteId,
       label: "v1",
       ref: null,
       body: "extract the invoice",
       createdAt: now,
     });
-    const runId = store.insertRun({
+    const runId = await store.insertRun({
       suiteId,
       promptVersionId,
       sha: "deadbeef",
@@ -326,7 +326,7 @@ describe("parsed verdict persists to a temp SQLite via the store", () => {
       startedAt: now,
       finishedAt: now,
     });
-    caseRowId = store.insertCase({
+    caseRowId = await store.insertCase({
       runId,
       caseId: "case-1",
       label: "demo case",
@@ -337,11 +337,13 @@ describe("parsed verdict persists to a temp SQLite via the store", () => {
       score: 1,
       precondition: null,
     });
-    judgeId = store.upsertJudge({
-      name: "mock-judge",
-      provider: "recorded",
-      status: "under-calibrated",
-    }).id;
+    judgeId = (
+      await store.upsertJudge({
+        name: "mock-judge",
+        provider: "recorded",
+        status: "under-calibrated",
+      })
+    ).id;
   });
 
   afterAll(() => {
@@ -353,7 +355,7 @@ describe("parsed verdict persists to a temp SQLite via the store", () => {
     // store sits behind.
     const verdict = judgeVerdictSchema.parse(GOOD_VERDICT);
 
-    const verdictId = store.persistJudgeVerdict({
+    const verdictId = await store.persistJudgeVerdict({
       caseRowId,
       judgeId,
       score: verdict.score,
@@ -365,7 +367,7 @@ describe("parsed verdict persists to a temp SQLite via the store", () => {
 
     const { judgeVerdicts } = await import("@/db/schema");
     const { eq } = await import("drizzle-orm");
-    const row = db
+    const row = await db
       .select()
       .from(judgeVerdicts)
       .where(eq(judgeVerdicts.id, verdictId))

@@ -187,28 +187,23 @@ describe("fieldAccuracy — 0.95 threshold gate", () => {
 describe("getGateStatus — 0.95 field-accuracy gate over a run", () => {
   let dbDir: string;
   // Imported dynamically AFTER RUBRIC_DB is set so @/db opens the temp file.
+  let db: typeof import("@/db").db;
+  let schema: typeof import("@/db/schema");
   let getGateStatus: typeof import("@/lib/queries/gating").getGateStatus;
   let GATE_THRESHOLDS: typeof import("@/lib/queries/gating").GATE_THRESHOLDS;
-  let rawDb: import("better-sqlite3").Database;
 
   beforeAll(async () => {
     dbDir = mkdtempSync(join(tmpdir(), "rubric-field-acc-"));
     process.env.RUBRIC_DB = join(dbDir, "test.db");
 
     // @/db reads RUBRIC_DB at module load — import only now.
-    const { db } = await import("@/db");
-    rawDb = db.$client;
+    const dbMod = await import("@/db");
+    db = dbMod.db;
+    schema = await import("@/db/schema");
 
-    // Apply the generated migration DDL to the fresh temp DB.
-    const { readFileSync } = await import("node:fs");
-    const migration = readFileSync(
-      join(process.cwd(), "db/migrations/0000_grey_rocket_racer.sql"),
-      "utf8",
-    );
-    for (const stmt of migration.split("--> statement-breakpoint")) {
-      const sql = stmt.trim();
-      if (sql.length > 0) rawDb.exec(sql);
-    }
+    // Materialize the schema by running the committed migrations.
+    const { migrate } = await import("drizzle-orm/libsql/migrator");
+    await migrate(db, { migrationsFolder: join(process.cwd(), "db", "migrations") });
 
     const gating = await import("@/lib/queries/gating");
     getGateStatus = gating.getGateStatus;
@@ -216,78 +211,74 @@ describe("getGateStatus — 0.95 field-accuracy gate over a run", () => {
   });
 
   afterAll(() => {
-    rawDb.close();
     rmSync(dbDir, { recursive: true, force: true });
     delete process.env.RUBRIC_DB;
   });
 
   /**
    * Seed one completed run whose field-accuracy scorer passes `pass` of
-   * `total` cases, then return the gate's field-accuracy metric.
+   * `total` cases, then return the gate's field-accuracy metric. Writes go
+   * through the drizzle query builder (async on libSQL).
    */
-  function seedRunAndGate(
+  async function seedRunAndGate(
     slug: string,
     pass: number,
     total: number,
-  ): { runId: number } {
-    const now = Math.floor(Date.now() / 1000);
-    const suite = rawDb
-      .prepare(
-        "INSERT INTO suites (slug, title, repo, status, created_at, updated_at) VALUES (?,?,?,?,?,?) RETURNING id",
-      )
-      .get(slug, slug, "acme/repo", "passing", now, now) as { id: number };
+  ): Promise<{ runId: number }> {
+    const now = new Date();
+    const [suite] = await db
+      .insert(schema.suites)
+      .values({ slug, title: slug, repo: "acme/repo", status: "passing", createdAt: now, updatedAt: now })
+      .returning({ id: schema.suites.id });
+    if (suite === undefined) throw new Error("seed: suite insert returned nothing");
 
-    const pv = rawDb
-      .prepare(
-        "INSERT INTO prompt_versions (suite_id, label, body, created_at) VALUES (?,?,?,?) RETURNING id",
-      )
-      .get(suite.id, "v1", "you are a judge", now) as { id: number };
+    const [pv] = await db
+      .insert(schema.promptVersions)
+      .values({ suiteId: suite.id, label: "v1", body: "you are a judge", createdAt: now })
+      .returning({ id: schema.promptVersions.id });
+    if (pv === undefined) throw new Error("seed: prompt version insert returned nothing");
 
     const passRate = total > 0 ? pass / total : 0;
-    const run = rawDb
-      .prepare(
-        `INSERT INTO runs (suite_id, prompt_version_id, sha, branch, trigger, status, total, pass_count, fail_count, pass_rate, started_at, finished_at)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id`,
-      )
-      .get(
-        suite.id,
-        pv.id,
-        "abc123",
-        "main",
-        "ci",
-        "completed",
+    const [run] = await db
+      .insert(schema.runs)
+      .values({
+        suiteId: suite.id,
+        promptVersionId: pv.id,
+        sha: "abc123",
+        branch: "main",
+        trigger: "ci",
+        status: "completed",
         total,
-        pass,
-        total - pass,
+        passCount: pass,
+        failCount: total - pass,
         passRate,
-        now,
-        now,
-      ) as { id: number };
-
-    const insertCase = rawDb.prepare(
-      "INSERT INTO cases (run_id, case_id, input, expected, verdict, score) VALUES (?,?,?,?,?,?) RETURNING id",
-    );
-    const insertResult = rawDb.prepare(
-      "INSERT INTO case_results (case_row_id, scorer_name, pass, score, errors) VALUES (?,?,?,?,?)",
-    );
+        startedAt: now,
+        finishedAt: now,
+      })
+      .returning({ id: schema.runs.id });
+    if (run === undefined) throw new Error("seed: run insert returned nothing");
 
     for (let i = 0; i < total; i++) {
       const passes = i < pass;
-      const c = insertCase.get(
-        run.id,
-        `c-${i}`,
-        "{}",
-        "{}",
-        passes ? "pass" : "fail",
-        passes ? 1 : 0,
-      ) as { id: number };
-      insertResult.run(
-        c.id,
-        "field-accuracy",
-        passes ? 1 : 0,
-        passes ? 1 : 0,
-        "[]",
-      );
+      const [c] = await db
+        .insert(schema.cases)
+        .values({
+          runId: run.id,
+          caseId: `c-${i}`,
+          input: {},
+          expected: {},
+          verdict: passes ? "pass" : "fail",
+          score: passes ? 1 : 0,
+        })
+        .returning({ id: schema.cases.id });
+      if (c === undefined) throw new Error("seed: case insert returned nothing");
+      await db.insert(schema.caseResults).values({
+        caseRowId: c.id,
+        scorerName: "field-accuracy",
+        pass: passes,
+        score: passes ? 1 : 0,
+        errors: [],
+      });
     }
 
     return { runId: run.id };
@@ -298,7 +289,7 @@ describe("getGateStatus — 0.95 field-accuracy gate over a run", () => {
   });
 
   it("passes the gate at exactly 0.95 (19/20 cases)", async () => {
-    seedRunAndGate("gate-pass", 19, 20);
+    await seedRunAndGate("gate-pass", 19, 20);
     const status = await getGateStatus();
     const gate = status.gates.find((g) => g.suiteSlug === "gate-pass");
     expect(gate).toBeDefined();
@@ -311,7 +302,7 @@ describe("getGateStatus — 0.95 field-accuracy gate over a run", () => {
   });
 
   it("trips the gate just below 0.95 (18/20 cases)", async () => {
-    seedRunAndGate("gate-fail", 18, 20);
+    await seedRunAndGate("gate-fail", 18, 20);
     const status = await getGateStatus();
     const gate = status.gates.find((g) => g.suiteSlug === "gate-fail");
     expect(gate).toBeDefined();
