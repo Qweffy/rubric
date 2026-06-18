@@ -46,6 +46,7 @@ export interface RunRow {
   id: number;
   sha: string;
   branch: string;
+  triggeredBy: string | null;
   promptLabel: string;
   status: RunStatus;
   passRate: number;
@@ -127,10 +128,11 @@ function fmtCost(usd: number): string {
   return `$${usd.toFixed(2)}`;
 }
 
-/** "who" column: a non-main branch carries a PR, a cron run is "nightly". */
+/** "who" column: the run's recorded trigger (e.g. "PR #214", "nightly"), with a
+ * branch-derived fallback for older rows that never recorded one. */
 function whoLabel(run: RunRow): string {
-  if (run.branch !== "main") return "PR #214";
-  return "nightly";
+  if (run.triggeredBy !== null && run.triggeredBy.length > 0) return run.triggeredBy;
+  return run.branch === "main" ? "nightly" : "manual";
 }
 
 /**

@@ -758,7 +758,7 @@ async function main(): Promise<void> {
     sha: "a3f9c21",
     branch: "feat/stricter-schema",
     trigger: "ci",
-    triggeredBy: "PR#214",
+    triggeredBy: "PR #214",
     status: "failed",
     costUsd: 0.83,
     wallMs: 38000,

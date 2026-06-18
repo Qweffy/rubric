@@ -291,6 +291,7 @@ export interface SuiteRunSummary {
   id: number;
   sha: string;
   branch: string;
+  triggeredBy: string | null;
   promptLabel: string;
   status: RunStatus;
   passRate: number;
@@ -354,6 +355,7 @@ export async function getSuiteDetail(slug: string): Promise<SuiteDetail | null> 
         id: runs.id,
         sha: runs.sha,
         branch: runs.branch,
+        triggeredBy: runs.triggeredBy,
         promptLabel: promptVersions.label,
         status: runs.status,
         passRate: runs.passRate,

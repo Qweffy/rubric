@@ -38,6 +38,7 @@ function toRunRow(run: SuiteRunSummary): RunRow {
     id: run.id,
     sha: run.sha,
     branch: run.branch,
+    triggeredBy: run.triggeredBy,
     promptLabel: run.promptLabel,
     status: run.status,
     passRate: run.passRate,
