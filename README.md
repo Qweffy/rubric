@@ -53,6 +53,26 @@ npx tsx bin/rubric.ts run examples/settle-bill-review/suite.yaml --no-store
 
 The deterministic scorers (exact-match, JSON-schema, field-accuracy) need no secrets and run fully offline against a captured fixture, so the gate always runs and fails the job on a regression via the CLI's non-zero exit code. A separate, optional **judge tier** is guarded by `if: ${{ secrets.GROQ_API_KEY != '' }}` and stays skipped until that secret is set — the deterministic gate is the hard blocker; the LLM judge is an additional signal for open-ended outputs.
 
+## Labeling for calibration
+
+Calibrating the judge (Cohen's κ) needs **human gold labels** to measure it against. `rubric label` collects them interactively from the suite's latest completed run:
+
+```bash
+rubric label <suite>             # label every still-unlabeled case in the latest run
+rubric label <suite> --limit 20  # cap how many cases you label this session
+rubric label <suite> --all       # re-label cases that already have a human label
+```
+
+Each case prints a compact card — input, expected, actual, every scorer's verdict, and the judge verdict + reasoning when present — then prompts `[p]ass / [f]ail / [s]kip / [q]uit` (`y`/`n` work too; `q` stops early). By default only unlabeled cases are shown, so you can label in passes across sessions.
+
+Then compute the judge's agreement against those labels:
+
+```bash
+rubric calibrate <suite>         # Cohen's κ + confusion matrix, judge vs. your labels
+```
+
+So the loop is `rubric label <suite>` → `rubric calibrate <suite>`.
+
 ## Milestones
 
 - [ ] **M1 — CLI core.** YAML golden-set spec, exact-match + JSON-schema scorers, clean terminal report. Demoed against a real bill-review prompt.

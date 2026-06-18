@@ -9,6 +9,7 @@ import "@/lib/env";
 import { calibrate } from "@/lib/commands/calibrate";
 import { diff } from "@/lib/commands/diff";
 import { exportRun } from "@/lib/commands/export";
+import { label } from "@/lib/commands/label";
 import { list } from "@/lib/commands/list";
 import { run } from "@/lib/commands/run";
 import { show } from "@/lib/commands/show";
@@ -26,10 +27,12 @@ interface Args {
   flags: {
     noStore: boolean;
     noColor: boolean;
+    all: boolean;
     suite: string | undefined;
     out: string | undefined;
     format: string | undefined;
     floor: number | undefined;
+    limit: number | undefined;
   };
 }
 
@@ -38,10 +41,12 @@ function parseArgs(argv: string[]): Args {
   const flags: Args["flags"] = {
     noStore: false,
     noColor: false,
+    all: false,
     suite: undefined,
     out: undefined,
     format: undefined,
     floor: undefined,
+    limit: undefined,
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -54,6 +59,15 @@ function parseArgs(argv: string[]): Args {
       case "--no-color":
         flags.noColor = true;
         break;
+      case "--all":
+        flags.all = true;
+        break;
+      case "--limit": {
+        const raw = argv[i + 1];
+        flags.limit = raw !== undefined ? Number(raw) : undefined;
+        i += 1;
+        break;
+      }
       case "--suite":
         flags.suite = argv[i + 1];
         i += 1;
@@ -88,6 +102,7 @@ usage:
   rubric list [<suite>]
   rubric show <runId>
   rubric diff <runIdA> <runIdB> | <suite>
+  rubric label <suite> [--limit <N>] [--all] [--no-color]
   rubric calibrate <judge> [--suite <slug>] [--no-store]
   rubric trajectory [<taskId>]
   rubric export <runId|suite> [--out <file.csv>] [--format csv]
@@ -169,6 +184,21 @@ async function main(): Promise<void> {
       print(result.data.report);
       // A regression makes diff non-zero so it can gate a PR like `run` does.
       process.exitCode = result.data.regressed ? 1 : 0;
+      return;
+    }
+
+    case "label": {
+      const result = await label(args.positionals[0] ?? args.flags.suite, {
+        limit: args.flags.limit,
+        all: args.flags.all,
+        noColor: args.flags.noColor,
+      });
+      if (!result.ok) {
+        printError(result.error);
+        process.exitCode = 1;
+        return;
+      }
+      print(result.data.report);
       return;
     }
 
