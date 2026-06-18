@@ -19,6 +19,10 @@ jobs:
   gate:
     name: build + eval gate
     runs-on: ubuntu-latest
+    # The `secrets` context can't be used in a step `if:` — surface it as a
+    # job-level env flag the optional judge step can branch on instead.
+    env:
+      HAS_GROQ: ${{ secrets.GROQ_API_KEY != '' }}
 
     steps:
       - name: Checkout
@@ -59,7 +63,7 @@ jobs:
       # non-blocking signal for open-ended outputs. Wire a judge-enabled suite
       # here once the secret exists.
       - name: Rubric judge tier (optional)
-        if: ${{ secrets.GROQ_API_KEY != '' }}
+        if: ${{ env.HAS_GROQ == 'true' }}
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: npx tsx bin/rubric.ts run examples/settle-bill-review/suite.yaml --no-store
