@@ -45,6 +45,8 @@ const eslintConfig = defineConfig([
     "**/*.gen.ts",
     // Design handoff prototypes — reference spec, not production code.
     "docs/**",
+    // Python error-analysis sub-project lives here — not JS/TS to lint.
+    "analysis/**",
   ]),
 
   // 1) Next.js base: App Router + Core Web Vitals (errors) + Next's TS recommended.

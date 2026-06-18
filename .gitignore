@@ -10,3 +10,10 @@ coverage
 
 # vercel
 .vercel
+
+# python analysis sub-project (uv) — commit pyproject/uv.lock/.python-version/notebook/data, ignore the rest
+analysis/.venv
+analysis/.ruff_cache
+analysis/outputs
+**/__pycache__
+.ipynb_checkpoints

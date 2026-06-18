@@ -1,25 +1,34 @@
 import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-import { getRunDetail, listRuns } from "@/lib/queries/runs";
+import { writeParquet } from "@/lib/analysis/parquet";
+import {
+  type ExportRow,
+  getAllExportRows,
+  getRunExportRows,
+} from "@/lib/queries/exports";
+import { listRuns } from "@/lib/queries/runs";
 import { type ActionResult, err, ok } from "@/lib/result";
 
 /* ------------------------------------------------------------------ */
-/* `rubric export <runId|suite> [--out file]` — results to CSV.         */
+/* `rubric export <runId|suite> [--out file] [--format csv|parquet]`.    */
 /*                                                                      */
-/* One row per (case, scorer): suite, run, case id, verdict, scorer,    */
-/* pass, score, detail, errors. CSV is the supported format today;      */
-/* parquet is deferred (would pull a heavy dependency). Writes the file  */
-/* and returns a one-line confirmation for the CLI to print.            */
+/* One rich row per (case, scorer): run + case + scorer + judge context. */
+/* CSV (default) projects that down to the 11 analysis columns; parquet  */
+/* writes the full row through @dsnp/parquetjs for pandas/pyarrow. Both   */
+/* sources come from lib/queries/exports. Writes the file and returns a   */
+/* one-line confirmation for the CLI to print.                           */
 /* ------------------------------------------------------------------ */
 
 export type ExportFormat = "csv" | "parquet";
 
 export interface ExportOptions {
-  /** Output file path. Defaults to ./<suite>-run<id>.csv. */
+  /** Output file path. Defaults to ./<suite>-run<id>.<ext> (or rubric-all-runs). */
   out?: string;
-  /** Only "csv" is supported; "parquet" is rejected with a clear message. */
+  /** Output format. Defaults to "csv"; "parquet" writes a real .parquet. */
   format?: ExportFormat;
+  /** Export every run instead of a single run/suite target. */
+  all?: boolean;
 }
 
 const CSV_COLUMNS = [
@@ -48,6 +57,32 @@ function csvRow(fields: readonly string[]): string {
   return fields.map(csvField).join(",");
 }
 
+/** Project a rich export row down to the 11 CSV analysis columns. */
+function csvCells(row: ExportRow): string[] {
+  return [
+    row.suite,
+    String(row.run_id),
+    row.case_id,
+    row.label ?? "",
+    row.verdict,
+    row.case_score.toString(),
+    row.scorer,
+    String(row.scorer_pass),
+    row.scorer_score.toString(),
+    row.detail ?? "",
+    row.errors,
+  ];
+}
+
+/** Serialize the export rows as the 11-column CSV (header + one row per cell). */
+function toCsv(rows: ExportRow[]): string {
+  const lines: string[] = [csvRow(CSV_COLUMNS)];
+  for (const row of rows) {
+    lines.push(csvRow(csvCells(row)));
+  }
+  return lines.join("\n") + "\n";
+}
+
 /** Resolve a run id from a numeric arg, or the latest run of a suite slug. */
 async function resolveRunId(target: string): Promise<ActionResult<number>> {
   if (/^\d+$/.test(target)) return ok(Number(target));
@@ -57,83 +92,60 @@ async function resolveRunId(target: string): Promise<ActionResult<number>> {
   return ok(latest.id);
 }
 
+/** Default output filename for a target + format. */
+function defaultOut(
+  all: boolean,
+  suiteSlug: string,
+  runId: number,
+  format: ExportFormat,
+): string {
+  const ext = format === "parquet" ? "parquet" : "csv";
+  if (all) return `./rubric-all-runs.${ext}`;
+  return `./${suiteSlug}-run${String(runId)}.${ext}`;
+}
+
 export async function exportRun(
   target: string | undefined,
   opts: ExportOptions = {},
 ): Promise<ActionResult<string>> {
-  if (target === undefined) {
-    return err("usage: rubric export <runId|suite> [--out file.csv]");
-  }
-
   const format = opts.format ?? "csv";
-  if (format !== "csv") {
-    // TODO(parquet): add a parquet writer once a lightweight encoder is vendored.
-    // For now, use --format csv (the only supported export format).
-    return err('parquet export is not yet supported — use --format csv');
-  }
+  const all = opts.all ?? false;
 
-  const runIdResult = await resolveRunId(target);
-  if (!runIdResult.ok) return err(runIdResult.error);
-  const runId = runIdResult.data;
+  let rows: ExportRow[];
+  let outPath: string;
 
-  const detail = await getRunDetail(runId);
-  if (detail === null) return err(`run #${String(runId)} not found`);
-
-  const { summary, scorers, rows } = detail;
-
-  const lines: string[] = [csvRow(CSV_COLUMNS)];
-  for (const row of rows) {
-    if (scorers.length === 0) {
-      lines.push(
-        csvRow([
-          summary.suiteSlug,
-          String(summary.id),
-          row.caseId,
-          row.label ?? "",
-          row.verdict,
-          row.score.toString(),
-          "",
-          "",
-          "",
-          "",
-          "",
-        ]),
+  if (all) {
+    rows = await getAllExportRows();
+    outPath = resolve(opts.out ?? defaultOut(true, "", 0, format));
+  } else {
+    if (target === undefined) {
+      return err(
+        "usage: rubric export <runId|suite> [--out file] [--format csv|parquet] [--all]",
       );
-      continue;
     }
-    row.cells.forEach((cell, i) => {
-      const scorer = scorers[i];
-      if (scorer === undefined) return;
-      lines.push(
-        csvRow([
-          summary.suiteSlug,
-          String(summary.id),
-          row.caseId,
-          row.label ?? "",
-          row.verdict,
-          row.score.toString(),
-          scorer.name,
-          cell === null ? "" : String(cell.pass),
-          cell === null ? "" : cell.score.toString(),
-          cell?.detail ?? "",
-          cell !== null ? cell.errors.join(" | ") : "",
-        ]),
-      );
-    });
+    const runIdResult = await resolveRunId(target);
+    if (!runIdResult.ok) return err(runIdResult.error);
+    const runId = runIdResult.data;
+
+    rows = await getRunExportRows(runId);
+    if (rows.length === 0) {
+      return err(`run #${String(runId)} has no rows to export`);
+    }
+    outPath = resolve(opts.out ?? defaultOut(false, rows[0]?.suite ?? "run", runId, format));
   }
 
-  const outPath = resolve(
-    opts.out ?? `./${summary.suiteSlug}-run${String(runId)}.csv`,
-  );
   try {
-    // reason: outPath is a CLI-provided destination, not untrusted input.
-    // eslint-disable-next-line security/detect-non-literal-fs-filename
-    writeFileSync(outPath, lines.join("\n") + "\n", "utf8");
+    if (format === "parquet") {
+      await writeParquet(outPath, rows);
+    } else {
+      // reason: outPath is a CLI-provided destination, not untrusted input.
+      // eslint-disable-next-line security/detect-non-literal-fs-filename
+      writeFileSync(outPath, toCsv(rows), "utf8");
+    }
   } catch (cause) {
     const message = cause instanceof Error ? cause.message : "unknown error";
     return err(`cannot write "${outPath}": ${message}`);
   }
 
-  const rowCount = lines.length - 1;
-  return ok(`Exported ${String(rowCount)} rows to ${outPath}`);
+  return ok(`Exported ${String(rows.length)} rows to ${outPath}`);
 }

@@ -105,7 +105,7 @@ usage:
   rubric label <suite> [--limit <N>] [--all] [--no-color]
   rubric calibrate <judge> [--suite <slug>] [--no-store]
   rubric trajectory [<taskId>]
-  rubric export <runId|suite> [--out <file.csv>] [--format csv]
+  rubric export <runId|suite> [--out <file>] [--format csv|parquet] [--all]
 `;
 
 /** Print a rendered report/string to stdout (CLI owns the single console write). */
@@ -234,6 +234,7 @@ async function main(): Promise<void> {
       const result = await exportRun(args.positionals[0], {
         out: args.flags.out,
         format: args.flags.format === "parquet" ? "parquet" : "csv",
+        all: args.flags.all,
       });
       if (!result.ok) {
         printError(result.error);
