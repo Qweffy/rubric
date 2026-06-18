@@ -1,0 +1,104 @@
+# settle-bill-review — the M1 offline demo suite.
+#
+# Runs fully offline: the target replays a captured settle mock output
+# (fixtures/inv-1046.json) instead of calling the model, so the suite scores
+# with ZERO API calls and is deterministic. Mirrors the {extraction, flags}
+# contract enforced by RECORD_TOOL in settle/lib/ocr.ts.
+#
+# The json-schema scorer's `schema` is the inline record_invoice contract
+# (kept byte-faithful to schemas/record_invoice.json — the file is the
+# human-readable reference, this is what the runner parses).
+version: 1
+suite: settle-bill-review
+title: Settle — AP bill review (OCR extraction + anomaly flags)
+repo: nicomastakas/settle
+
+prompt:
+  version: ocr-v1
+  ref: settle/lib/ocr.ts
+
+target:
+  kind: fixture
+  path: ./fixtures/inv-1046.json
+
+scorers:
+  - type: json-schema
+    name: schema
+    schema:
+      $schema: http://json-schema.org/draft-07/schema#
+      $id: settle/record_invoice
+      title: record_invoice output
+      type: object
+      additionalProperties: false
+      required: [extraction, flags]
+      properties:
+        extraction:
+          type: object
+          additionalProperties: false
+          required:
+            - vendorGuess
+            - invoiceNumber
+            - issueDate
+            - dueDate
+            - currency
+            - lineItems
+            - subtotal
+            - tax
+            - total
+          properties:
+            vendorGuess: { type: string }
+            invoiceNumber: { type: string }
+            issueDate: { type: string }
+            dueDate: { type: string }
+            currency: { type: string }
+            subtotal: { type: number }
+            tax: { type: number }
+            total: { type: number }
+            lineItems:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required: [description, quantity, unitPrice, amount, glGuess]
+                properties:
+                  description: { type: string }
+                  quantity: { type: [number, "null"] }
+                  unitPrice: { type: [number, "null"] }
+                  amount: { type: number }
+                  glGuess: { type: string }
+        flags:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [type, severity, title, message]
+            properties:
+              type:
+                type: string
+                enum:
+                  - anomalous_surcharge
+                  - new_fee
+                  - amount_deviation
+                  - possible_duplicate
+                  - vendor_bank_change
+                  - missing_po
+                  - other
+              severity:
+                type: string
+                enum: [high, med, low]
+              title: { type: string }
+              message: { type: string }
+              lineRef: { type: string }
+
+  - type: exact-match
+    name: exact-match
+    mode: by-path
+
+  - type: field-accuracy
+    name: field-accuracy
+    fields:
+      - extraction.invoiceNumber
+      - extraction.total
+    threshold: 0.95
+
+cases: ./cases/*.yaml

@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "settle/record_invoice",
+  "title": "record_invoice output",
+  "description": "Structured-output contract for the settle bill-review tool. Mirrors the RECORD_TOOL input_schema in settle/lib/ocr.ts: the {extraction, flags} object the model must return for every invoice.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["extraction", "flags"],
+  "properties": {
+    "extraction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "vendorGuess",
+        "invoiceNumber",
+        "issueDate",
+        "dueDate",
+        "currency",
+        "lineItems",
+        "subtotal",
+        "tax",
+        "total"
+      ],
+      "properties": {
+        "vendorGuess": { "type": "string" },
+        "invoiceNumber": { "type": "string" },
+        "issueDate": { "type": "string", "description": "ISO date or as printed" },
+        "dueDate": { "type": "string" },
+        "currency": { "type": "string" },
+        "subtotal": { "type": "number", "description": "dollars" },
+        "tax": { "type": "number" },
+        "total": { "type": "number" },
+        "lineItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["description", "quantity", "unitPrice", "amount", "glGuess"],
+            "properties": {
+              "description": { "type": "string" },
+              "quantity": { "type": ["number", "null"] },
+              "unitPrice": { "type": ["number", "null"] },
+              "amount": { "type": "number" },
+              "glGuess": { "type": "string", "description": "best-guess GL category" }
+            }
+          }
+        }
+      }
+    },
+    "flags": {
+      "type": "array",
+      "description": "Anomalies found by comparing this invoice to the vendor history. Empty if nothing is off.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "severity", "title", "message"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "anomalous_surcharge",
+              "new_fee",
+              "amount_deviation",
+              "possible_duplicate",
+              "vendor_bank_change",
+              "missing_po",
+              "other"
+            ]
+          },
+          "severity": { "type": "string", "enum": ["high", "med", "low"] },
+          "title": {
+            "type": "string",
+            "description": "short headline, e.g. \"Fuel surcharge 32% above 6-mo average\""
+          },
+          "message": {
+            "type": "string",
+            "description": "one or two sentences explaining the anomaly"
+          },
+          "lineRef": {
+            "type": "string",
+            "description": "which line it refers to, if any"
+          }
+        }
+      }
+    }
+  }
+}

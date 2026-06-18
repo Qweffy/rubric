@@ -1,0 +1,32 @@
+# Golden case for the settle bill-review demo.
+# The canonical regressed case from the rubric demo dataset (case_071,
+# "split-tender checkout") reused here as the split-tender invoice INV-1046:
+# four anomaly flags including the possible-duplicate + vendor-bank-change pair
+# a controller must see. Scored offline against fixtures/inv-1046.json — zero API.
+id: case_071
+label: split-tender checkout
+
+# What the system under test was handed. Recorded for provenance; the fixture
+# target replays the captured output rather than re-running the model.
+input:
+  vendorName: Regional Landfill Authority
+  source: invoice-ocr
+  document: INV-1046.pdf
+
+# expect blocks, one keyed object per scorer wired in suite.yaml.
+expect:
+  # json-schema: validate the whole {extraction, flags} output against the
+  # record_invoice contract (schema lives in the suite scorer config).
+  json-schema:
+    valid: true
+
+  # exact-match (by-path): each dotted path must equal its value exactly.
+  exact-match:
+    extraction.invoiceNumber: INV-1046
+    extraction.total: 85400
+
+  # field-accuracy: expected values for the tracked fields; the scorer measures
+  # the fraction matched against threshold 0.95.
+  field-accuracy:
+    extraction.invoiceNumber: INV-1046
+    extraction.total: 85400
